@@ -18,6 +18,19 @@ REM ****************************************************************************
 REM	Parameter
 REM ***********************************************************************************************************
 REM -----------------------------------------------------------------------------------------------------------
+
+if not exist bin mkdir bin
+if not exist KeilMisc mkdir KeilMisc
+
+if not exist .\KeilMisc\Lst mkdir .\KeilMisc\Lst
+if not exist .\KeilMisc\Obj mkdir .\KeilMisc\Obj
+if not exist .\KeilMisc\Map mkdir .\KeilMisc\Map
+
+
+
+
+
+
 IF  "%1" == ""     GOTO OPTIONS
 IF  "%1" == "?"    GOTO OPTIONS
 IF  "%1" == "/?"   GOTO OPTIONS

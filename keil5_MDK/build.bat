@@ -9,6 +9,13 @@ set EC_ROM_SIZE=128
 IF  "%1" == "clear"   GOTO clear
 IF  "%1" == "CLEAR"   GOTO clear
 
+if not exist bin mkdir bin
+if not exist KeilMisc mkdir KeilMisc
+
+if not exist .\KeilMisc\Lst mkdir .\KeilMisc\Lst
+if not exist .\KeilMisc\Obj mkdir .\KeilMisc\Obj
+if not exist .\KeilMisc\Map mkdir .\KeilMisc\Map
+
 
 copy .\KeilMisc\Lst\*.m51 .\KeilMisc\Map\
 copy .\KeilMisc\Obj\%buildfile%.B00
