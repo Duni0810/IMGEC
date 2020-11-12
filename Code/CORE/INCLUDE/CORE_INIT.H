@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:34
+ * @LastEditTime: 2020-11-11 10:51:16
+ */
 /*-----------------------------------------------------------------------------
  * TITLE: CORE_INIT.H
  *
@@ -27,9 +36,18 @@
 #define EXT_CB2_INIT    	0x22		
 #define SAVE_TYPEMATIC_INIT 0x2A
 
+
+#define PLLFreqSetting03        0x03    // 32.3 MHZ PLL frequency
+#define PLLFreqSetting05        0x05    // 46.0 MHZ PLL frequency
+#define PLLFreqSetting07        0x07    // 64.5 MHZ PLL frequency
+
+
+
+
 extern void Core_Initialization(void);
 extern void Core_Init_ClearRam(void);
 extern void Core_Init_Regs(void);
+extern void ChangePLLFrequency(BYTE newseting);
 
 typedef struct REG_INIT
 {

@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:35
- * @LastEditTime: 2020-11-07 15:39:22
+ * @LastEditTime: 2020-11-12 09:07:34
  */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_INCLUDE.H
@@ -35,17 +35,17 @@
 #include <OEM_SMBUS.H>
 #include <OEM_SCANTABS.H>
 #include <OEM_ADC.H>
-#include <OEM_MMB.H>
+// #include <OEM_MMB.H>
 #include <OEM_ACPI.H>
 //#include <OEM_CIR.H>
 #include <OEM_FLASH.H>
 #include <OEM_HOSTIF.H>
 #include <OEM_6064.H>
-#include <OEM_MailBox.H>
+// #include <OEM_MailBox.H>
 #include <OEM_Ver.H>
 #include <OEM_LCD.H>
 #include <OEM_PORT686C.H>
-#include <OEM_PECI.H>
+// #include <OEM_PECI.H>
 #include <OEM_PM3.H>
 #include <OEM_SPI.H>
 #include <OEM_IRQ.H>
@@ -54,7 +54,7 @@
 #include <OEM_SPI.H>
 #include <OEM_LPC.H>
 #include <OEM_Timer.H>
-#include <OEM_HSPI.H>
+// #include <OEM_HSPI.H>
 #include <OEM_ASM.H>
 #include <OEM_Debug.H>
 #include <Oem_Uart.H>

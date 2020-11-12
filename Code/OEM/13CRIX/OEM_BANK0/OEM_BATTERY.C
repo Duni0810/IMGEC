@@ -541,29 +541,7 @@ void BAT1ID_GetDesignVoltage(void)
 //----------------------------------------------------------------------------
 void BAT1ID_CheckBatAuth(void)
 {
-
-#if Lenovo_Support
-	//Battery_Auth_Lenovo();
-	#if Sha1Support
-		if(Sha1Authentication() == TRUE)
-		{
-			BAT1IdentifyNextStep();
-			SET_MASK(BIOS_OEM_battery_health,HOST_BAT_Authentication);
-		}	
-		else
-		{
-			BAT1_SetFail(Bat_AuthFail);
-			CLEAR_MASK(BIOS_OEM_battery_health,HOST_BAT_Authentication);
-		}
-	#else
-
-		BAT1IdentifyNextStep();         // next step 
-			
-	#endif
-#else
 	BAT1IdentifyNextStep();         // next step 
-#endif  
-
 }
 
 //----------------------------------------------------------------------------

@@ -31,7 +31,7 @@ void PMC3SetDataCounter(BYTE cunt)
 // ----------------------------------------------------------------------------
 void PMC3_Cmd_60(void)
 {
-    PMC3SetDataCounter(BufferLength);   // Write PECI_StressToolBuf[];
+    // PMC3SetDataCounter(BufferLength);   // Write PECI_StressToolBuf[];
 }
 
 // ----------------------------------------------------------------------------
@@ -39,7 +39,8 @@ void PMC3_Cmd_60(void)
 // ----------------------------------------------------------------------------
 void PMC3_Cmd_61(void)
 {
-    PECI_PSTReadBuffer();               // Read PECI_StressToolBuf[];
+	// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = 0x61;
+    // PECI_PSTReadBuffer();               // Read PECI_StressToolBuf[];
 }
 
 // ----------------------------------------------------------------------------
@@ -47,7 +48,8 @@ void PMC3_Cmd_61(void)
 // ----------------------------------------------------------------------------
 void PMC3_Cmd_62(void)
 {
-    PECI_PSTIssueCmd();
+	// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = 0x62;
+    // PECI_PSTIssueCmd();
 }
 
 // ----------------------------------------------------------------------------
@@ -55,7 +57,8 @@ void PMC3_Cmd_62(void)
 // ----------------------------------------------------------------------------
 void PMC3_Cmd_63(void)
 {
-    PECI_PSTEndCmd();
+	// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = 0x63;
+    // PECI_PSTEndCmd();
 }
 
 // ----------------------------------------------------------------------------
@@ -63,7 +66,8 @@ void PMC3_Cmd_63(void)
 // ----------------------------------------------------------------------------
 void PMC3_Cmd_64(void)
 {
-    PECI_PSTReadStatus();
+	// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = 0x64;
+    // PECI_PSTReadStatus();
 }
 
 // ----------------------------------------------------------------------------
@@ -71,7 +75,8 @@ void PMC3_Cmd_64(void)
 // ----------------------------------------------------------------------------
 void PMC3_Cmd_65(void)
 {
-    PECI_PSTReadErrorCount();
+	// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = 0x65;
+    // PECI_PSTReadErrorCount();
 }
 
 // ----------------------------------------------------------------------------
@@ -159,7 +164,8 @@ void PMC3_Cmd_6F(void)
 // ----------------------------------------------------------------------------
 void PMC3_Data_60(void)
 {
-    PECI_PSTWriteBuffer();
+	// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = 0x60;
+    // PECI_PSTWriteBuffer();
 }
 
 // ----------------------------------------------------------------------------

@@ -472,9 +472,6 @@ void OEM_S0_SXCommVar(void)
 //-----------------------------------------------------------------------------
 void S0_SXCommVar(void)
 {
-#ifdef PECI_Support
-    PECI_ClearPSTVariables();
-#endif
     
 #if TouchPad_only
     PowerOffClearTPPendingData();
@@ -482,10 +479,6 @@ void S0_SXCommVar(void)
 
 	CLEAR_MASK(KBHISR,SYSF);
     Ccb42_SYS_FLAG=0;
-	
-#if CIRFuncSupport	
-	Init_CIR();
-#endif
 
 	InitSMBus();
     OEM_S0_SXCommVar();

@@ -19,11 +19,6 @@ void Pm2_Cmd_80Data(void)
 	{
 		Tmp_XPntr=(ECRAM|PM2Data);
 		PM2DO = *Tmp_XPntr;
-
-			// if ((MapIndex == 0x0A) || (MapIndex == 0x4F)) {
-		// (*(volatile unsigned char xdata *)(0x801 + (*(volatile unsigned char xdata *)0x800)++) ) = PM2Data;
-		// (*(volatile unsigned char xdata *)(0x841 + (*(volatile unsigned char xdata *)0x840)++) ) = *Tmp_XPntr;
-	// }
 	}
 }
 
@@ -43,11 +38,6 @@ void Pm2_Cmd_81Data(void)
 	{
 		Tmp_XPntr=(ECRAM|PM2Data1);
 		*Tmp_XPntr = PM2Data;
-
-			// if ((MapIndex == 0x0A) || (MapIndex == 0x4F)) {
-		// (*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = PM2Data1;
-		// (*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = *Tmp_XPntr;
-	// }
 
  	}
 }

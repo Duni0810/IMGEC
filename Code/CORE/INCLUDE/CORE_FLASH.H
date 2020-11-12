@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:34
+ * @LastEditTime: 2020-11-11 10:41:31
+ */
 /*-----------------------------------------------------------------------------
  * TITLE: CORE_FLASH.H
  *
@@ -54,6 +63,17 @@
 #define SPIStatus_ProtectAll	0xFC
 #define SPIStatus_UnlockAll		0x00
 #define SPIStatus_WriteEnable	0x02
+
+
+#define SPIReadMode_0           0x00    // Read cycle
+#define SPIReadMode_1           0x01    // Fast read cycle
+#define SPIReadMode_2           0x02    // Fast read dual output
+#define SPIReadMode_3           0x03    // Fast read dual input/output
+
+
+
+extern void FuncAt_0xFE00(void);
+extern void ChangeSPIFlashReadMode(BYTE Mode);
 
 extern void RamCode(void);
 extern void ITE_Flash_Utility(void);

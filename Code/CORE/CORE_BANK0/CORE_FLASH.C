@@ -913,3 +913,36 @@ void Do_SPI_Write_Disable(void)
 	EnableAllInterrupt();				// Enable all interrupt 
 	CLEAR_MASK(FBCFG,SSMC);       		// disable scatch ROM
 }
+
+
+//-----------------------------------------------------------------------------
+// Changing SPI flash read mode
+//-----------------------------------------------------------------------------
+void ChangeSPIFlashReadMode(BYTE Mode)
+{
+    XBYTE restore;
+    restore = FLHCTRL1R;
+    CLEAR_MASK(restore, SPIFR0+SPIFR1);
+    
+    switch(Mode)
+    {
+        case SPIReadMode_0:
+            break;
+            
+        case SPIReadMode_1:
+            SET_MASK(restore, SPIFR0);
+            break;  
+            
+        case SPIReadMode_2:
+            SET_MASK(restore, SPIFR1);
+            break;
+            
+        case SPIReadMode_3:
+            SET_MASK(restore, SPIFR0+SPIFR1);
+            break;
+            
+        default:
+            break;
+    }
+    FLHCTRL1R = restore;
+}

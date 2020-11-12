@@ -51,6 +51,8 @@
         "OEM_SPI.C": "cpp",
         "OEM_PM3.C": "cpp",
         "OEM_SHA1.C": "cpp",
-        "CORE_GPIO.C": "cpp"
+        "CORE_GPIO.C": "cpp",
+        "OEM_MMB.C": "cpp",
+        "OEM_MailBox.C": "cpp"
     }
 }

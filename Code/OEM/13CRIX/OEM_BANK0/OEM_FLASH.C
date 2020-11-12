@@ -102,14 +102,6 @@ void LPC_RamCode(void)
 //----------------------------------------------------------------------------
 void RamProgram(BYTE useport)
 { 
-
-
-
-	// (*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = 0x01;
-	(*(volatile unsigned char xdata *)(0x8c1 + (*(volatile unsigned char xdata *)0x8c0)++) ) = *Tmp_XPntr;
-
-
-
     SetLPCClockFreeRun();
 	RamCodePort = useport;
 	DisableAllInterrupt();

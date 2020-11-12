@@ -282,59 +282,7 @@ void HSPI_CmdRamCode(void)
 
 }
 
-//-----------------------------------------------------------------------------
-// Changing PLL frequency function
-//-----------------------------------------------------------------------------
-void ChangePLLFrequency(BYTE newseting)
-{
-    if(newseting!=PLLFREQR)
-    {
-        PLLFREQR = newseting;
-        PLLCTRL = 1;
-        DisableAllInterrupt();
-	    PCON =2 ;             	// enter sleep mode
-	    _nop_();
-	    _nop_();
-	    _nop_();
-	    _nop_();
-	    _nop_();
-	    _nop_();
-	    _nop_();
-	    _nop_();	
-    }
-}
 
-//-----------------------------------------------------------------------------
-// Changing SPI flash read mode
-//-----------------------------------------------------------------------------
-void ChangeSPIFlashReadMode(BYTE Mode)
-{
-    XBYTE restore;
-    restore = FLHCTRL1R;
-    CLEAR_MASK(restore, SPIFR0+SPIFR1);
-    
-    switch(Mode)
-    {
-        case SPIReadMode_0:
-            break;
-            
-        case SPIReadMode_1:
-            SET_MASK(restore, SPIFR0);
-            break;  
-            
-        case SPIReadMode_2:
-            SET_MASK(restore, SPIFR1);
-            break;
-            
-        case SPIReadMode_3:
-            SET_MASK(restore, SPIFR0+SPIFR1);
-            break;
-            
-        default:
-            break;
-    }
-    FLHCTRL1R = restore;
-}
 
 //-----------------------------------------------------------------------------
 // Changing HSPI requestmode

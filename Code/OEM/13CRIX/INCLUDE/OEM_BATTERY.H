@@ -254,20 +254,6 @@
 #define Bat_AuthFail            0x08
 
 //-------------------------------------------------------------------------------
-// Battery Stop charge cause
-//-------------------------------------------------------------------------------
-#if Sha1Support
-extern void InitCreatRandomData(void); 	// 
-extern void Sha1HashProcess(void);
-extern BYTE Sha1WriteChallengeValueToBat1(void);
-extern BYTE Sha1ReadResponseFromBat1(void);
-extern BYTE ReadBat1BlockTest(void);
-extern BYTE CompareAuthentication(void);
-extern BYTE ProcessAuthentication(void);
-extern BYTE Sha1Authentication(void);
-#endif
-
-//-------------------------------------------------------------------------------
 // Functions prototype
 //-------------------------------------------------------------------------------
 extern void Battey1ControlCenter(void);

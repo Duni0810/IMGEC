@@ -2078,10 +2078,6 @@ void Oem_Initialization(void)
 	Init_ADC();
     #endif
 
-    #if CIRFuncSupport	
-	Init_CIR();
-    #endif
-
 	Init_Cache();
 	Init_PS2Port();
     

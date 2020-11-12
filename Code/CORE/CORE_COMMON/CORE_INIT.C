@@ -165,3 +165,27 @@ void Core_Init_Regs(void)
     CLEAR_MASK(FLHCTRL2R,BIT3);
 	DCache = 0x03; // Disable Caches
 }
+
+
+
+//-----------------------------------------------------------------------------
+// Changing PLL frequency function
+//-----------------------------------------------------------------------------
+void ChangePLLFrequency(BYTE newseting)
+{
+    if(newseting!=PLLFREQR)
+    {
+        PLLFREQR = newseting;
+        PLLCTRL = 1;
+        DisableAllInterrupt();
+	    PCON =2 ;             	// enter sleep mode
+	    _nop_();
+	    _nop_();
+	    _nop_();
+	    _nop_();
+	    _nop_();
+	    _nop_();
+	    _nop_();
+	    _nop_();	
+    }
+}

@@ -215,17 +215,14 @@ void Hook_64Port(BYTE KBHICmd)
         break;
 
         case 0x94:
-        (*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = 0x94;
         OEM_Cmd_94();
         break;
 
         case 0xB4:
-        (*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = 0xB4;
         OEM_Cmd_B4();
         break;
 
         case 0xD8:
-        (*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = 0xD8;
         OEM_Cmd_D8();
         break;
 
@@ -234,7 +231,6 @@ void Hook_64Port(BYTE KBHICmd)
         break;
 
         case 0xDD:
-        (*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = 0xDD;
         OEM_Cmd_DD();
         break;
 

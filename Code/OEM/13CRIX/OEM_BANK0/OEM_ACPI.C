@@ -346,15 +346,6 @@ BYTE Hook_ReadMapECSpace(BYTE MapIndex)
 {
 	Tmp_XPntr=(ECRAM|MapIndex);
 
-
-	// if ((MapIndex == 0x0A) || (MapIndex == 0x4F)) {
-	// 	(*(volatile unsigned char xdata *)(0x801 + (*(volatile unsigned char xdata *)0x800)++) ) = MapIndex;
-	// 	(*(volatile unsigned char xdata *)(0x881 + (*(volatile unsigned char xdata *)0x880)++) ) = *Tmp_XPntr;
-	// }
-
-
-
-
 	return(*Tmp_XPntr);	
 }
 

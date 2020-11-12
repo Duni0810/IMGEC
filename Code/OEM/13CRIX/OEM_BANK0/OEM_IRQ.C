@@ -700,13 +700,6 @@ void Hook_IRQ_INT79_WKO77(void)
 //------------------------------------------------------------
 void Hook_EnableInterrupt(void)
 {
-    #if CIRFuncSupport
-	if(SysPowState!=SYSTEM_S0)
-	{
-		SET_MASK(IER1, Int_CIR);    // enable CIR interrupt 
-	}
-    #endif
-
     #ifdef PMC3_Support
   	EnablePMC3IBFInt(); // Enable PMC3 input buffer full interrup
   	#endif

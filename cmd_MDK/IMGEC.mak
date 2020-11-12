@@ -72,18 +72,15 @@ $(filename).ABS:KeilMisc\Obj\CORE_IRQ.OBJ\
 			KeilMisc\Obj\OEM_POWER.OBJ\
 			KeilMisc\Obj\OEM_SMBUS.OBJ\
 			KeilMisc\Obj\OEM_ADC.OBJ\
-			KeilMisc\Obj\OEM_MMB.OBJ\
 			KeilMisc\Obj\OEM_ACPI.OBJ\
 			KeilMisc\Obj\OEM_FLASH.OBJ\
 			KeilMisc\Obj\OEM_INIT.OBJ\
 			KeilMisc\Obj\OEM_HOSTIF.OBJ\
 			KeilMisc\Obj\OEM_6064.OBJ\
 			KeilMisc\Obj\OEM_MEMORY.OBJ\
-            KeilMisc\Obj\OEM_MailBox.OBJ\
             KeilMisc\Obj\OEM_Ver.OBJ\
             KeilMisc\Obj\OEM_LCD.OBJ\
             KeilMisc\Obj\OEM_PORT686C.OBJ\
-            KeilMisc\Obj\OEM_PECI.OBJ\
             KeilMisc\Obj\OEM_PM3.OBJ\
             KeilMisc\Obj\OEM_IRQ.OBJ\
             KeilMisc\Obj\OEM_PM2.OBJ\
@@ -91,11 +88,10 @@ $(filename).ABS:KeilMisc\Obj\CORE_IRQ.OBJ\
             KeilMisc\Obj\OEM_SPI.OBJ\
             KeilMisc\Obj\OEM_LPC.OBJ\
             KeilMisc\Obj\OEM_TIMER.OBJ\
-            KeilMisc\Obj\OEM_HSPI.OBJ\
             KeilMisc\Obj\OEM_ASM.OBJ\
             KeilMisc\Obj\OEM_Debug.OBJ\
             KeilMisc\Obj\OEM_ECPDM.OBJ\
-	    KeilMisc\Obj\UCSI.OBJ\
+			KeilMisc\Obj\UCSI.OBJ\
             KeilMisc\Obj\ANX7447_LIB.OBJ\
             KeilMisc\Obj\OEM_UART.OBJ\
             KeilMisc\Obj\OEM_BANK1_Func.OBJ\
@@ -264,11 +260,6 @@ KeilMisc\Obj\OEM_ADC.OBJ:..\Code\OEM\OEM_ADC.C $(COREInclude) $(OEMInclude) $(CH
 	move ..\Code\OEM\OEM_ADC.OBJ KeilMisc\Obj
 	move ..\Code\OEM\OEM_ADC.LST KeilMisc\Lst
 
-KeilMisc\Obj\OEM_MMB.OBJ:..\Code\OEM\OEM_MMB.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
-	$(CC) ..\Code\OEM\OEM_MMB.C $(CDirectives)
-	move ..\Code\OEM\OEM_MMB.OBJ KeilMisc\Obj
-	move ..\Code\OEM\OEM_MMB.LST KeilMisc\Lst	
-
 KeilMisc\Obj\OEM_ACPI.OBJ:..\Code\OEM\OEM_ACPI.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
 	$(CC) ..\Code\OEM\OEM_ACPI.C $(CDirectives)
 	move ..\Code\OEM\OEM_ACPI.OBJ KeilMisc\Obj
@@ -300,11 +291,6 @@ KeilMisc\Obj\OEM_MEMORY.OBJ:..\Code\Oem\OEM_MEMORY.C $(COREInclude) $(OEMInclude
 	move ..\Code\Oem\OEM_MEMORY.OBJ KeilMisc\Obj
 	move ..\Code\Oem\OEM_MEMORY.LST KeilMisc\Lst
 
-KeilMisc\Obj\OEM_MailBox.OBJ:..\Code\Oem\OEM_MailBox.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
-	$(CC) ..\Code\Oem\OEM_MailBox.C $(CDirectives)
-	move ..\Code\Oem\OEM_MailBox.OBJ KeilMisc\Obj
-	move ..\Code\Oem\OEM_MailBox.LST KeilMisc\Lst
-
 KeilMisc\Obj\OEM_Ver.OBJ:..\Code\Oem\OEM_Ver.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
 	$(CC) ..\Code\Oem\OEM_Ver.C $(CDirectives)
 	move ..\Code\Oem\OEM_Ver.OBJ KeilMisc\Obj
@@ -319,11 +305,6 @@ KeilMisc\Obj\OEM_PORT686C.OBJ:..\Code\Oem\OEM_PORT686C.C $(COREInclude) $(OEMInc
 	$(CC) ..\Code\Oem\OEM_PORT686C.C $(CDirectives)
 	move ..\Code\Oem\OEM_PORT686C.OBJ KeilMisc\Obj
 	move ..\Code\Oem\OEM_PORT686C.LST KeilMisc\Lst	
-
-KeilMisc\Obj\OEM_PECI.OBJ:..\Code\Oem\OEM_PECI.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
-	$(CC) ..\Code\Oem\OEM_PECI.C $(CDirectives)
-	move ..\Code\Oem\OEM_PECI.OBJ KeilMisc\Obj
-	move ..\Code\Oem\OEM_PECI.LST KeilMisc\Lst
 
 KeilMisc\Obj\OEM_PM3.OBJ:..\Code\Oem\OEM_PM3.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
 	$(CC) ..\Code\Oem\OEM_PM3.C $(CDirectives)
@@ -359,13 +340,6 @@ KeilMisc\Obj\OEM_TIMER.OBJ:..\Code\Oem\OEM_TIMER.C $(COREInclude) $(OEMInclude) 
 	$(CC) ..\Code\Oem\OEM_TIMER.C $(CDirectives)
 	move ..\Code\Oem\OEM_TIMER.OBJ KeilMisc\Obj
 	move ..\Code\Oem\OEM_TIMER.LST KeilMisc\Lst
-
-KeilMisc\Obj\OEM_HSPI.OBJ:..\Code\Oem\OEM_HSPI.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
-	$(CC) ..\Code\Oem\OEM_HSPI.C $(CDirectives1)
-	$(AS) ..\Code\Oem\OEM_HSPI.SRC $(ADirectives) 
-	move ..\Code\Oem\OEM_HSPI.OBJ KeilMisc\Obj
-	move ..\Code\Oem\OEM_HSPI.LST KeilMisc\Lst
-	del ..\Code\Oem\OEM_HSPI.SRC
 
 KeilMisc\Obj\OEM_ASM.OBJ:..\Code\Oem\OEM_ASM.C $(COREInclude) $(OEMInclude) $(CHIPInclude)
 	$(CC) ..\Code\Oem\OEM_ASM.C $(CDirectives1)

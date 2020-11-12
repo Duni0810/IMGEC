@@ -41,7 +41,7 @@
 #define TouchPad_only           TRUE    // True : Only touch pad device in this project
                                         /* Note : If TouchPad_only is set, remeber to call 
                                             PowerOffClearTPPendingData() function in power off sequnce
-                                            include (S3, S4, and S5)¡C*/   
+                                            include (S3, S4, and S5)ï¿½C*/   
 
 #if TouchPad_only                                     
 #define MultiplexedModes        FALSE   // 0 : Doesn't support multiplexed modes.
@@ -204,13 +204,11 @@
 #define Support_ANX7447			TRUE	//J80_018++
 #define Two_PD_Chip				FALSE
 #define ADCFuncSupport			TRUE    // True : support ADC function
-#define CIRFuncSupport			FALSE   // True : support cir function
 #define LEDFuncSupport          TRUE    // True : support LEC control function
 #define HookFucnofWriteECRam    TRUE    // True : Hook function For ACPI command 0x81 write EC space 
 #define S3KeyboardWakeUp        TRUE    // True : support S3 wake up from internal keyboard
 #define MailBoxRWECRam          FALSE
 #define Insyde_Bios             TRUE    //FALSE
-#define Sha1Support 			FALSE   //  sha1 function support 
 #define _8S_Reset_Support       TRUE
 
 
@@ -242,16 +240,6 @@
 //#define AdapterProtect_Support 
 
 //#define SYSTEM_POWER_PROTECT_SUPPORT 
-
-//-----------------------------------------------------------------------------
-// PECI
-//-----------------------------------------------------------------------------
-#ifdef PECI_Support
-#define ReadCPUTemperature      TRUE    // FALSE   // 1 : Getting CPU temperature via PECI interface
-#define ReadPKGTemperature      TRUE    // 1 : Getting package temperature via PECI interface
-#define ReadDRAMTemperature     FALSE    // 1 : Getting DRAM temperature via PECI interface
-#define ACTurboControlAlgorithm FALSE   
-#endif
 
 //-----------------------------------------------------------------------------
 // OEM_Event.C Debounce time setting
