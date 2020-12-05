@@ -136,8 +136,8 @@ DEL /q *.ABS*
 move *.m51 .\KeilMisc\Map
 cls
 ECHO    ********************************************************************
-ECHO    *    ITE Embedded Controller Firmware Build Process                *
-ECHO    *    Copyright (c) 2006-2010, ITE Tech. Inc. All Rights Reserved.  *
+ECHO    *    IMGEC Embedded Controller Firmware Build Process              *
+ECHO    *    Copyright (c) 2006-2010, IMGEC Tech. Inc. All Rights Reserved.*
 ECHO    ********************************************************************
 ECHO.  
 ECHO    Making EC bin file successfully !!!
@@ -168,8 +168,8 @@ REM GOTO End
 :NotExit
 cls
 ECHO    ********************************************************************
-ECHO    *    ITE Embedded Controller Firmware Build Process                *
-ECHO    *    Copyright (c) 2006-2010, ITE Tech. Inc. All Rights Reserved.  *
+ECHO    *    IMGEC Embedded Controller Firmware Build Process              *
+ECHO    *    Copyright (c) 2006-2010, IMGEC Tech. Inc. All Rights Reserved.*
 ECHO    ********************************************************************
 ECHO.  
 ECHO    Project folder isn't exit.
@@ -182,8 +182,8 @@ GOTO done
 :OPTIONS
 cls
 ECHO    ********************************************************************
-ECHO    *    ITE Embedded Controller Firmware Build Process                *
-ECHO    *    Copyright (c) 2006-2010, ITE Tech. Inc. All Rights Reserved.  *
+ECHO    *    IMGEC Embedded Controller Firmware Build Process              *
+ECHO    *    Copyright (c) 2006-2010, IMGEC Tech. Inc. All Rights Reserved.*
 ECHO    ********************************************************************
 ECHO.    
 ECHO    USAGE:  build [P1] [P2]

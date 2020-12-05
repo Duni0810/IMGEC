@@ -17,11 +17,16 @@
 
 void Oem_Hook_Timer1ms(void)
 {
-	#ifdef UART_Debug
+	#if UART_Debug
+	
+	// 上锁，防止被打断
+	DisableAllInterrupt();
 	if(IS_MASK_SET(UART_Buffer_Status, _Send_Ready))
 	{
 		UART_Send_Byte();
 	}
+	EnableAllInterrupt();
+
 	#endif
 }
 
@@ -33,20 +38,26 @@ void Hook_Timer1msEvent(IBYTE EventId)
     #if MailBoxRWECRam
     HandleMailBox();
     #endif
-	
-    EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
+
+
+	#if UART_Debug
+	// Oem_Hook_Timer1ms();
+	#endif
+
+	// 暂时屏蔽 young
+    // EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
     
-    Oem_SysPowerContrl();       // System Power Control
-    SMBusCenter(); 
+    // Oem_SysPowerContrl();       // System Power Control
+    // SMBusCenter(); 
 
-	//Label:BLD_TIPIA_20161118_021
-	#if Lenovo_Support
-	Lenovo_PM_Cmd();
-	#endif
+	// //Label:BLD_TIPIA_20161118_021
+	// #if Lenovo_Support
+	// Lenovo_PM_Cmd();
+	// #endif
 
-	#if Support_ANX7447
-	ANX_HOOK_1ms();
-	#endif
+	// #if Support_ANX7447
+	// ANX_HOOK_1ms();
+	// #endif
 }
 //------------------------------------------------------------
 // Hook 5ms events

@@ -53,6 +53,11 @@
         "OEM_SHA1.C": "cpp",
         "CORE_GPIO.C": "cpp",
         "OEM_MMB.C": "cpp",
-        "OEM_MailBox.C": "cpp"
+        "OEM_MailBox.C": "cpp",
+        "OEM_Ver.C": "cpp",
+        "OEM_BANK1_Func.C": "cpp",
+        "OEM_BANK2_Func.C": "cpp",
+        "OEM_BANK3_Func.C": "cpp",
+        "OEM_PS2.C": "cpp"
     }
 }

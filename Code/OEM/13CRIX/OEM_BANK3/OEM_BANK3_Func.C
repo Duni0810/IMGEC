@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:35
+ * @LastEditTime: 2020-11-30 10:30:03
+ */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_BANK3_Func.C
  *
@@ -15,5 +24,5 @@
 //----------------------------------------------------------------------------
 void Bank3_Test(void)
 {
-    
+    uart_printf("Bank3_Test\n");
 }

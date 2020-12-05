@@ -23,13 +23,146 @@
  *  all service requests have been handled, return to idle state.
  * ------------------------------------------------------------------------- */
 
-XBYTE   young_data    				_at_(0x0B01);
-XBYTE   young_data1    				_at_(0x0B02);
 
-static unsigned char __data_young = 0x00;
+
+extern void cold_reset(void);
+
+static void __test_init(void)
+{
+    DCache = 0x00;
+
+	cold_reset();
+    // init timer
+    Init_Timers();
+
+    // init uart
+	uart_Initial();
+	Init_GPIO();
+    GPCRB0 = ALT;
+    GPCRB1 = ALT;
+
+    Core_Init_SMBus();
+    ChangeSPIFlashReadMode(SPIReadMode);
+    Init_SMBus_Regs();
+    InitSMBus();
+	Init_OEMVariable();
+
+    // // 这个函数中有修改，测试完记得修改回来
+	// InitThermalChip();
+
+    InitEnableInterrupt();
+    UART_Print_Str("FIC628 say hello\n");
+}
+
+
+static void __1s_delay(void)
+{
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+}
+
+extern void Oem_Hook_Timer1ms(void);
+
+ECReg	GCR11     		_at_ 0x16FA;
 
 void main(void)
 {
+    u8    young_flag = 0x00;
+    
+    SP = 0xC0;					// Setting stack pointer
+
+    // for(;;){
+    //     young_flag++;
+    //     if (young_flag > 250) {
+    //         young_flag = 0;
+    //     }
+    // }
+
+    __test_init();
+
+    GPCRE4 = OUTPUT;
+
+    GCR10 = 0x01;
+	GCR8  = 0x10;
+    // GCR11 = 0x01;
+    // GCR9  = 0x02;
+    
+
+    // BAT_LED2_ON();
+    _nop_();
+    _nop_();
+    _nop_();
+    _nop_();
+    _nop_();
+    _nop_();
+    _nop_();
+    _nop_();
+
+    SCLKTS_A = 0x02;
+
+    CHARGER_OPTION_L = 0x08;
+    CHARGER_OPTION_H = 0xE2;  // 默认为E1  建议别乱写
+
+
+    if(bRWSMBus(SmartChargerChannel, SMbusWW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0) == FALSE ) {
+        // UART_Print_Str("Write ERROR \r\n");
+        // BAT_LED1_ON();
+    }
+
+    // BAT_LED1_ON();
+    // _nop_();
+
+    ServiceSMBus();
+
+    if(bRWSMBus(SmartChargerChannel, SMbusRW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0)) {
+        UART_Print_Str("CHARGER_OPTION: ");
+        UART_Print_HEX(CHARGER_OPTION_L);
+        UART_Print_Str(" \r\n    CHARGER_OPTION:");
+        UART_Print_HEX(CHARGER_OPTION_H);
+        UART_Print_Str(" \r\n");
+    }
+
+	for(;;) {
+        // 这个是串口发送程序 
+        Oem_Hook_Timer1ms();
+
+        //-----------------------------------
+        // 1 millisecond elapsed
+        //-----------------------------------
+        if(F_Service_MS_1)
+        {
+            F_Service_MS_1=0;
+            service_1mS();
+
+            if(young_flag >= 250) {
+                UART_Print_Str("test code \r\n");
+                young_flag = 0;
+            }
+            young_flag++;
+
+            continue;
+        }
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	DisableAllInterrupt();
 	SP = 0xC0;					// Setting stack pointer
@@ -64,6 +197,8 @@ void main(void)
         UART_Print_Str("\n\n------------------------------------");
         UART_Print_Str("\n  EC Init OK !!!");
         UART_Print_Str("\n\n------------------------------------");
+        GPCRB0 = ALT;
+        GPCRB1 = ALT;
 		#else
 		//uart_Initial_Host();
 		#endif
@@ -80,8 +215,16 @@ void main(void)
 	BRAM_FLASH_ID2=0;
 	BRAM_FLASH_ID3=0;	
 
+    // //test
+    // for(;;) {
+    //    Oem_Hook_Timer1ms(); 
+    // };
 
-    (*(volatile unsigned char xdata *)0x805 ) = 0x55;
+
+
+
+
+    // (*(volatile unsigned char xdata *)0x805 ) = 0x55;
 
 	while(1)
    	{
@@ -129,64 +272,6 @@ void main_service(void)
     while((Service!=0x00)||(Service1!=0x00))
     #endif
     {
-        // young modified
-        /*********************************************/
-                
-        // if (SystemIsS0) {
-        //     // (*(volatile unsigned char xdata *) 0x0B01) = 0x01;
-        //     young_data = 0x11;
-        //     __data_young += 1;
-
-        //     UART1_LCR = __data_young;
-
-        //     if (UART1_LCR == __data_young) {
-        //         young_data1 = 0x55;
-        //     } else {
-        //         young_data1 = 0xFF;
-        //     }
-
-        //         EX1 = 0;
-        //         EA  = 0;
-
-        //         PCON=1;      		// enter idle mode
-
-        //         _nop_();
-        //         _nop_();
-        //         _nop_();
-        //         _nop_();
-        //         _nop_();
-        //         _nop_();
-        //         _nop_();
-        //         _nop_();
-
-
-
-            
-        // } else if(SystemIsS3) {
-        //     // (*(volatile unsigned char xdata *) 0x0B01) = 0x02;
-        //     young_data = 0x22;
-        // } else if(SystemIsS4) {
-        //     // (*(volatile unsigned char xdata *) 0x0B01) = 0x03;
-        //     young_data = 0x33;
-        // } else if (SystemIsS5){
-        //     // (*(volatile unsigned char xdata *) 0x0B01) = 0x04;
-        //     young_data = 0x44;
-        // } else {
-        //     // (*(volatile unsigned char xdata *) 0x0B01) = 0x05;
-        //     young_data = 0x55;
-        // }
-
-
-        /*********************************************/
-
-
-
-
-
-
-
-
-
         //-----------------------------------
         // Host command/data service    6064
         //-----------------------------------
@@ -306,15 +391,6 @@ void main_service(void)
             continue;
         }
 
-        //-----------------------------------
-        // CIR IRQ
-        //-----------------------------------
-//        if(F_Service_CIR)
-//        {
-//            F_Service_CIR=0;
-//            service_cir();
-//            continue;
-//        }
 
         //-----------------------------------
         // fourth command/data service
@@ -407,94 +483,104 @@ void service_1mS(void)
 {
 	Timer1msEvent();
 	Timer1msCnt++;
-    if(Timer1msCnt>=10)
+
+    // 临时测试代码
+    if(Timer1msCnt>=250)
     {
+        INVERSE_REG(GPDRJ, 4);
+        INVERSE_REG(GPDRC, 6);
         Timer1msCnt = 0x00;
     }
 
-    if(Hook_Only_Timer1msEvent()==Only_Timer1msEvent)
-    {   
-        return;
-    }
 
-    if((Timer1msCnt%5)==0x00)
-    {
-	    Timer5msEvent();
-	    Timer5msCnt++;
-	    if ( Timer5msCnt & 1 )  	// 10ms events
-	    {
-            Timer10msEventA();
-	    }
-	    else
-	    {
-		    Timer10msEventB();
-     	    switch( Timer5msCnt )   // Share Loading Branch Control
-    	    {
-       		    case 2: Timer50msEventA();
-                    break;
-          	    case 4: Timer50msEventB();
-             	    break;
-        	    case 6: Timer50msEventC();
-              	    break;
-          	    case 8: Timer100msCntB++;
-         		    if ( Timer100msCntB & 1 )
-             	    {
-                  	    Timer100msEventA();
-              	    }
-             	    else
-             	    {
-                   	    Timer100msEventB();
-              	    }
-               	    break;
+    // if(Timer1msCnt>=10)
+    // {
+    //     Timer1msCnt = 0x00;
+    // }
 
-           	    default:        
-				    Timer5msCnt=0;
-              	    break;
-     	    }
+    // if(Hook_Only_Timer1msEvent()==Only_Timer1msEvent)
+    // {   
+    //     return;
+    // }
 
-    	    if ( Timer5msCnt == 0x00 )
-    	    {       			// 50msec
-          	    Timer100msCnt ++;
-          	    if ( Timer100msCnt & 1 )
-         	    {
-             	    Timer100msEventC();
-          	    }
-         	    else
-     		    {       		// 100msec
-          		    switch( Timer100msCnt )
-              	    {
-                	    case 2:	Timer500msEventA();
-                 		    break;
-                 	    case 4:	Timer500msEventB();
-                      	    break;
-                 	    case 6:	Timer500msEventC();
-                     	    break;
-                 	    case 8:	Timer1SecEventA();
-                     	    break;
-					    case 10: 	Timer1SecEventB();
-                     	    break;	
-                 	    case 12:	Timer500msEventA();
-                      	    break;
-                	    case 14:	Timer500msEventB();
-                      	    break;
-               		    case 16: 	Timer500msEventC();
-                      	    break;
-                 	    case 18: 	Timer1SecEventC();
-                     	    break;
-                  	    default:        // 1 Sec
-                      	    Timer100msCnt = 0;
-                  		    Timer1SecCnt ++;
-                    	    if ( Timer1SecCnt == 60 )
-                      	    {
-                         	    Timer1MinEvent();
-                         	    Timer1SecCnt=0;
-                     	    }
-                    	    break;
-          		    }
-              	}
-       		}
-   		}
-	} 
+    // if((Timer1msCnt%5)==0x00)
+    // {
+	//     Timer5msEvent();
+	//     Timer5msCnt++;
+	//     if ( Timer5msCnt & 1 )  	// 10ms events
+	//     {
+    //         Timer10msEventA();
+	//     }
+	//     else
+	//     {
+	// 	    Timer10msEventB();
+    //  	    switch( Timer5msCnt )   // Share Loading Branch Control
+    // 	    {
+    //    		    case 2: Timer50msEventA();
+    //                 break;
+    //       	    case 4: Timer50msEventB();
+    //          	    break;
+    //     	    case 6: Timer50msEventC();
+    //           	    break;
+    //       	    case 8: Timer100msCntB++;
+    //      		    if ( Timer100msCntB & 1 )
+    //          	    {
+    //               	    Timer100msEventA();
+    //           	    }
+    //          	    else
+    //          	    {
+    //                	    Timer100msEventB();
+    //           	    }
+    //            	    break;
+
+    //        	    default:        
+	// 			    Timer5msCnt=0;
+    //           	    break;
+    //  	    }
+
+    // 	    if ( Timer5msCnt == 0x00 )
+    // 	    {       			// 50msec
+    //       	    Timer100msCnt ++;
+    //       	    if ( Timer100msCnt & 1 )
+    //      	    {
+    //          	    Timer100msEventC();
+    //       	    }
+    //      	    else
+    //  		    {       		// 100msec
+    //       		    switch( Timer100msCnt )
+    //           	    {
+    //             	    case 2:	Timer500msEventA();
+    //              		    break;
+    //              	    case 4:	Timer500msEventB();
+    //                   	    break;
+    //              	    case 6:	Timer500msEventC();
+    //                  	    break;
+    //              	    case 8:	Timer1SecEventA();
+    //                  	    break;
+	// 				    case 10: 	Timer1SecEventB();
+    //                  	    break;	
+    //              	    case 12:	Timer500msEventA();
+    //                   	    break;
+    //             	    case 14:	Timer500msEventB();
+    //                   	    break;
+    //            		    case 16: 	Timer500msEventC();
+    //                   	    break;
+    //              	    case 18: 	Timer1SecEventC();
+    //                  	    break;
+    //               	    default:        // 1 Sec
+    //                   	    Timer100msCnt = 0;
+    //               		    Timer1SecCnt ++;
+    //                 	    if ( Timer1SecCnt == 60 )
+    //                   	    {
+    //                      	    Timer1MinEvent();
+    //                      	    Timer1SecCnt=0;
+    //                  	    }
+    //                 	    break;
+    //       		    }
+    //           	}
+    //    		}
+   	// 	}
+	// } 
 }
 
 //------------------------------------------------------------
@@ -502,7 +588,8 @@ void service_1mS(void)
 //------------------------------------------------------------
 void Timer1msEvent(void)
 {
-    ReSendPS2PendingData();
+    // 暂时屏蔽
+    // ReSendPS2PendingData();
     Hook_Timer1msEvent(Timer1msCnt);
 }
 

@@ -913,7 +913,8 @@ void IRQ_INT79_WKO77(void)
 //----------------------------------------------------------------------------
 void Isr_Int0(void) interrupt 0 using 2
 {
-
+    // BAT_LED1_ON();
+    // BAT_LED2_ON();
 }
 
 //----------------------------------------------------------------------------
@@ -931,10 +932,15 @@ void Isr_Int0(void) interrupt 0 using 2
  *                  of serial data transmissions to/from the auxiliary
  *                  keyboard/pointing devices.
  * ------------------------------------------------------------------------- */
+
+extern void Oem_Hook_Timer1ms(void);
 void Isr_Tmr0(void) interrupt 1 using 2
 {
     Load_Timer_A();
     F_Service_MS_1 = 1;   // Request 1 mS timer service.
+
+    // 不用这个方式
+    // Oem_Hook_Timer1ms();
 
 	if(guoyong003 == 0x99)
 	guoyong001 = guoyong001 + 1;
@@ -1117,7 +1123,6 @@ void Isr_UART(void) interrupt 4 using 2
  * ------------------------------------------------------------------------- */
 void Isr_Tmr2(void) interrupt 5 using 2
 {
-
 }
 
 //------------------------------------------------------------------------------

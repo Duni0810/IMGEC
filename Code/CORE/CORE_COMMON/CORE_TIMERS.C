@@ -76,7 +76,7 @@ void Init_Timers(void)
 	TMOD  = 0x11;			// Timer0 and timer1 are 16 bits timer
     TR0 = 1;                // Start timer0 running
     ET0 = 1;				// Enable timer0 interrupt
-							
+			
     TF1 = TR1 = 0;       	// Stop timer 1 and clear interrupt
     TL1 = Timer_2ms;      	// Reload timer
     TH1 = Timer_2ms>>8; 	// 2ms

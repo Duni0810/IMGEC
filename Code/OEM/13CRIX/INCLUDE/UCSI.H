@@ -76,9 +76,13 @@ extern u8 SWAP_BYTE;
 /*set the INT and Address configuration for ANX EVB*/
 //#define ITE_EC_EVB_PORT1_TEST
 
+// ---> young modified 
 
-#define ANXDEBUG
-#define ucsi_debug printf
+// #define ANXDEBUG
+// #define ucsi_debug printf
+
+// <---
+
 #endif
 
 void ANX_HOOK_10ms(void);

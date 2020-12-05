@@ -124,10 +124,12 @@ void Hook_IRQ_INT13_WKINTC(void)
 void Hook_IRQ_INT14_WKO25(void)
 {
     ISR1 |= Int_WKO25;
-    (*(volatile unsigned char xdata *) 0x410) = 0x66;
+    WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能    
 
-    BAT_LED1_OFF();
-    BAT_LED2_OFF();
+    // (*(volatile unsigned char xdata *) 0x410) = 0x66;
+
+    // BAT_LED1_ON();
+    // BAT_LED2_ON();
 
 }
 
@@ -260,22 +262,10 @@ void Hook_IRQ_INT29_EGPC(void)
 //----------------------------------------------------------------------------
 void Hook_IRQ_INT30_ET1(void)
 {
-    static char i = 0;
-     ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
-        // young 外部定时器测试使用
-    // INVERSE_REG(GPDRJ,BIT(4));
-
-    // if(i == 0) {
-    //     BAT_LED1_ON();
-    // } else {
-    //     BAT_LED1_OFF();
-    // }
-    // i++;
-
-    // if(i == 2) {
-    //     i = 0;
-    // }
-    // BAT_LED1_ON();
+    // static char i = 0;
+    ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+    // young 外部定时器测试使用
+    //  INVERSE_REG(GPDRC, 6);
 }
 
 //----------------------------------------------------------------------------
@@ -502,18 +492,7 @@ void Hook_IRQ_INT58_ET2(void)
     static char i = 0;
     ISR7 = Int_ET2Intr;               // Write to clear external timer 1 interrupt 
         // young 外部定时器测试使用
-    // INVERSE_REG(GPDRJ,BIT(4));
-
-    // if(i == 0) {
-    //     BAT_LED2_ON();
-    // } else {
-    //     BAT_LED2_OFF();
-    // }
-    // i++;
-
-    // if(i == 2) {
-    //     i = 0;
-    // }
+     INVERSE_REG(GPDRJ, 4);
 }
 
 //----------------------------------------------------------------------------

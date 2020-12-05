@@ -18,20 +18,26 @@
 
 static void __1s_delay(void)
 {
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
-    Delay1MS(200);
+//	int i = 0;
+//	int j = 0;
+//	
+//	for(;i < 250;i++) {
+//		for(;j < 250; j++) {
+//			
+//			_nop_();
+//		}
+//	}
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
 }
 
 // 看门狗测试
-#if 0
+#if 1
 
 /**
  * 试验一内容  : RSTS 寄存器属性判断
@@ -47,7 +53,12 @@ static void __test1_rets(void)
     uchar i = 0;
     uchar j = 0;
 
-    Init_GPIO();
+    //  Init_GPIO();
+    CLEAR_MASK(GPDRC ,BIT(6));
+    CLEAR_MASK(GPDRJ ,BIT(4));
+
+    GPCRC6 = OUTPUT;
+    GPCRJ4 = OUTPUT;
 
     i = RSTS;
     j = RSTS;
@@ -145,8 +156,18 @@ static void __test_ETWD(void)
 static void __test_ITWD(void)
 { 
     uchar i = 0;
+    
     EnableInternalWDT();
     Init_GPIO();
+
+    BAT_LED1_OFF();
+    BAT_LED2_OFF();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
 
     i = RSTS;
 
@@ -155,769 +176,14 @@ static void __test_ITWD(void)
         BAT_LED1_ON();
         BAT_LED2_OFF();
     } else if ((i & 0x03) == 0x03){  // 外部看门狗
-        // BAT_LED1_OFF();
-        // BAT_LED2_ON();
     } else {
         BAT_LED1_OFF();
         BAT_LED2_ON();
-        // BAT_LED1_OFF();
-        // BAT_LED2_OFF();
     }
     InternalWDTNow();
     for(;;);
 }
 
-XBYTE test_rdata1	_at_(0x0430 + 0); 
-XBYTE test_rdata2	_at_(0x0430 + 1); 
-XBYTE test_rdata3	_at_(0x0430 + 2); 
-XBYTE test_rdata4	_at_(0x0430 + 3); 
-XBYTE test_rdata5	_at_(0x0430 + 4); 
-XBYTE test_rdata6	_at_(0x0430 + 5); 
-XBYTE test_rdata7	_at_(0x0430 + 6); 
-XBYTE test_rdata8	_at_(0x0430 + 7); 
-XBYTE test_rdata9	_at_(0x0430 + 8); 
-XBYTE test_rdataa	_at_(0x0430 + 9); 
-XBYTE test_rdatab	_at_(0x0430 + 10); 
-XBYTE test_rdatac	_at_(0x0430 + 11); 
-
-#define __UNEQUAL(reg, data)   (FBCFG != data)
-
-// 这个得保留测试, 发现可能有好多不大一样
-static void __test_SMFI(void)
-{
-    test_rdata1 = FBCFG;
-    test_rdata2 = FPCFG;
-    test_rdata3 = HSPICTRL3R;
-    test_rdata4 = HINSTC2;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x3f) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    FBCFG       = 0x80;
-    FPCFG       = 0xff;
-    HSPICTRL3R  = 0x70;
-    HINSTC2     = 0x0f;
-}
-
-
-// intc 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_INTC(void)
-{
-    test_rdata1 = IER0;
-    test_rdata2 = IER1;
-    test_rdata3 = IPOLR0;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    IER0       = 0xff;
-    IER1       = 0xff;
-    IPOLR0     = 0xff;
-}
-
-// EC2I 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_EC2I(void)
-{
-    test_rdata1 = IHIOA;
-    test_rdata2 = IHD;
-    test_rdata3 = LSIOHA;
-    test_rdata4 = IBMAE;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    IHIOA      = 0xff;
-    IHD        = 0xff;
-    LSIOHA     = 0xff;
-    IBMAE      = 0x05;
-}
-
-// KBC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_KBC(void)
-{
-    test_rdata1 = KBHICR;
-
-    // 判断状态
-    if((test_rdata1 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    KBHICR      = 0x0f;
-}
-
-
-// SWUC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_SWUC(void)
-{
-    // test_rdata1 = SWCBALR;
-    // test_rdata2 = SWCBAHR;
-    test_rdata3 = SWCIER;
-    test_rdata4 = SWCHIER;
-
-    // 判断状态
-    if((test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    // SWCBALR    = 0xfE;
-    // SWCBAHR    = 0xff;
-    SWCIER     = 0xff;
-    SWCHIER    = 0xCB;
-}
-
-
-// PMC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_PMC(void)
-{
-    test_rdata1 = PM1CTL;
-    test_rdata2 = PM1IE;
-    test_rdata3 = MBXCTRL;
-    test_rdata4 = PM3CTL;
-
-    // 判断状态
-    if((test_rdata1 != 0x40) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    PM1CTL   = 0x43;
-    PM1IE    = 0x3f;
-    MBXCTRL  = 0xE0;
-    PM3CTL   = 0x03;
-}
-
-// PS2 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_PS2(void)
-{
-    test_rdata1 = PSCTL1;
-    test_rdata2 = PSINT1;
-    test_rdata3 = PSDAT1;
-
-    // 判断状态
-    if((test_rdata1 != 0x01) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    PSCTL1 = 0x1F;
-    PSINT1 = 0x0F;
-    PSDAT1 = 0xFF;
-}
-
-
-// PWM 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_PWM(void)
-{
-    test_rdata1 = C0CPRS;
-    test_rdata2 = CTR;
-    test_rdata3 = PWMPOL;
-    test_rdata4 = ZTIER;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0xFF) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    C0CPRS  = 0xFF;
-    CTR     = 0x00;
-    PWMPOL  = 0xFF;
-    ZTIER   = 0x03;
-}
-
-
-ECReg	VCMP0CTL       	_at_ 0x1946;	
-ECReg	VCMPLR       	_at_ 0x1952;	
-
-// ADC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_ADC(void)
-{
-    test_rdata1 = ADCCFG;
-    test_rdata2 = ADCCTL;
-    test_rdata3 = VCMP0CTL;
-    test_rdata4 = VCMPLR;
-
-    // 判断状态
-    if((test_rdata1 != 0x80) || (test_rdata2 != 0x15) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    ADCCFG      = 0xF5;
-    ADCCTL      = 0xBF;
-    VCMP0CTL    = 0xFF;
-    VCMPLR      = 0x07;
-}
-
-// DAC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_DAC(void)
-{
-    test_rdata1 = DACPWRDN;
-
-    // 判断状态
-    if((test_rdata1 != 0x3F)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    DACPWRDN      = 0x03;
-}
-
-
-// WUC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_WUC(void)
-{
-    test_rdata1 = WUEMR1;
-    test_rdata2 = WUENR1;
-    test_rdata3 = WUENR3;
-    test_rdata4 = WUEMR6;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    WUEMR1    = 0xFF;
-    WUENR1    = 0xFF;
-    WUENR3    = 0xFF;
-    WUEMR6    = 0xFF;
-}
-
-
-// SMBus 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_SMB(void)
-{
-    test_rdata1 = HOCMD_A;
-    test_rdata2 = TRASLA_B;
-    test_rdata3 = NDHB_A;
-    test_rdata4 = SICR_A;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    HOCMD_A   = 0x0F;
-    TRASLA_B  = 0xFF;
-    NDHB_A    = 0x0F;
-    SICR_A    = 0xFC;
-}
-
-
-// KBS 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_KBS(void)
-{
-    test_rdata1 = KSOL;
-    test_rdata2 = KSOCTRL;
-    test_rdata3 = KSIGCTRL;
-    test_rdata4 = KSOLGOEN;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    KSOL        = 0x3F;
-    KSOCTRL     = 0xFF;
-    KSIGCTRL    = 0xFF;
-    KSOLGOEN    = 0xFF;
-}
-
-
-// ECPM 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_ECPM(void)
-{
-    test_rdata1 = CGCTRL2R;
-    test_rdata2 = AUTOCG;
-    test_rdata3 = PLLSSCR;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x70) || (test_rdata3 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    CGCTRL2R   = 0x70;
-    AUTOCG     = 0x7F;
-    PLLSSCR    = 0x07;
-}
-
-// ETWD 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test1_ETWD(void)
-{
-    test_rdata1 = ETWCFG;
-    test_rdata2 = ETPSR;
-    test_rdata3 = ET2PSR;
-    test_rdata4 = EWDCNTHR;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) || (test_rdata4 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    ETWCFG      = 0x20;
-    ETPSR       = 0x02;
-    ET2PSR      = 0x03;
-    EWDCNTHR    = 0xFF;
-}
-
-
-// GCTRC 功能测试
-// 现象是：开始一段时间不亮，相当于一开始是默认参数；等第一次看门狗复位之后，
-// 先亮LED1,在亮LED2,最后两个一直亮，知道看门狗复位；
-static void __test_GCTRC(void)
-{
-    test_rdata1 = RSTDMMC;
-    test_rdata2 = BADRSEL;
-    test_rdata3 = BINTADDR0R;
-
-    // 判断状态
-    if((test_rdata1 != 0x13) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-
-        if (test_rdata1 != 0x13) {
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            BAT_LED1_ON();
-        }
-
-        if (test_rdata2 != 0x00) {
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            BAT_LED2_ON();
-        }
-
-        if (test_rdata3 != 0x00) {
-
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            __1s_delay();
-            BAT_LED1_OFF();
-            BAT_LED2_OFF();
-            BAT_LED1_ON();
-            BAT_LED2_ON();
-        }
-
-
-    } else {
-        // BAT_LED1_ON();
-    }
-
-    RSTDMMC      = 0x1F;
-    BADRSEL      = 0x03;
-    BINTADDR0R   = 0xff;
-}
-
-
-// EGPC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test1_EGPC(void)
-{
-    test_rdata1 = ECNT;
-    test_rdata2 = EDAT;
-    test_rdata3 = EADDR;
-
-    // 判断状态
-    if((test_rdata1 != 0x11) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    ECNT      = 0x1f;
-    EDAT      = 0xFF;
-    EADDR     = 0xFF;
-}
-
-
-ECReg	__BATT_RAM1       	_at_ 0x2201;	
-ECReg	__BATT_RAM2       	_at_ 0x2203;
-
-// Batt 功能测试
-// 不受控，橙色灯，而且掉电数据也不丢失
-static void __test_Batt(void)
-{
-    test_rdata1 = __BATT_RAM1;
-    test_rdata2 = __BATT_RAM2;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    __BATT_RAM1      = 0xFf;
-    __BATT_RAM2      = 0xFF;
-}
-
-
-// CIR 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_CIR(void)
-{
-    test_rdata1 = C0MSTCR;
-    test_rdata2 = C0IER;
-    test_rdata3 = C0CFR;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x0B) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    C0MSTCR      = 0xFC;
-    C0IER        = 0xC7;
-    C0CFR        = 0x00;
-}
-
-
-// SSPI 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_SSPI(void)
-{
-    test_rdata1 = SPICTRL1;
-    test_rdata2 = SPICTRL2;
-    test_rdata3 = SPICTRL3;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    SPICTRL1      = 0xFF;
-    SPICTRL2      = 0xFF;
-    SPICTRL3      = 0xFF;
-}
-
-
-// UART1 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_UART1(void)
-{
-    uchar i = RSTDMMC;
-
-    if(i == 0x13) {
-        RSTDMMC = 0x1F;
-    }
-
-
-    i = CGCTRL3R;
-    if (i == 0x51) {
-        CGCTRL3R = 0x55;
-    }
- 
-    i = AUTOCG;
-    if (i == 0x70) {
-        AUTOCG = 0x10;
-    }
-    // test_rdata1 = UART1_LCR;
-    // test_rdata2 = UART1_IER;
-
-    // 判断状态
-    // if((test_rdata1 != 0x00) || (test_rdata2 != 0x00)) {
-    //     // BAT_LED1_ON();
-    //     BAT_LED2_ON();
-    // } else {
-    //     // BAT_LED1_ON();
-    // }
-
-    UART1_LCR      = 0xFf;
-    UART1_IER      = 0xFF;
-
-    test_rdata1 = UART1_LCR;
-    test_rdata2 = UART1_IER;
-
-    // BAT_LED1_ON();
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        // BAT_LED1_ON();
-    }
-
-    if((UART1_LCR == 0xFF) || (UART1_IER == 0xFF)) {
-        BAT_LED1_ON();
-    }
-
-}
-
-
-// UART2 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_UART2(void)
-{
-    test_rdata1 = UART2_LCR;
-    test_rdata2 = UART2_IER;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    UART2_LCR      = 0xFf;
-    UART2_IER      = 0xFF;
-}
-
-
-// TMR 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_TMR(void)
-{
-    test_rdata1 = PRSC;
-    test_rdata2 = TMRCE;
-    test_rdata3 = TMEIE;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00) || (test_rdata3 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    PRSC       = 0xFF;
-    TMRCE      = 0x03;
-    TMEIE      = 0xFF;
-}
-
-ECReg	__CEC_CECDLA       	_at_ 0x2E02;	
-ECReg	__CEC_CECIE       	_at_ 0x2E05;
-// CEC 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_CEC(void)
-{
-    test_rdata1 = __CEC_CECDLA;
-    test_rdata2 = __CEC_CECIE;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x00)) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    __CEC_CECDLA      = 0x0F;
-    __CEC_CECIE       = 0x3F;
-}
-
-
-ECReg	__PECI_PADCTLR     _at_ 0x300E;
-// PECI 功能测试
-// 一直亮白灯，说明 寄存器被初始化
-static void __test_PECI(void)
-{
-    test_rdata1 = HOTRADDR;
-    test_rdata2 = HOCTL2R;
-    test_rdata3 = __PECI_PADCTLR;
-
-    // 判断状态
-    if((test_rdata1 != 0x00) || (test_rdata2 != 0x40) || (test_rdata3 != 0x00) ) {
-        // BAT_LED1_ON();
-        BAT_LED2_ON();
-    } else {
-        BAT_LED1_ON();
-    }
-
-    HOTRADDR            = 0xFF;
-    HOCTL2R             = 0x47;
-    __PECI_PADCTLR      = 0xC3;
-}
-
-/**
- * 试验四内容  : 利用外部看门狗测试看门狗的作用范围
- * 实验四现象  : 具体看函数内部注释
- *             
- * 试验步骤    : 首先设置不同功能的寄存器(一般设置配置寄存器的数值)数值，
- *              然后启动看门狗判断寄存器是否被复位;
- * 
- * 结论        : 具体看函数内部注释
- */
-static void __test_function(void)
-{
-
-    Init_GPIO();
-
-    // SMFI 寄存器判断设置   不完全受控 待验证
-    // __test_SMFI();
-
-    // INTC 寄存器判断设置  受控
-    //  __test_INTC();
-
-    // EC2I 寄存器判断设置  受控
-    // __test_EC2I();
-
-    // KBC 寄存器判断设置   受控
-    //  __test_KBC();
-
-    // SWUC 寄存器判断设置   不完全受控 待验证
-    // __test_SWUC();
-
-    // PMC 寄存器判断设置   受控
-    // __test_PMC();
-
-    // 关于GPIO 寄存器受控 ，这个原因就是看萌狗复位会导致灯闪
-
-    // PS2 寄存器判断设置   受控
-    //  __test_PS2();
-
-    // ADC 寄存器判断设置   受控
-    // __test_ADC();
-
-    // PWM 寄存器判断设置   受控
-    // __test_PWM();
-
-    // DAC 寄存器判断设置   受控
-    // __test_DAC();
-
-    // WUC 寄存器判断设置   受控
-    // __test_WUC();
-
-    // SMB 寄存器判断设置   受控
-    // __test_SMB();
-
-    // KBS 寄存器判断设置   受控
-    // __test_KBS();
-
-    // ECPM 寄存器判断设置   不完全受控 待验证
-    // __test_ECPM();
-
-    // ETWD 寄存器判断设置   受控
-    // __test1_ETWD();  
-
-    // GCTRC 寄存器判断设置   完全不受控
-    // __test_GCTRC();
-
-    // ETWD 寄存器判断设置   受控
-    // __test1_EGPC();
-
-    // Batt_RAM 寄存器判断设置   完全不受控，掉电数据也不丢失
-    // __test_Batt();
-
-    // CIR 寄存器判断设置    受控
-    //  __test_CIR();
-
-    // SSPI 寄存器判断设置    受控
-    //   __test_SSPI();
-
-    // UART1 寄存器判断设置    受控
-    // __test_UART1();
-
-    // UART2 寄存器判断设置    受控
-    // __test_UART2();
-
-    // TMR 寄存器判断设置    受控
-    //  __test_TMR();
-
-    // CEC 寄存器判断设置    受控
-    //   __test_CEC();
-
-    // PECI 寄存器判断设置    受控
-    //    __test_PECI();
-
-    // ETWCFG = 0x20;  // 使能外部看门狗
-
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-
-    // EWDKEYR = 0xff; // 开启看门狗复位
-
-    for(;;) {
-        _nop_();
-    };
-} 
 #endif
 
 
@@ -1185,11 +451,6 @@ void __test_GPIO_GFLE(void)
         BAT_LED1_ON();  // 白色
     }
 
-    
-    // i_data = GPDRB;
-    // i_data = GPDRB;
-
-
     for(;;);
 
 }
@@ -1197,145 +458,12 @@ void __test_GPIO_GFLE(void)
 #endif
 
 
-#if 0
-void __test_UART(void)
-{
-    uchar i_status = 0;
-    uchar j_status = 0;
 
-    // 初始化默认的GPIO功能（主要是LED）
-    Init_GPIO();
-
-    // 设置 UART为1
-    RSTDMMC |= 0x0C;
-
-
-    UART1_LCR = 0x55; 
-
-    // 复位 UART
-    RSTC4 = 0x06;
-
-    // 读寄存器
-    i_status = UART1_LCR;
-
-    // 写寄存器
-    // UART1_LCR = 0xFF;
-
-    j_status = UART1_LCR;
-
-    if (j_status == 0x55) {
-        BAT_LED2_ON();  // 橙色
-    } else {
-        BAT_LED1_ON();
-    }
-    // if(j_status ^ i_status) {
-    //     BAT_LED1_ON();
-    // } else {
-    //     BAT_LED2_ON();  // 橙色
-    // }
-
-    for(;;);
-}
-#endif
-
-#if 0
-void __test_ETime(void)
-{
-    // // 初始化默认的GPIO功能（主要是LED）
-    Init_GPIO();
-
-    EX1=1;					// enable external 1 interrupt 
-	EnableAllInterrupt();
-
-    ETPSR = 0x00;                   
-    ETCNTLHR = 0x80;        //
-    ETCNTLLR = 0x00;        // "g_ECPowerDownPeriodWakeUpTime" second
-
-    ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
-    SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
-
-    ETWCTRL = 0x01;
-
-    
-    for(;;);
-}
-#endif
 
 #if 1
-void __test_ET2_Timer(void)
-{
-    // 初始化默认的GPIO功能（主要是LED）
-    Init_GPIO();
-
-    GCR10 = 0x01;
-	GCR8 = 0x10;
-	
-    // 关总中断
-	DisableAllInterrupt();
-
-    //*************************************************************************
-	// Set Wake up pin -> alt function
-	//*************************************************************************
-	// GPCRE4 = ALT;			// pwrsw to alternate pin
-	WUEMR2 |= 0x20;         //  设置边缘触发方式
-	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
-	WUENR2 |= 0x20;  
-	ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
-	IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
-
-
-    EX1=1;					// enable external 1 interrupt 
-	EnableAllInterrupt();
-
-    // 设置外部定时器2
-    ET2PSR=0x00;		// SELECT 32.768Khz
-    ET2CNTLH2R= 0x00;
-	ET2CNTLHR = 0x80;	   	// SET EXTERNAL TIMERR = 1sec
-	ET2CNTLLR = 0x00;		// SET EXTERNAL TIMERR = 1sec 
-    
-
-    // int58  IRQ_INT58_ET2
-    ISR7 = Int_ET2Intr;             // Write to clear external timer 1 interrupt 
-    SET_MASK(IER7, Int_ET2Intr);    // Enable external timer 1 interrupt 
-
-    // ETWCTRL = 0x04;
-
-    for(;;)
-    {
-        
-    };
-
-}
-
-void __test_SMFI1(void)
-{
-    // unsigned int i = 0;
-
-    // // 初始化默认的GPIO功能（主要是LED）
-     Init_GPIO();
-
-    // (*(volatile unsigned char xdata *) 0x1901) = 0x85;
-    // (*(volatile unsigned char xdata *) 0x1902) = 0x00;
-
-    // // 对0x1000 ~ 0x107F 所有位置写 0xFF
-    // for(i = 0x1000; i < 0x1080; i++) {
-    //     (*(volatile unsigned char xdata *) i) = 0xff;
-    // }
-
-    // // RSTC1 = 0x80;
-
-    for(;;) {
-         BAT_LED2_ON();  // 橙色
-    };
-}
-#endif
-
-#if 0
 // 程序进入为 idle 模式， 通过开机按钮唤醒
 void __idle_to_wakeup(void)
 {
-
-
     
     // 只是写一个标志位而已
     (*(volatile unsigned char xdata *) 0x401) = 0x55;
@@ -1343,8 +471,9 @@ void __idle_to_wakeup(void)
     // 初始化默认的GPIO功能（主要是LED）
     Init_GPIO();
 
-    GCR10 = 0x01;
-	GCR8 = 0x10;
+    BAT_LED1_OFF();
+    BAT_LED2_OFF();
+
 	
     // 关总中断
 	DisableAllInterrupt();
@@ -1353,6 +482,9 @@ void __idle_to_wakeup(void)
 	// Set Wake up pin -> alt function
 	//*************************************************************************
 	GPCRE4 = ALT;			// pwrsw to alternate pin
+    GCR10 = 0x01;
+	GCR8 = 0x10;
+
 	WUEMR2 |= 0x20;         //  设置边缘触发方式
 	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
 	WUENR2 |= 0x20;  
@@ -1360,15 +492,15 @@ void __idle_to_wakeup(void)
 	IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
 
 
-    EX1=1;					// enable external 1 interrupt 
-	EnableAllInterrupt();
+    // EX1=1;					// enable external 1 interrupt 
+	// EnableAllInterrupt();
 
     _nop_();
 	_nop_();
     _nop_();
 	_nop_();
 
-	// InitEnableInterrupt();
+	InitEnableInterrupt();
 
     PCON=1;      		// enter idle mode
 
@@ -1384,13 +516,18 @@ void __idle_to_wakeup(void)
 	Init_GPIO();
 	GPCRE4 = INPUT; 		// pwrsw to alternate pin
 
+
+
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+
+
+    
     BAT_LED2_ON();  // 橙色
-
-
-    BRAM_OEM[40]
-
-
-
 
     for(;;);
 }
@@ -1831,57 +968,37 @@ void __test_dac_pin_invert()
         DACDAT4  = 0x00;      
         DACDAT4  = 0xff;    
 
-         
-        #else
-
-        // __ASM_young
-            
-            // #pragma asm
-            // nop
-            // #pragma endasm
-
-
-
-// //                 MOV  DPTR,#0x1A06
-
-// //                 MOV  A,#0xff
-// //                 MOVX @DPTR,A
-
-// // LOOP:
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-// //                 CPL A
-// //                 MOVX @DPTR,A
-
-// //                 SJMP LOOP 
-
-
-//                 // MOV  A,#0xff
-//                 // MOVX @DPTR,A
-
-//                 // MOV  A,#0xff
-//                 // MOVX @DPTR,A
-
-//             #pragma endasm
-
         #endif
     };
 #endif
 }
 
 #if 1
+
+
+static void __test_flash2sram()
+{
+    BAT_LED2_ON(); 
+    BAT_LED1_ON(); 
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    BAT_LED2_OFF(); 
+    BAT_LED1_OFF(); 
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+    __1s_delay();
+}
 
 // 程序进入为 sleep 模式， 通过开机按钮唤醒
 static void __change_PLL_req(void)
@@ -1891,55 +1008,33 @@ static void __change_PLL_req(void)
 
     // 初始化默认的GPIO功能（主要是LED）
     Init_GPIO();
-
-    GCR10 = 0x01;
-	GCR8 = 0x10;
-	
-    // 关总中断
-	DisableAllInterrupt();
-
-    //*************************************************************************
-	// Set Wake up pin -> alt function
-	//*************************************************************************
-	GPCRE4 = ALT;			// pwrsw to alternate pin
-	WUEMR2 |= 0x20;         //  设置边缘触发方式
-	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
-	WUENR2 |= 0x20;  
-	ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
-	IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
+    // BAT_LED2_ON(); 
+    // BAT_LED1_ON(); 
 
 
     EX1=1;					// enable external 1 interrupt 
 	EnableAllInterrupt();
 
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
+    // ChangePLLFrequency(PLLFreqSetting05);
 
 
-    // 改变PLL
-    PLLFREQR = 0x07;	
-
-
-	// InitEnableInterrupt();
-
-    PLLCTRL = 0x01;
-    PCON    = 2;      		
-
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
 
 	Init_GPIO();
-	GPCRE4 = INPUT; 		// pwrsw to alternate pin
+
+
+    DisableAllInterrupt();				// Disable all interrupt 
+	LoadSPIFucnToRam(__test_flash2sram);		// Load function to ram
+
+
+
+	// SET_MASK(FBCFG,SSMC);       		// enable scatch ROM
+
+	SCRA0L = 0x00;
+	SCRA0M = 0xF8;
+	SCRA0H = 0x00;
 
     
+    __test_flash2sram();
 
     for(;;){
         BAT_LED2_ON();  // 橙色
@@ -1962,25 +1057,88 @@ static void __change_PLL_req(void)
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
-    // Core_Init_ClearRam();
-    // Init_ClearRam();
 
-    // // DisableAllInterrupt();
+    // u8    young_flag = 0x00;
+    // 关闭内部看门狗
+    // WDTEB = 0;
+ 	// Init_ClearRam();
+    // Init_GPIO();
+    //  for(;;){
+    //         INVERSE_REG(GPDRJ, 4);
+    //         INVERSE_REG(GPDRC, 6);
+    //         __1s_delay();
+    //         __1s_delay();
+    //         __1s_delay();
+    //         __1s_delay();
+    //         __1s_delay();
+    //  };
+
+    //   SP = 0xC0;					// Setting stack pointer
+
+	//  Init_GPIO();
+
+//     // UART GPIO初始化
+//     GPCRB0 = ALT;
+//     GPCRB1 = ALT;
+
+//     // LED GPIO 初始化
+ 	// GPCRJ4 = OUTPUT; // 0x40 
+ 	// GPCRC6 = OUTPUT;
+    //  for(;;) {
+    //      INVERSE_REG(GPDRJ, 4);
+    //      __1s_delay();
+    //  }
+	
+//     // init timer
+//     Init_Timers();
+//     // init uart
+// 	uart_Initial();
+
+//     InitEnableInterrupt();
+//     uart_printf("FIC628 say hello\n");
+
+//     Bank1_Test();
+//     Bank2_Test();
+    
+//     uart_printf("young_Test\n");
+//     // while(1);
+
+// 	for(;;) {
+
+//         //-----------------------------------
+//         // 1 millisecond elapsed
+//         //-----------------------------------
+//         if(F_Service_MS_1)
+//         {
+//             F_Service_MS_1=0;
+//             service_1mS();
+
+//             if(young_flag >= 250) {
+//                 young_flag = 0;
+//             }
+//             young_flag++;
+
+//             continue;
+//         }
+// 	};
+	
+	
+	//  Init_ClearRam();
+
+    // DisableAllInterrupt();
 	// SP = 0xC0;					// Setting stack pointer
 
     // (*(volatile unsigned char xdata *) 0x400) = 0x55;
 
     /** \brief 测试电源状态寄存器 */
-    // __test1_rets();
+    //  __test1_rets();
 
     /** \brief 测试外部看门狗 */
-    // __test_ETWD();
+    //  __test_ETWD();
 
     /** \brief 测试内部看门狗 */
     // __test_ITWD();
 
-    /** \brief 用外部看门狗测试看门狗的复位作用阈 */
-    // __test_function();
 
     // power good 测试
     // __test_power_good();
@@ -1988,19 +1146,8 @@ void Oem_StartUp(void)
     // GFLE 相应寄存器测试
     // __test_GPIO_GFLE();
 
-    // 
-    // __test_UART();
-
-    //外部定时器1 相应功能测试
-    // __test_ETime();
-
-    //外部定时器2 相应功能测试
-    // __test_ET2_Timer();
-
-    // __test_SMFI1();
-
     // idle 唤醒测试
-    // __idle_to_wakeup();
+    //   __idle_to_wakeup();
 
     // 瞌睡唤醒
     // __doze_to_wakeup();
@@ -2036,7 +1183,7 @@ void Oem_StartUp(void)
 void Oem_Initialization(void)
 {
 
-	LWORD *pnt;
+	// LWORD *pnt;
 //	WORD Fvalue = 0x4000;
 
 //	pnt = sha1_auth(&HashRandom);           // only for compile

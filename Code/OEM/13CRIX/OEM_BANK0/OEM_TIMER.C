@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:35
+ * @LastEditTime: 2020-12-02 09:18:22
+ */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_TIMER.C
  *
@@ -62,9 +71,11 @@ void InternalWDTNow(void)
 void EnableInternalWDT(void)
 {
 	
-	CKCON |= 0xC0;		    // set 26 bit counter
-	WDTRST = 1;				// reset internal watch dog
-	WDTEB = 1;				// enable internal watch dog		
+	CKCON |= 0xC0;		    // set 26 bit counter   0xC0
+
+	// young modified
+	// WDTRST = 1;				// reset internal watch dog
+	// WDTEB = 1;				// enable internal watch dog		
 }
 
 //----------------------------------------------------------------------------

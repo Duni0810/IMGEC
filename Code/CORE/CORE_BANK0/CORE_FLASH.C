@@ -748,7 +748,16 @@ void ITE_Flash_Utility(void)
 {
 	DisableAllInterrupt();				// Disable all interrupt 
 	LoadSPIFucnToRam(FlashECCode);		// Load function to ram
-	SET_MASK(FBCFG,SSMC);       		// enable scatch ROM
+
+
+
+	// SET_MASK(FBCFG,SSMC);       		// enable scatch ROM
+
+	SCRA0L = 0x00;
+	SCRA0M = 0xF8;
+	SCRA0H = 0x00;
+
+
 	FuncAt_0xFE00();					// do function in extern ram 0x600
 }
 

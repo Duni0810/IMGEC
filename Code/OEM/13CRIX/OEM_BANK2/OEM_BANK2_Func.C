@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:35
+ * @LastEditTime: 2020-11-30 10:28:58
+ */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_BANK2_Func.C
  *
@@ -15,5 +24,5 @@
 //----------------------------------------------------------------------------
 void Bank2_Test(void)
 {
-
+    UART_Print_Str("Bank2_Test\n");
 }

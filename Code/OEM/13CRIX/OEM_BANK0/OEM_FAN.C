@@ -594,7 +594,6 @@ void InitThermalChip(void)
 	LimitTm = 125;
 	TmToSensor = 0xFF;
 
-
 	bRWSMBus(SMbusCh2, SMbusWB, 0x98, 0x19, &LimitTm, 0);
 	bRWSMBus(SMbusCh2, SMbusWB, 0x98, 0x20, &LimitTm, 0);
 

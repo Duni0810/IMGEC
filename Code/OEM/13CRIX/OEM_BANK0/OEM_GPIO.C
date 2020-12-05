@@ -19,16 +19,16 @@ const sInitGPIOReg code asInitGPIOReg[] =
  	{ &GCR2,	GCR2_Init		},	//
  	{ &GPOTD,	0x80		    },  // D7, Open-drain output
  	
-	{ &GPDRA,	PortA_Init		},	// Port A Data port Init
-	{ &GPDRB,	PortB_Init		},	// Port B Data port Init
-	{ &GPDRC,	PortC_Init		},	// Port C Data port Init
-	{ &GPDRD,	PortD_Init		},	// Port D Data port Init
-	{ &GPDRE,	PortE_Init		},	// Port E Data port Init
-	{ &GPDRF,	PortF_Init		},	// Port F Data port Init
-	{ &GPDRG,	PortG_Init		},	// Port G Data port Init
-	{ &GPDRH,	PortH_Init		},	// Port H Data port Init
-	{ &GPDRI,	PortI_Init		},	// Port I Data port Init
-	{ &GPDRJ,	PortJ_Init		},	// Port J Data port Init
+	{ &GPDRA,	PortA_Init		},	// Port A Data port Init    46
+	{ &GPDRB,	PortB_Init		},	// Port B Data port Init    82
+	{ &GPDRC,	PortC_Init		},	// Port C Data port Init    00
+	{ &GPDRD,	PortD_Init		},	// Port D Data port Init    01
+	{ &GPDRE,	PortE_Init		},	// Port E Data port Init    00
+	{ &GPDRF,	PortF_Init		},	// Port F Data port Init    00
+	{ &GPDRG,	PortG_Init		},	// Port G Data port Init    00
+	{ &GPDRH,	PortH_Init		},	// Port H Data port Init    00
+	{ &GPDRI,	PortI_Init		},	// Port I Data port Init    04
+	{ &GPDRJ,	PortJ_Init		},	// Port J Data port Init    04
 
 	{ &GPCRA0,	PortA0_Ctrl		},
 	{ &GPCRA1,	PortA1_Ctrl		},

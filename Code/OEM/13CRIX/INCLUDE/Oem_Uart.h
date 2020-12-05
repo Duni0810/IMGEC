@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:35
+ * @LastEditTime: 2020-11-30 10:52:41
+ */
 #ifndef OemUart_h
 #define OemUart_h
 
@@ -6,12 +15,12 @@
 
 //*****************************************************************************
 // UART debug interface
-// Timer 2 baudrate = Fosc / 32 / (0x10000-RCAP2)¡C
+// Timer 2 baudrate = Fosc / 32 / (0x10000-RCAP2)ï¿½C
 //*****************************************************************************
 #if UART_Debug
 // 9600 bps-------------------------
-//#define R2HV                  0xFF
-//#define R2LV                  0xE2  
+#define R2HV                  0xFF
+#define R2LV                  0xE2  
 // 9600 bps-------------------------
 
 // 19200 bps------------------------
@@ -20,8 +29,8 @@
 // 19200 bps------------------------
 
 // 57600 bps------------------------
-#define R2HV                    0xFF
-#define R2LV                    0xFB  
+// #define R2HV                    0xFF
+// #define R2LV                    0xFB  
 // 57600 bps------------------------
 #endif
 
@@ -36,6 +45,8 @@ extern void UART_Print_Byte(unsigned char ch);
 extern void UART_Print_HEX(unsigned char HEX_Dat);
 extern void UART_Print_Int(unsigned int aInt);
 extern void UART_Print_Str(unsigned char *str);
+extern void uart_printf(const char *fmt,...);
+
 //extern void UART_RX_Command(void);
 
 extern void uart_Initial_Host(void);

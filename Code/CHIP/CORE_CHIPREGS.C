@@ -511,18 +511,21 @@ ECReg	PECERC_B    	_at_ 0x1C18;	// Packet Error Check B
 ECReg	PECERC_C    	_at_ 0x1C30;	// Packet Error Check C
 ECReg	PECERC_D    	_at_ 0x1C3C;	// Packet Error Check D
 
+// 改版本中的slave 没用到 ---------------------------------------------------->
 ECReg	RESLADR_A		_at_ 0x1C08;	// Receive Slave Adress A
 ECReg	RESLADR_B		_at_ 0x1C19;	// Receive Slave Adress B
 ECReg	RESLADR_2_A		_at_ 0x1C3F;	// Receive Slave Adress_2 A
 ECReg	RESLADR_2_B		_at_ 0x1C44;	// Receive Slave Adress_2 B
 ECReg	SLDA_A			_at_ 0x1C09;	// Slave Data A
 ECReg	SLDA_B			_at_ 0x1C1A;	// Slave Data B
+//----------------------------------------------------------------------------<
 
 ECReg	SMBPCTL_A      	_at_ 0x1C0A;	// SMBUS Pin Control A
 ECReg	SMBPCTL_B      	_at_ 0x1C1B;	// SMBUS Pin Control B
 ECReg	SMBPCTL_C      	_at_ 0x1C31;	// SMBUS Pin Control C
 ECReg	SMBPCTL_D      	_at_ 0x1C3D;	// SMBUS Pin Control D
 
+// 没用到-------------------------------------------------------------------->
 ECReg	SLSTA_A			_at_ 0x1C0B;	// Slave Status A
 ECReg	SLSTA_B			_at_ 0x1C1C;	// Slave Status B
 ECReg	SICR_A			_at_ 0x1C0C;	// Slave Interrupt Control A
@@ -533,25 +536,30 @@ ECReg	NDLB_A			_at_ 0x1C0E;	// Notify Data Low Byte A
 ECReg	NDLB_B			_at_ 0x1C1F;	// Notify Data Low Byte B
 ECReg	NDHB_A			_at_ 0x1C0F;	// Notify Data High Byte A
 ECReg	NDHB_B			_at_ 0x1C20;	// Notify Data High Byte B
+//--------------------------------------------------------------------------<
 
 ECReg	HOCTL2_A      	_at_ 0x1C10;	// Host Control2 A
 ECReg	HOCTL2_B      	_at_ 0x1C21;	// Host Control2 B
 ECReg	HOCTL2_C      	_at_ 0x1C32;	// Host Control2 C
 ECReg	HOCTL2_D      	_at_ 0x1C3E;	// Host Control2 D
-ECReg	SMB4P7USL   	_at_ 0x1C22;	// 4.7 �gs Low Register
-ECReg	SMB4P0USH   	_at_ 0x1C23;	// 4.7 �gs High Register
+ECReg	SMB4P7USL   	_at_ 0x1C22;	// 4.7 �gs Low Register
+ECReg	SMB4P0USH   	_at_ 0x1C23;	// 4.7 �gs High Register
 ECReg	SMB300NS  		_at_ 0x1C24;	// 300 ns Register
 ECReg	SMB250NS  		_at_ 0x1C25;	// 250 ns Register
 ECReg	SMB25MS   		_at_ 0x1C26;	// 25 ms Register
-ECReg	SMB45P3USL 		_at_ 0x1C27;	// 45.3 �gs Low Register
-ECReg	SMBS4P3USH 		_at_ 0x1C28;	// 45.3 �gs High Register
-ECReg	SMB4P7A4P0H		_at_ 0x1C33;	// 4.7 �gs and 4.0 �gs High Register
+ECReg	SMB45P3USL 		_at_ 0x1C27;	// 45.3 �gs Low Register
+ECReg	SMBS4P3USH 		_at_ 0x1C28;	// 45.3 �gs High Register
+ECReg	SMB4P7A4P0H		_at_ 0x1C33;	// 4.7 �gs and 4.0 �gs High Register
 
+
+// 没用到-------------------------------------------------------------------->
 ECReg	SLVISEL			_at_ 0x1C34;	// Slave Interface Select
 ECReg	SCLKTS_A		_at_ 0x1C40;	// SMCLK Timing Setting Register A
 ECReg	SCLKTS_B		_at_ 0x1C41;	// SMCLK Timing Setting Register B
 ECReg	SCLKTS_C		_at_ 0x1C42;	// SMCLK Timing Setting Register C
 ECReg	SCLKTS_D		_at_ 0x1C43;	// SMCLK Timing Setting Register D
+//--------------------------------------------------------------------------<
+
 //-----------------------------------------------------------------------------
 // (1Dxxh) Keyboard Matrix Scan control (KBS) 
 //-----------------------------------------------------------------------------

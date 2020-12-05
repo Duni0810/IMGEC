@@ -1,6 +1,10 @@
 #include <CORE_INCLUDE.H>
 #include <OEM_INCLUDE.H>
 
+#if UART_Debug
+#include "stdio.h"
+#include<stdarg.h>
+#endif
 
 void uart_Initial_Host(void)
 {
@@ -12,19 +16,54 @@ void uart_Initial_Host(void)
 }
 
 
+#define T1H_DAT                  0xFB    //  0xFB = 4800
+
+// 关于初始化串口波特率设置，在手册193 ，公式为 UCT_Freq（9.2M）/32/(0x10000 - RCAP2)
 void uart_Initial(void)
 {
 #if UART_Debug
 
+	// 使用定时器2 产生波特率 --->
 	SCON=0x40;         // Mode 1
 	SCON |= BIT4;      // Receive data enable
-    T2CON &= 0xF0;     // EXEN2=0; TR2=0; C/T2#=0; CP/RL2#=0;
-    T2CON |= 0x30;     // RCLK = 1; TCLK=1;     receive and send use time2
+
     T2MOD=0x00;
+
+	// PCON  |= 0x80;  
+	// CKCON |= 0x20;
+
+
     RCAP2H=R2HV;
     RCAP2L=R2LV;
-    TR2=1;
 
+	TL2 = R2LV;  // CC
+    TH2 = R2HV;  // CD
+
+	// 对于定时器2 没有影响
+    T2CON &= 0xF0;     // EXEN2=0; TR2=0; C/T2#=0; CP/RL2#=0;
+    T2CON |= 0x30;     // RCLK = 1; TCLK=1;     receive and send use time2
+	TR2=1;
+	// <---
+
+
+	// ---> 使用定时器1产生波特率
+	// SCON=0x40;         // Mode 1
+	// SCON |= BIT4;      // Receive data enable
+    // TMOD=0x00;
+
+	// TH1 = T1H_DAT;
+	// TL1 = 0xFF;
+
+	// // 自动重装载
+	// TMOD |= 0x20;
+
+	// // 翻倍
+	// // PCON  |= 0x80;  
+	// // CKCON |= 0x10;
+
+	// TR1=1;
+	//<---
+	
 	UART_RX_Buffer_In = 0;
 	
 	SET_MASK(UART_Buffer_Status,_buffer_Empty);   // Set buffer empty flag
@@ -112,7 +151,6 @@ void UART_Print_Byte(unsigned char ch)
 			SET_MASK(UART_Buffer_Status,_buffer_Full); // Set bufer full flag
 		}
 	}
-	
 #endif
 }
 
@@ -217,6 +255,36 @@ void UART_Print_Str(unsigned char *str)
 	}
 
 #endif
+}
+
+
+
+void uart_printf(const char *fmt,...)
+{
+	#if UART_Debug
+
+
+	#if 0  // 代码太大  不建议使用
+	va_list ap;
+	char xdata string[32];//访问内部拓展RAM，非访问外部RAM，不能超过内部拓展RAM大小(此处为64)
+	
+	va_start(ap,fmt);
+	vsprintf(string,fmt,ap);//此处也可以使用sprintf函数，用法差不多，稍加修改即可，此处略去
+	UART_Print_Str(string);
+	va_end(ap);
+	#else
+
+	// UART_Print_Str(fmt);
+
+
+	#endif
+
+
+
+
+
+
+	#endif
 }
 
 
