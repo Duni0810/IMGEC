@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:35
- * @LastEditTime: 2020-12-02 09:18:22
+ * @LastEditTime: 2020-12-08 14:15:19
  */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_TIMER.C
@@ -56,13 +56,12 @@ void ExtWDTInit(void)
 // Enable internal watch dog and waiting EC reset                 
 //----------------------------------------------------------------------------
 void InternalWDTNow(void)
-
 {
 	WDTCON|=0x01;   // WDTRST = 1 Reset watch dog timer.
 	WDTCON|=0x02;   // WDTEN  = 1 Enable watch dog.     
 
 	// modified
-	// while(1);       // Wait for watch dog time-out      
+	 while(1);       // Wait for watch dog time-out      
 }
 
 //----------------------------------------------------------------------------

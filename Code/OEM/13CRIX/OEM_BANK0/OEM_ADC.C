@@ -63,7 +63,9 @@ void ScanAll_ADCChannel(void)
     if(IS_MASK_SET(VCH0CTL, DATVAL))
     {
         SET_MASK(VCH0CTL,DATVAL);        // write 1, to clear data vaild flag
-        ADCAvg0 = (XWORD)((VCH0DATM<<8)+VCH0DATL);
+
+         ADCAvg0 = (XWORD)((0x01<<8)+0xB4);
+        //ADCAvg0 = (XWORD)((VCH0DATM<<8)+VCH0DATL);
     }
 #endif
 
@@ -119,7 +121,8 @@ void ScanAll_ADCChannel(void)
     if(IS_MASK_SET(VCH7CTL, DATVAL))
     {
         SET_MASK(VCH7CTL,DATVAL);        // write 1, to clear data vaild flag
-        ADCAvg7 = (VCH7DATM*0xFF)+VCH7DATL;
+        ADCAvg7 = (0x01*0xFF)+0xE0;
+        //ADCAvg7 = (VCH7DATM*0xFF)+VCH7DATL;
     }
 #endif
 }

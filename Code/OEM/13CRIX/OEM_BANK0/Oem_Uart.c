@@ -2,8 +2,8 @@
 #include <OEM_INCLUDE.H>
 
 #if UART_Debug
-#include "stdio.h"
-#include<stdarg.h>
+// #include "stdio.h"
+// #include<stdarg.h>
 #endif
 
 void uart_Initial_Host(void)
@@ -74,6 +74,9 @@ void uart_Initial(void)
 #endif	
 }
 
+
+
+volatile u8 tmp_ch = 0;
 //------------------------------------------------------
 //    Send out an char by 8032 UART from buffer
 // 1. Just call in the event of 1 ms
@@ -86,6 +89,7 @@ void UART_Send_Byte(void)
 
 	if(IS_MASK_SET(UART_Buffer_Status,_buffer_Empty)) // The buffer is empty
 	{
+		tmp_ch = 0x55;
 		return;
 	}
 
@@ -109,6 +113,12 @@ void UART_Send_Byte(void)
 	
 	SBUF = ch; // SBUF is the Register for UART TX
 	           // After the success to send a char, TI will set to 1 automatically
+
+
+	// if(ch == '\n') {
+	// 	tmp_ch = 0x55;
+	// }
+
 #endif
 }
 
@@ -151,8 +161,12 @@ void UART_Print_Byte(unsigned char ch)
 			SET_MASK(UART_Buffer_Status,_buffer_Full); // Set bufer full flag
 		}
 	}
+
 #endif
 }
+
+
+
 
 //------------------------------------------------------
 //    Print HEX to UART buffer
@@ -244,6 +258,9 @@ void UART_Print_Str(unsigned char *str)
 	{
 		ch = *(str + i);
 
+		// 添加一个变量测试
+		// tmp_ch = ch;
+
 		if (ch == '\0')  // String end
 		{
 			break;
@@ -258,7 +275,7 @@ void UART_Print_Str(unsigned char *str)
 }
 
 
-
+extern void Oem_Hook_Timer1ms(void);
 void uart_printf(const char *fmt,...)
 {
 	#if UART_Debug
@@ -279,15 +296,39 @@ void uart_printf(const char *fmt,...)
 
 	#endif
 
-
-
-
-
-
 	#endif
 }
 
 
+void uart_hex_show(unsigned char ch)
+{
+	#if UART_Debug
+    UART_Print_HEX(ch);
+
+    for(;;){
+		if(tmp_ch == 0x55) {
+            tmp_ch = 0;
+            break;
+        }
+        Oem_Hook_Timer1ms();
+    };
+	#endif
+}
+
+void uart_print(unsigned char *str)
+{
+#if UART_Debug
+    UART_Print_Str(str);
+
+    for(;;){
+		if(tmp_ch == 0x55) {
+            tmp_ch = 0;
+            break;
+        }
+        Oem_Hook_Timer1ms();
+    };
+#endif
+}
 
 
 void Cmd_Hello(void)

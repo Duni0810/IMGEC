@@ -178,9 +178,11 @@ BYTE spi_read_sensor(unsigned char addr)
 	BYTE temp;
 
     SPIWriteByte(addr, SPI_Channel);
-    WNCKR = 0x00;               // Delay 15.26 us
+    Loop_Delay(10);
+    // WNCKR = 0x00;               // Delay 15.26 us
     temp = SPIReadByte(SPI_Channel);
-    WNCKR = 0x00;               // Delay 15.26 us
+    Loop_Delay(10);
+    // WNCKR = 0x00;               // Delay 15.26 us
 	return temp;
 }
 
@@ -195,8 +197,9 @@ void spi_write_sensor(unsigned char addr, unsigned char data_in)
     }
 
     SPIWriteWord(addr, data_in, SPI_Channel);
-	WNCKR = 0x00;               // Delay 15.26 us
-	WNCKR = 0x00;               // Delay 15.26 us
+    Loop_Delay(20);
+	// WNCKR = 0x00;               // Delay 15.26 us
+	// WNCKR = 0x00;               // Delay 15.26 us
 }
 
 //----------------------------------------------------------------------------

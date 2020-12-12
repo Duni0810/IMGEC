@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:35
- * @LastEditTime: 2020-11-30 10:30:03
+ * @LastEditTime: 2020-12-05 16:27:39
  */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_BANK3_Func.C
@@ -24,5 +24,5 @@
 //----------------------------------------------------------------------------
 void Bank3_Test(void)
 {
-    uart_printf("Bank3_Test\n");
+    // uart_printf("Bank3_Test\n");
 }

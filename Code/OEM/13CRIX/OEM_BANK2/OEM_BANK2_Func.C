@@ -24,5 +24,5 @@
 //----------------------------------------------------------------------------
 void Bank2_Test(void)
 {
-    UART_Print_Str("Bank2_Test\n");
+    // UART_Print_Str("Bank2_Test\n");
 }

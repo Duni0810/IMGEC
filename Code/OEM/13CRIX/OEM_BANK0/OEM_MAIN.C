@@ -39,25 +39,26 @@ void Hook_Timer1msEvent(IBYTE EventId)
     HandleMailBox();
     #endif
 
-
 	#if UART_Debug
 	// Oem_Hook_Timer1ms();
 	#endif
 
 	// 暂时屏蔽 young
-    // EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
+	// 事件状态检测，例如适配器插拔，电池插拔，开机按键等
+    EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
     
-    // Oem_SysPowerContrl();       // System Power Control
-    // SMBusCenter(); 
+    Oem_SysPowerContrl();       // System Power Control EC电源状态控制
+    SMBusCenter(); 
 
-	// //Label:BLD_TIPIA_20161118_021
-	// #if Lenovo_Support
-	// Lenovo_PM_Cmd();
-	// #endif
+	//Label:BLD_TIPIA_20161118_021
+	#if Lenovo_Support
+	Lenovo_PM_Cmd();
+	#endif
 
-	// #if Support_ANX7447
-	// ANX_HOOK_1ms();
-	// #endif
+	// 暂时屏蔽 young
+	#if Support_ANX7447
+	ANX_HOOK_1ms();
+	#endif
 }
 //------------------------------------------------------------
 // Hook 5ms events
@@ -86,8 +87,10 @@ void Hook_Timer5msEvent(void)
 	else if(SYS_state & BIT3)	
 	{
 		S3_state = 0;	
-	    if(restartStep == 0)
+	    if(restartStep == 0) {
 			Oem_TriggerS0S5(SC_S0SLPOff);
+		}
+			
 		else if(restartStep == 1)
 		{
 			SYS_state = SYS_state & 0xF7;
@@ -319,8 +322,10 @@ void Hook_Timer500msEventC(void)
 	temp_cmd[4] = 0X00;
 	temp_cmd[5] = 0X8F;
 	I2C_WriteStream(2,0x82,&temp_cmd[0],6);
-	if(bRSMBusBlock(2,SMbusRBK,0x83,0x03,&dGPU_Temp[0]))
+	if(bRSMBusBlock(2,SMbusRBK,0x83,0x03,&dGPU_Temp[0])) {
+		BAT_LED1_ON();
 		GPUTm = ((dGPU_Temp[2] >> 1) + (dGPU_Temp[1] << 7));
+	}
 }
 
 //------------------------------------------------------------
@@ -481,7 +486,8 @@ BYTE Hook_Only_Timer1msEvent(void)
 {
     if((SysPowState==SYSTEM_S5_S0)||(SysPowState==SYSTEM_S4_S0)||(SysPowState==SYSTEM_S3_S0))
     {
-        if(++PowerOnWDT >4400)  // > 4.4 sec
+		// 超时机制
+        if(++PowerOnWDT >6000)  // > 4.4 sec    4400
         {
             PowerOnWDT = 0x00;
             Oem_TriggerS0S5(SC_PowerOnWatchDog);

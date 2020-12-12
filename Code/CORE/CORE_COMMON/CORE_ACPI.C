@@ -330,13 +330,15 @@ void ACPI_Gen_Int(BYTE Qevent)
         DisableAllInterrupt();
     }
 	PM1IC &=~ PMIC_SCI;//Hook_SCION();   // 
-    WNCKR = 0x00;               // Delay 15.26 us
-	WNCKR = 0x00;
-	WNCKR = 0x00;	
-	WNCKR = 0x00;
-	WNCKR = 0x00;
-	WNCKR = 0x00;
-	WNCKR = 0x00;
+
+	Loop_Delay(200);
+    // WNCKR = 0x00;               // Delay 15.26 us
+	// WNCKR = 0x00;
+	// WNCKR = 0x00;	
+	// WNCKR = 0x00;
+	// WNCKR = 0x00;
+	// WNCKR = 0x00;
+	// WNCKR = 0x00;
 
 	PM1IC |= PMIC_SCI;//Hook_SCIOFF();
     if(Qevent==QeventSCI)

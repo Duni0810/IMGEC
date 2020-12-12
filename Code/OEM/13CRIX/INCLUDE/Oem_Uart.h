@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:35
- * @LastEditTime: 2020-11-30 10:52:41
+ * @LastEditTime: 2020-12-07 15:04:36
  */
 #ifndef OemUart_h
 #define OemUart_h
@@ -47,6 +47,8 @@ extern void UART_Print_Int(unsigned int aInt);
 extern void UART_Print_Str(unsigned char *str);
 extern void uart_printf(const char *fmt,...);
 
+extern void uart_print(unsigned char *str);
+extern void uart_hex_show(unsigned char ch);
 //extern void UART_RX_Command(void);
 
 extern void uart_Initial_Host(void);

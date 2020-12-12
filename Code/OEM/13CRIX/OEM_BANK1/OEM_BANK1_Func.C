@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:35
- * @LastEditTime: 2020-11-30 10:58:18
+ * @LastEditTime: 2020-12-05 16:27:47
  */
 /*-----------------------------------------------------------------------------
  * TITLE: OEM_BANK1_Func.C
@@ -24,6 +24,6 @@
 //----------------------------------------------------------------------------
 void Bank1_Test(void)
 {
-    UART_Print_Str("Bank1_Test\n");
+    // UART_Print_Str("Bank1_Test\n");
 }
 

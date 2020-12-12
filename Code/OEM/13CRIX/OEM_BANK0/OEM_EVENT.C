@@ -49,7 +49,7 @@ void NullEvent(void)
 //-----------------------------------------------------------------------------
 void AdapterIn(void)
 {
-	UART_Print_Str("AC plug IN!\n");
+	uart_print("AC plug IN!\n");
 	
 	SET_MASK(BAT1_STATUS,OS_AC_IN);
 	ECQEvent(AC_HOT_PLUG_EVT,SCIMode_Normal);	//J80_013++
@@ -60,7 +60,7 @@ void AdapterIn(void)
 //-----------------------------------------------------------------------------
 void AdapterOut(void)
 {
-	UART_Print_Str("AC plug OUT!\n");
+	uart_print("AC plug OUT!\n");
 	
 	CLEAR_MASK(BAT1_STATUS,OS_AC_IN);
 	ECQEvent(AC_HOT_PLUG_EVT,SCIMode_Normal);	//J80_013++
@@ -73,7 +73,7 @@ void PSWPressed(void)
 {
 	if(Read_LID())
        return;
-	UART_Print_Str("\nPower button is pressed!\n");
+	uart_print("\nPower button is pressed!\n");
 	
 	#if BRAM_Debug	
 	Copy_BRAM_SRAM();
@@ -89,6 +89,8 @@ void PSWPressed(void)
  			//if(IS_MASK_SET(POWER_FLAG1, adapter_in))
 			{
 				Oem_TriggerS5S0();
+
+				// BAT_LED1_ON();
 				SET_MASK(Oem_Globe_Flag1,Oem_PCHBTN_En);
  			}
 			break;
@@ -112,8 +114,11 @@ void PSWPressed(void)
 				//J80_007++<<
 			//J80_007A++>>
 			}
-			else
+			else {
+				// BAT_LED1_ON();
 				Oem_TriggerS0S5(SC_S0SLPOff);
+			}
+				
 			//J80_007A++<<
 			break;
         default :
@@ -127,7 +132,7 @@ void PSWPressed(void)
 //-----------------------------------------------------------------------------
 void PSWReleased(void)
 {
-	UART_Print_Str("\nPower button is released!\n");
+	uart_print("\nPower button is released!\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -135,6 +140,9 @@ void PSWReleased(void)
 //-----------------------------------------------------------------------------
 void PSWOverrided(void)
 {
+	// 测试
+	// BAT_LED1_OFF();
+
 	if(Read_LID())
        return;
 	if(PSW_COUNTER != 0 )	
@@ -171,6 +179,7 @@ void HW_Reset_Released(void)
 	{
 		if(IS_MASK_SET(EVT_STATUS2,Sys_ResetPowerOn_f))
 		{
+			// BAT_LED1_ON();
 			Oem_TriggerS0S5(SC_Sys_Reset);
 			SET_MASK(EVT_STATUS2,Sys_ResetPowerOff_f);
 			CLEAR_MASK(EVT_STATUS2,Sys_ResetPowerOn_f);

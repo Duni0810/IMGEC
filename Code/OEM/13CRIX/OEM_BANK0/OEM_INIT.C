@@ -37,7 +37,7 @@ static void __1s_delay(void)
 }
 
 // 看门狗测试
-#if 1
+#if 0
 
 /**
  * 试验一内容  : RSTS 寄存器属性判断
@@ -460,7 +460,7 @@ void __test_GPIO_GFLE(void)
 
 
 
-#if 1
+#if 0
 // 程序进入为 idle 模式， 通过开机按钮唤醒
 void __idle_to_wakeup(void)
 {
@@ -649,7 +649,7 @@ void __deepdoze_to_wakeup(void)
 
 #endif
 
-#if 1
+#if 0
 
 // 程序进入为 sleep 模式， 通过开机按钮唤醒
 void __sleep_to_wakeup(void)
@@ -973,7 +973,7 @@ void __test_dac_pin_invert()
 #endif
 }
 
-#if 1
+#if 0
 
 
 static void __test_flash2sram()
@@ -1052,16 +1052,38 @@ static void __change_PLL_req(void)
 
 
 #endif
+
+
+
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
 
+
+
     // u8    young_flag = 0x00;
-    // 关闭内部看门狗
-    // WDTEB = 0;
+    // // 关闭内部看门狗
+    
+    
  	// Init_ClearRam();
+    //  SP = 0xC0;					// Setting stack pointer
+
+    // WDTEB = 0;
+    // Init_Timers();
+    // Init_GPIO();
+    // InitEnableInterrupt();
+
+    // for(;;);
+    // Oem_TriggerS5S0();
+    
+    // Oem_S5S0Sequence();
+    // for(;;) {
+    //     if (SysPowState != SYSTEM_S0) {
+    //         Oem_S5S0Sequence();
+    //     }
+    // };
     // Init_GPIO();
     //  for(;;){
     //         INVERSE_REG(GPDRJ, 4);
@@ -1191,8 +1213,11 @@ void Oem_Initialization(void)
 
 	Init_GPIO();
 	//TF_010++>>
-	if(IS_BOARD_ID1_HI())
-		EC_PWR_CTR1_ON();
+	if(IS_BOARD_ID1_HI()) {
+        BAT_LED1_ON();
+        EC_PWR_CTR1_ON();
+    }
+		
 	//TF_010++<<
     #ifdef HSPI
 	GPIO_HSPI_INIT();
@@ -1207,7 +1232,9 @@ void Oem_Initialization(void)
     #endif
 
     #ifdef PLLFrequency
-    ChangePLLFrequency(PLLFrequency);
+
+    // fpga 验证的时候不要使用，因为进入sleep之后就不能唤醒了  young
+    // ChangePLLFrequency(PLLFrequency);
     #endif
 
     #ifdef PECI_Support
@@ -1225,7 +1252,7 @@ void Oem_Initialization(void)
 	Init_ADC();
     #endif
 
-	Init_Cache();
+	// Init_Cache();
 	Init_PS2Port();
     
     #ifdef SysMemory2ECRam	
@@ -1240,6 +1267,10 @@ void Oem_Initialization(void)
 
 	
     InitSMBus();
+
+    
+
+
     ResetSCIEvent();
 	Init_OEMVariable();
 
@@ -1250,12 +1281,13 @@ void Oem_Initialization(void)
 			ExtendScanPin++;
 		}
 	}
-
 	ExtWDTInit();	
-	InitThermalChip();
+
+	// InitThermalChip();  // 98
+
 
 	#if Support_ANX7447
-	ucsi_init();
+	// ucsi_init();
 	#endif
 
 	Warning_flag = 0xFF;	//TF_004++
@@ -1544,7 +1576,7 @@ void Init_OEMVariable(void)
     
 	SysPowState=SYSTEM_S5;		
 
-	//TF_014++>>
+	//TF_014++>> 
 	if(BRAM[63]==0x55)
 	{
 		BRAM[63]=0x00;

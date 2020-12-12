@@ -43,7 +43,6 @@ void cold_reset(void)
     Pass_Make2 = 0;   /* Reject make code 2. */
 
     MULPX = 0;
-
 }
 
 

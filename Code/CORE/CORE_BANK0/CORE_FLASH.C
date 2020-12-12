@@ -551,10 +551,11 @@ void SST_SPI_Write_256Bytes(void)
 	ECINDAR1 = 0xFD;
     ECINDDR = SPICmd_WRDI;          // Write disable
 
-    WNCKR = 0x00;                   // Delay 15.26 us
-    WNCKR = 0x00;                   // Delay 15.26 us
-    WNCKR = 0x00;                   // Delay 15.26 us
-    WNCKR = 0x00;                   // Delay 15.26 us
+	Loop_Delay(70);
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
 
 	ECINDAR3 = 0x00;     			// Exit follow mode
 	ECINDAR2 = 0x00;				// For 256 bytes function limite
@@ -624,10 +625,11 @@ void Old_SST_SPI_Write_256Bytes(void)
     ECINDDR = SPICmd_WRDI;          // Write disable
 
 
-    WNCKR = 0x00;                   // Delay 15.26 us
-    WNCKR = 0x00;                   // Delay 15.26 us
-    WNCKR = 0x00;                   // Delay 15.26 us
-    WNCKR = 0x00;                   // Delay 15.26 us
+	Loop_Delay(70);
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
 	//ECINDAR1 = 0xFE;
 	//ECINDDR = 0xFF;					// SCE# high level
 	//ECINDAR1 = 0xFD;

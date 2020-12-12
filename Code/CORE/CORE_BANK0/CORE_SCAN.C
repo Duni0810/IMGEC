@@ -14,8 +14,8 @@
 
 void CapDelay(void)
 {
-    WNCKR = 0x00;               // Delay 15.26 us
-    //WNCKR = 0x00;               // Delay 15.26 us	
+    Loop_Delay(10);
+    // WNCKR = 0x00;               // Delay 15.26 us
 }
 
 /* ----------------------------------------------------------------------------

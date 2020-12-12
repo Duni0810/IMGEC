@@ -569,6 +569,7 @@ ECReg	KSOCTRL      	_at_ 0x1D02;	// Keyboard Scan Out Control
 ECReg	KSOH2			_at_ 0x1D03;	// Keyboard Scan Out
 ECReg	KSI           	_at_ 0x1D04;	// Keyboard Scan In
 ECReg	KSICTRL       	_at_ 0x1D05;	// Keyboard Scan In Control
+
 ECReg	KSIGCTRL       	_at_ 0x1D06;	// Keyboard Scan In [7:0] GPIO Control
 ECReg	KSIGOEN       	_at_ 0x1D07;	// Keyboard Scan In [7:0] GPIO Output Enable
 ECReg	KSIGDAT       	_at_ 0x1D08;	// Keyboard Scan In [7:0] GPIO DATA

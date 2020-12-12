@@ -23,38 +23,6 @@
  *  all service requests have been handled, return to idle state.
  * ------------------------------------------------------------------------- */
 
-
-
-extern void cold_reset(void);
-
-static void __test_init(void)
-{
-    DCache = 0x00;
-
-	cold_reset();
-    // init timer
-    Init_Timers();
-
-    // init uart
-	uart_Initial();
-	Init_GPIO();
-    GPCRB0 = ALT;
-    GPCRB1 = ALT;
-
-    Core_Init_SMBus();
-    ChangeSPIFlashReadMode(SPIReadMode);
-    Init_SMBus_Regs();
-    InitSMBus();
-	Init_OEMVariable();
-
-    // // 这个函数中有修改，测试完记得修改回来
-	// InitThermalChip();
-
-    InitEnableInterrupt();
-    UART_Print_Str("FIC628 say hello\n");
-}
-
-
 static void __1s_delay(void)
 {
    Delay1MS(200);
@@ -66,139 +34,72 @@ static void __1s_delay(void)
    Delay1MS(200);
 }
 
-extern void Oem_Hook_Timer1ms(void);
 
 ECReg	GCR11     		_at_ 0x16FA;
 
+ECReg	SMBUS1_test1     		_at_ 0x1C49;
+ECReg	SMBUS1_test2     		_at_ 0x1C4a;
+ECReg	SMBUS1_test3     		_at_ 0x1C4b;
+ECReg	SMBUS1_test4     		_at_ 0x1C4c;
+ECReg	SMBUS1_test5     		_at_ 0x1Cac;
+ECReg	SMBUS1_test6     		_at_ 0x1Cbc;
+
+
 void main(void)
 {
-    u8    young_flag = 0x00;
-    
-    SP = 0xC0;					// Setting stack pointer
-
-    // for(;;){
-    //     young_flag++;
-    //     if (young_flag > 250) {
-    //         young_flag = 0;
-    //     }
-    // }
-
-    __test_init();
-
-    GPCRE4 = OUTPUT;
-
-    GCR10 = 0x01;
-	GCR8  = 0x10;
-    // GCR11 = 0x01;
-    // GCR9  = 0x02;
-    
-
-    // BAT_LED2_ON();
-    _nop_();
-    _nop_();
-    _nop_();
-    _nop_();
-    _nop_();
-    _nop_();
-    _nop_();
-    _nop_();
-
-    SCLKTS_A = 0x02;
-
-    CHARGER_OPTION_L = 0x08;
-    CHARGER_OPTION_H = 0xE2;  // 默认为E1  建议别乱写
-
-
-    if(bRWSMBus(SmartChargerChannel, SMbusWW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0) == FALSE ) {
-        // UART_Print_Str("Write ERROR \r\n");
-        // BAT_LED1_ON();
-    }
-
-    // BAT_LED1_ON();
-    // _nop_();
-
-    ServiceSMBus();
-
-    if(bRWSMBus(SmartChargerChannel, SMbusRW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0)) {
-        UART_Print_Str("CHARGER_OPTION: ");
-        UART_Print_HEX(CHARGER_OPTION_L);
-        UART_Print_Str(" \r\n    CHARGER_OPTION:");
-        UART_Print_HEX(CHARGER_OPTION_H);
-        UART_Print_Str(" \r\n");
-    }
-
-	for(;;) {
-        // 这个是串口发送程序 
-        Oem_Hook_Timer1ms();
-
-        //-----------------------------------
-        // 1 millisecond elapsed
-        //-----------------------------------
-        if(F_Service_MS_1)
-        {
-            F_Service_MS_1=0;
-            service_1mS();
-
-            if(young_flag >= 250) {
-                UART_Print_Str("test code \r\n");
-                young_flag = 0;
-            }
-            young_flag++;
-
-            continue;
-        }
-	};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    u8    young_flag  = 0x00;
+    u8    young_flag1 = 0x00;
+ 
 	DisableAllInterrupt();
 	SP = 0xC0;					// Setting stack pointer
 
-	if(Hook_ECRetunrMainFuncKeepCondition()==0x33)  // Exit from follow mode or EC scatch ROM
+	// if(Hook_ECRetunrMainFuncKeepCondition()==0x33)  // Exit from follow mode or EC scatch ROM
+	// {
+	// 	CLEAR_MASK(FBCFG,SSMC); // disable scatch ROM
+	// 	_nop_();
+	//     MPRECF = 0x01;
+	//     _nop_();
+	//     MPRECF = 0x01;
+	//     _nop_(); 
+	//     MPRECF = 0x01;
+	//     _nop_();
+	//     MPRECF = 0x01;
+	//     _nop_();
+	//     _nop_();
+    //     WinFlashMark = 0x00;
+    //     ResetBANKDATA();        // init bank mechanism to code bank 0
+    //     Hook_ECExitFollowMode();
+    //     Init_Timers();
+	// 	EnableModuleInterrupt();    
+	// }
+	// else
 	{
-		CLEAR_MASK(FBCFG,SSMC); // disable scatch ROM
-		_nop_();
-	    MPRECF = 0x01;
-	    _nop_();
-	    MPRECF = 0x01;
-	    _nop_(); 
-	    MPRECF = 0x01;
-	    _nop_();
-	    MPRECF = 0x01;
-	    _nop_();
-	    _nop_();
-        WinFlashMark = 0x00;
-        ResetBANKDATA();        // init bank mechanism to code bank 0
-        Hook_ECExitFollowMode();
-        Init_Timers();
-		EnableModuleInterrupt();    
-	}
-	else
-	{
+
+        SMBUS1_test1 = 0x10;
+        SMBUS1_test2 = 0x10;
+        SMBUS1_test3 = 0x10;
+        SMBUS1_test4 = 0x10;
+        SMBUS1_test5 = 0x10;
+        SMBUS1_test6 = 0x10;
+
+
 		Core_Initialization();
 		Oem_Initialization();
+
+
+        // for(;;);
+
         InitEnableInterrupt();
 		
         #if UART_Debug
 		uart_Initial();
-        UART_Print_Str("\n\n------------------------------------");
-        UART_Print_Str("\n  EC Init OK !!!");
-        UART_Print_Str("\n\n------------------------------------");
         GPCRB0 = ALT;
         GPCRB1 = ALT;
+
+        uart_print("\r\n------------------------------------\r\n");
+        uart_print("  EC Init OK !!! ");
+        uart_print("\r\n------------------------------------\r\n");
+
 		#else
 		//uart_Initial_Host();
 		#endif
@@ -215,16 +116,121 @@ void main(void)
 	BRAM_FLASH_ID2=0;
 	BRAM_FLASH_ID3=0;	
 
-    // //test
-    // for(;;) {
-    //    Oem_Hook_Timer1ms(); 
-    // };
+
+#if 1
+    SCLKTS_A = 0x02;
+    SCLKTS_B = 0x02;
+    SCLKTS_C = 0x02;
+
+    CHARGER_OPTION_L = 0x08;
+    CHARGER_OPTION_H = 0xE2;  // 默认为E1  建议别乱写
+
+    // ServiceSMBus();
+
+    // if(bRWSMBus(SmartChargerChannel, SMbusWW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0) == FALSE ) {
+    //     // UART_Print_Str("Write ERROR \r\n");
+    //     // BAT_LED1_ON();
+    //     // while(1);
+    // }
+    
+    // ServiceSMBus();
+
+    // CHARGER_OPTION_H = 0x00;
+
+    // if(bRWSMBus(SmartChargerChannel, SMbusRW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0)) {
+    //     // BAT_LED1_ON();
+    //     uart_print("CHARGER_OPTION:  ");
+    //     UART_Print_HEX(CHARGER_OPTION_L);
+    //     uart_print(" \r\nCHARGER_OPTION: ");
+    //     UART_Print_HEX(CHARGER_OPTION_H);
+    //     uart_print(" \r\n");
+    // }
+
+    // if (CHARGER_OPTION_H == 0xE2) {
+    //     BAT_LED1_ON();
+    // }
+
+    // ServiceSMBus();
+    
+
+    // anx_write_reg(0x58, 0xa1 , 0x20);
+
+    // // ServiceSMBus();
+    // young_flag = anx_read_reg(0x58, 0xa1); // ANALOG_CTRL_1  0xa1
+    // uart_print("anx_read_reg:  ");
+    // uart_hex_show(young_flag);
+    // young_flag = 0x00;
+
+    // __1s_delay();
+    // BAT_LED1_ON();
+
+    // 
+
+
+    for(;;) {
+        anx_read_reg(0x58, 0xa1);
+        if(F_Service_MS_1)
+        {
+            F_Service_MS_1=0;
+            if(young_flag >= 10) {
+                    // INVERSE_REG(GPDRJ, 4);
+                    INVERSE_REG(GPDRC, 6);
+                // uart_print("test code \r\n");
+                young_flag = 0;
+            }
+            young_flag++;
+            continue;
+        }
+    };
 
 
 
+	for(;;) {
+        //-----------------------------------
+        // 1 millisecond elapsed
+        //-----------------------------------
+        if(F_Service_MS_1)
+        {
+            F_Service_MS_1=0;
+            service_1mS();
+            if(young_flag >= 250) {
+                    // INVERSE_REG(GPDRJ, 4);
+                    INVERSE_REG(GPDRC, 6);
+                // uart_print("test code \r\n");
+                young_flag = 0;
+            }
+            young_flag++;
+            continue;
+        }
+
+        if(SysPowState == SYSTEM_S0) {
+
+        } else {
+            // BAT_LED1_OFF();
+        }
+
+        // INVERSE_REG(GPDRJ, 4);
+        // // uart_print("idle code \r\n");
+        // //-----------------------------------
+        // // Keyboard scanner service
+        // //-----------------------------------
+        // if(F_Service_KEY)
+        // {
+        // 	F_Service_KEY=0;
+        //     // uart_print("KBS code \r\n");
+		// 	service_scan();
+		// 	continue;
+        // }
+
+        // young_flag1 = Get_Buffer();
+        // if (young_flag1 != 0xff) {
+        //     uart_print("\r\ndata:");
+        //     uart_hex_show(young_flag1);
+        // }
+	};
 
 
-    // (*(volatile unsigned char xdata *)0x805 ) = 0x55;
+#endif
 
 	while(1)
    	{
@@ -484,103 +490,96 @@ void service_1mS(void)
 	Timer1msEvent();
 	Timer1msCnt++;
 
-    // 临时测试代码
-    if(Timer1msCnt>=250)
+    if(Timer1msCnt>=10)
     {
-        INVERSE_REG(GPDRJ, 4);
-        INVERSE_REG(GPDRC, 6);
         Timer1msCnt = 0x00;
     }
 
+    // 判断强制关机事件
+    if(Hook_Only_Timer1msEvent()==Only_Timer1msEvent)
+    {   
+        return;
+    }
 
-    // if(Timer1msCnt>=10)
-    // {
-    //     Timer1msCnt = 0x00;
-    // }
+    if((Timer1msCnt%5)==0x00)
+    {
+	    Timer5msEvent();            // 检查系统状态，这个与系统有关
+	    Timer5msCnt++;
+	    if ( Timer5msCnt & 1 )  	// 10ms events
+	    {
+            Timer10msEventA();      // 电磁管理事件
+	    }
+	    else
+	    {
+		    Timer10msEventB();                          // ANX7447 事件
+     	    switch( Timer5msCnt )   // Share Loading Branch Control
+    	    {
+       		    case 2: //Timer50msEventA();              // LED 灯控制
+                    break;
+          	    case 4: Timer50msEventB();              // 适配器热插拔事件
+             	    break;
+        	    case 6: Timer50msEventC();              // 电池热插拔事件，SCI         
+              	    break;
+          	    case 8: Timer100msCntB++;
+         		    if ( Timer100msCntB & 1 )
+             	    {
+                  	    Timer100msEventA();             // 做 ADC 温度获取
+              	    }
+             	    else
+             	    {
+                   	    Timer100msEventB();             // 获取风扇1，2转速，在500ms事件做调速
+              	    }
+               	    break;
 
-    // if(Hook_Only_Timer1msEvent()==Only_Timer1msEvent)
-    // {   
-    //     return;
-    // }
+           	    default:        
+				    Timer5msCnt=0;
+              	    break;
+     	    }
 
-    // if((Timer1msCnt%5)==0x00)
-    // {
-	//     Timer5msEvent();
-	//     Timer5msCnt++;
-	//     if ( Timer5msCnt & 1 )  	// 10ms events
-	//     {
-    //         Timer10msEventA();
-	//     }
-	//     else
-	//     {
-	// 	    Timer10msEventB();
-    //  	    switch( Timer5msCnt )   // Share Loading Branch Control
-    // 	    {
-    //    		    case 2: Timer50msEventA();
-    //                 break;
-    //       	    case 4: Timer50msEventB();
-    //          	    break;
-    //     	    case 6: Timer50msEventC();
-    //           	    break;
-    //       	    case 8: Timer100msCntB++;
-    //      		    if ( Timer100msCntB & 1 )
-    //          	    {
-    //               	    Timer100msEventA();
-    //           	    }
-    //          	    else
-    //          	    {
-    //                	    Timer100msEventB();
-    //           	    }
-    //            	    break;
+    	    if ( Timer5msCnt == 0x00 )
+    	    {       			// 50msec
+          	    Timer100msCnt ++;
+          	    if ( Timer100msCnt & 1 )
+         	    {
+             	    Timer100msEventC();                 // 空函数
+          	    }
+         	    else
+     		    {       		// 100msec
+          		    switch( Timer100msCnt )
+              	    {
+                	    case 2:	Timer500msEventA();     // 系统睡眠唤醒 例如S3->S0 有关
+                 		    break;
+                 	    case 4:	Timer500msEventB();     // 与进入sleep
+                      	    break;
+                 	    case 6:	Timer500msEventC();     // GPU 温度有关
+                     	    break;
+                 	    case 8:	Timer1SecEventA();      // 风扇1 检查风速，调速
+                     	    break;
+					    case 10: 	Timer1SecEventB();  // 风扇2 检查风速，调速
+                     	    break;	
+                 	    case 12:	Timer500msEventA(); // 系统睡眠唤醒 例如S3->S0 有关
+                      	    break;
+                	    case 14:	Timer500msEventB(); // 与进入sleep
+                      	    break;
+               		    case 16: 	Timer500msEventC(); // GPU 温度有关
+                      	    break;
+                 	    case 18: 	Timer1SecEventC();  // ADC温度有关
+                     	    break;
+                  	    default:        // 1 Sec
+                      	    Timer100msCnt = 0;
+                  		    Timer1SecCnt ++;
 
-    //        	    default:        
-	// 			    Timer5msCnt=0;
-    //           	    break;
-    //  	    }
-
-    // 	    if ( Timer5msCnt == 0x00 )
-    // 	    {       			// 50msec
-    //       	    Timer100msCnt ++;
-    //       	    if ( Timer100msCnt & 1 )
-    //      	    {
-    //          	    Timer100msEventC();
-    //       	    }
-    //      	    else
-    //  		    {       		// 100msec
-    //       		    switch( Timer100msCnt )
-    //           	    {
-    //             	    case 2:	Timer500msEventA();
-    //              		    break;
-    //              	    case 4:	Timer500msEventB();
-    //                   	    break;
-    //              	    case 6:	Timer500msEventC();
-    //                  	    break;
-    //              	    case 8:	Timer1SecEventA();
-    //                  	    break;
-	// 				    case 10: 	Timer1SecEventB();
-    //                  	    break;	
-    //              	    case 12:	Timer500msEventA();
-    //                   	    break;
-    //             	    case 14:	Timer500msEventB();
-    //                   	    break;
-    //            		    case 16: 	Timer500msEventC();
-    //                   	    break;
-    //              	    case 18: 	Timer1SecEventC();
-    //                  	    break;
-    //               	    default:        // 1 Sec
-    //                   	    Timer100msCnt = 0;
-    //               		    Timer1SecCnt ++;
-    //                 	    if ( Timer1SecCnt == 60 )
-    //                   	    {
-    //                      	    Timer1MinEvent();
-    //                      	    Timer1SecCnt=0;
-    //                  	    }
-    //                 	    break;
-    //       		    }
-    //           	}
-    //    		}
-   	// 	}
-	// } 
+                    	    if ( Timer1SecCnt == 60 )
+                      	    {
+                         	    Timer1MinEvent();   // 空
+                         	    Timer1SecCnt=0;
+                     	    }
+                    	    break;
+          		    }
+              	}
+       		}
+   		}
+	} 
 }
 
 //------------------------------------------------------------
@@ -589,7 +588,7 @@ void service_1mS(void)
 void Timer1msEvent(void)
 {
     // 暂时屏蔽
-    // ReSendPS2PendingData();
+    ReSendPS2PendingData();
     Hook_Timer1msEvent(Timer1msCnt);
 }
 
@@ -601,8 +600,10 @@ void Timer5msEvent(void)
     F_Service_Low_LV = 1;
 	if (Timer_A.fbit.TMR_SCAN) 
 	{
+        // uart_print("Timer_A.fbit.TMR_SCAN\r\n");
   		F_Service_KEY = 1;		// Request scanner service. 
   	}
+    // uart_print("Timer5msEvent\r\n");
     Hook_Timer5msEvent();
 }
 

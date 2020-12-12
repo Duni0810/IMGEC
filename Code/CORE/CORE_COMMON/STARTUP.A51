@@ -169,7 +169,7 @@ EXTRN CODE (CheckResetSource)
 
 				PUSH	ACC
 				MOV     DPTR,#2006H 	; RSTS Register
-                MOVX    A,@DPTR
+               MOVX    A,@DPTR
                 
                 MOV     DPTR,#082H 		; RSTStatus
                 MOVX    @DPTR,A

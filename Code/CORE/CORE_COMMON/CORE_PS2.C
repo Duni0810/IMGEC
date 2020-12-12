@@ -965,8 +965,9 @@ void PS2Deviceactive(void)
             //SET_MASK(*asPS2Struct[index].ps2ier, asPS2Struct[index].ctrlbit); 
             PS2ReceiveMode_OneChannel(index, 0x00);
 
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
+            Loop_Delay(20);
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
 
             if(PS2StartBit || F_Service_PS2)
             {
@@ -1488,6 +1489,7 @@ void TPOnlyLowLevelFunc(void)
 //----------------------------------------------------------------------------
 // The function of scaning external AUX device
 //----------------------------------------------------------------------------
+// 没用
 void ExternalAUXLowLevelFunc(void)
 {
     BYTE ISR2Temp;
@@ -1777,7 +1779,8 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
                     //
                     // Delay 15.26 us
                     //
-                    WNCKR = 0x00;
+                    Loop_Delay(10);
+                    // WNCKR = 0x00;
                 }
             }
             //WNCKR = 0x00;               // Delay 15.26 us

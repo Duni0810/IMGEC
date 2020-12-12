@@ -229,6 +229,12 @@ BYTE bRWSMBus(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var,BYTE PEC
 	    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits
     }
 
+    // young modified 
+    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
+    DelayInact();
+
+
+
 	return(resutl);
 }
 
@@ -327,6 +333,9 @@ BYTE bRSMBusBlock(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var)
 	    *asSMBus[Channel].SMBusSTA=0xFE;        // clear bits
     }
     
+    // young modified 
+    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
+    DelayInact();
 	return(ack);	
 }
 
@@ -447,6 +456,10 @@ BYTE bWSMBusBlock(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var,BYTE
 	    *asSMBus[Channel].SMBusSTA=0xFE;        // clear bits
     }
     
+
+        // young modified 
+    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
+    DelayInact();
 	return(ack);
 } 
 
@@ -530,7 +543,11 @@ BYTE bSMBusSendByte(BYTE Channel,BYTE Addr,BYTE SData)
         }
 	    *asSMBus[Channel].SMBusSTA=0xFE;	// clear bits
     }
-    
+
+
+      // young modified 
+    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
+    DelayInact();  
 	return(result);
 }
 
@@ -615,6 +632,10 @@ BYTE bSMBusReceiveByte(BYTE Channel,BYTE Addr,XBYTE *Var)
 	    *asSMBus[Channel].SMBusSTA=0xFE;	    // clear bits
     }
     
+
+        // young modified 
+    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
+    DelayInact();
 	return(result);
 }
 
@@ -750,6 +771,23 @@ void Core_Init_SMBus(void)
  * @return   - None
  * @note     - None
  *---------------------------------------------------------------------------*/
+
+
+volatile u8 tem_i2C = 0;
+volatile u8 tem_i2C1 = 0;
+
+static void __1s_delay(void)
+{
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+   Delay1MS(200);
+}
+
+#if 0
 BYTE I2C_WriteStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
 {
     BYTE    i, j, len;
@@ -765,7 +803,8 @@ BYTE I2C_WriteStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
         i = 100;
         while(1)
         {
-            WNCKR = 0x00;   /* Delay 15.26 us */
+            Loop_Delay(10);
+            // WNCKR = 0x00;   /* Delay 15.26 us */
             j = *asSMBus[I2C_Chn].SMBusSTA;
             if (i > 0)
             {
@@ -803,8 +842,130 @@ BYTE I2C_WriteStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
 
     *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x01;
     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+    // Loop_Delay(250);
     return TRUE;
 }
+
+#else 
+BYTE I2C_WriteStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
+{
+    BYTE    i, j, len;
+
+    len = 0;
+
+
+        HSPI_Misc1 = 0x00;
+    while(1) {
+        INVERSE_REG(GPDRC, 6);
+        __1s_delay();
+        if (HSPI_Misc1 == 0x55) {
+            break;
+        }
+    }
+
+
+    *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x03;               //  使能  I2C1
+    *asSMBus[I2C_Chn].SMBusSTA = 0xFE;                      //  请标志位
+    *asSMBus[I2C_Chn].SMBusADR = (I2C_Addr & 0xFE);         //  设置地址
+    *asSMBus[I2C_Chn].SMBusBData = *Var;                    //  设置第一个数据
+    *asSMBus[I2C_Chn].SMBusCTL = (_SMbusEXT | HOCTL_SRT);   //  设置指令并开始传输
+
+
+
+    while(1)
+    {
+        i = 100;
+        while(1)
+        {
+            Loop_Delay(100);
+            // WNCKR = 0x00;   /* Delay 15.26 us young */
+            j = *asSMBus[I2C_Chn].SMBusSTA;  // j 暂时保存为SMBUS状态 
+            if (i > 0)
+            {
+                i--;
+            }
+            else
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+
+                tem_i2C = 1;
+
+               break;
+                //  return FALSE;
+            }
+
+            if ((j & HOSTA_BDS) != 0x00)   // 接收到一个字节或完成一次传输
+            {
+                tem_i2C = 2;
+                break;
+            }
+
+            if ((j & (HOSTA_FAIL)) != 0x00) // 总线错误
+            {
+                ResetSMBus(I2C_Chn);
+                tem_i2C = 3;
+               break;
+                //  return FALSE;
+            }
+
+            if ((j & (HOSTA_BSER)) != 0x00) // 总线错误
+            {
+                ResetSMBus(I2C_Chn);
+                tem_i2C = 4;
+               break;
+                //  return FALSE;
+            }
+
+
+            // if ((j & (HOSTA_DVER)) != 0x00)   // 设备错误
+            // {
+            //     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+            //     tem_i2C = 4;
+            //     break;
+            //     // return FALSE;
+            // }
+
+            if ((j & (HOSTA_NACK)) != 0x00)   // 设备错误
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C = 5;
+               break;
+                //  return FALSE;
+            }
+
+            if ((j & ( HOSTA_TMOE)) != 0x00)   // 设备错误
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C = 6;
+               break;
+                //  return FALSE;
+            }
+        }
+
+        (*(volatile unsigned char xdata *) 0x802) = tem_i2C;
+
+        len++;
+        if (len == Count)
+        {
+            break;
+        }
+        Var++;
+        *asSMBus[I2C_Chn].SMBusBData = *Var;
+        *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+    }
+
+    //*asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+    *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x01;   // 关闭I2C使能
+    *asSMBus[I2C_Chn].SMBusSTA = 0xFE;          // 清状态
+
+    // BAT_LED1_ON();
+
+    return TRUE;
+}
+
+#endif
+
+#if 0
 /*-----------------------------------------------------------------------------
  * @subroutine - I2C_ReadStream
  * @function - I2C Read Stream data
@@ -830,29 +991,34 @@ BYTE I2C_ReadStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
         i = 100;
         while(1)
         {
-            WNCKR = 0x00;   /* Delay 15.26 us */
+            Loop_Delay(10);
+            // WNCKR = 0x00;   /* Delay 15.26 us young */
             if (i > 0)
             {
                 i--;
             }
             else
             {
+                tem_i2C1 = 1;
                 *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
                 return FALSE;
             }
             j = *asSMBus[I2C_Chn].SMBusSTA;
             if ((j & HOSTA_BDS) != 0x00)
             {
+                tem_i2C1 = 2;
                 break;
             }
             if ((j & (HOSTA_BSER + HOSTA_FAIL)) != 0x00)
             {
                 ResetSMBus(I2C_Chn);
+                tem_i2C1 = 3;
                 return FALSE;
             }
             if ((j & (HOSTA_DVER + HOSTA_NACK + HOSTA_TMOE)) != 0x00)
             {
                 *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C1 = 4;
                 return FALSE;
             }
         }
@@ -867,9 +1033,347 @@ BYTE I2C_ReadStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
     }
     while (Count > 0);
 
+    
     *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x01;
     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+    // Loop_Delay(250);
+
     CLEAR_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
     return TRUE;
 }
 
+#else 
+
+/*-----------------------------------------------------------------------------
+ * @subroutine - I2C_ReadStream
+ * @function - I2C Read Stream data
+ * @Upstream - By call
+ * @input    - None
+ * @return   - None
+ * @note     - None
+ *---------------------------------------------------------------------------*/
+// BYTE I2C_ReadStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
+// {
+//     BYTE    i, j;
+
+//     (*(volatile unsigned char xdata *) 0x804) = 0x00;
+//     (*(volatile unsigned char xdata *) 0x805) = 0x00;
+
+//         HSPI_Misc1 = 0x00;
+//     while(1) {
+//         INVERSE_REG(GPDRC, 6);
+//         __1s_delay();
+//         if (HSPI_Misc1 == 0x55) {
+//             break;
+//         }
+//     }
+
+//     *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x03;
+//     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+//     *asSMBus[I2C_Chn].SMBusADR = (I2C_Addr | 0x01);
+//     *asSMBus[I2C_Chn].SMBusCTL = (_SMbusEXT | HOCTL_SRT);
+//     if (Count == 0x01)
+//     {
+//         SET_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
+//     }
+//     do
+//     {
+//         i = 100;
+//         while(1)
+//         {
+//             Loop_Delay(100);
+//             // WNCKR = 0x00;   /* Delay 15.26 us young */
+//             if (i > 0)
+//             {
+//                 i--;
+//             }
+//             else
+//             {
+//                 tem_i2C1 = 1;
+//                 *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+//                break;
+//                 //  return FALSE;
+//             }
+
+//             j = *asSMBus[I2C_Chn].SMBusSTA;
+//             if ((j & HOSTA_BDS) != 0x00)
+//             {
+//                 tem_i2C1 = 2;
+//                 break;
+//             }
+
+//             if ((j & (HOSTA_BSER)) != 0x00)
+//             {
+//                 ResetSMBus(I2C_Chn);
+//                 tem_i2C1 = 3;
+//                break;
+//                 //  return FALSE;
+//             }
+//             if ((j & (HOSTA_FAIL)) != 0x00)
+//             {
+//                 ResetSMBus(I2C_Chn);
+//                 tem_i2C1 = 4;
+//                break;
+//                 //  return FALSE;
+//             }
+
+//             // if ((j & (HOSTA_DVER)) != 0x00)
+//             // {
+//             //     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+//             //     tem_i2C1 = 5;
+//             //    break;
+//             //     //  return FALSE;
+//             // }
+//             if ((j & (HOSTA_NACK)) != 0x00)
+//             {
+//                 *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+//                 tem_i2C1 = 6;
+//                break;
+//                 //  return FALSE;
+//             }
+//             if ((j & (HOSTA_TMOE)) != 0x00)
+//             {
+//                 *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+//                 tem_i2C1 = 7;
+//                break;
+//                 //  return FALSE;
+//             }
+//         }
+
+//         if (Count == 2) {
+//             (*(volatile unsigned char xdata *) 0x804) = tem_i2C1;
+
+//         } else {
+//            (*(volatile unsigned char xdata *) 0x805) = tem_i2C1; 
+//         }
+
+
+//         *Var = *asSMBus[I2C_Chn].SMBusBData;
+//         Count--;
+//         if (Count == 0x01)
+//         {
+//             SET_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
+//         }
+//         Var++;
+
+
+//         HSPI_Misc1 = 0x00;
+//     while(1) {
+//         INVERSE_REG(GPDRC, 6);
+//         __1s_delay();
+//         if (HSPI_Misc1 == 0x66) {
+//             break;
+//         }
+//     }
+
+//         *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+
+
+//     }
+//     while (Count > 0);
+
+    
+//     *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x01;
+//     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+//     // Loop_Delay(250);
+
+//     CLEAR_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
+//     return TRUE;
+// }
+
+
+
+static void __young_delay(void)
+{
+    BYTE ii = 0;
+    BYTE temp = 0;
+    for (ii = 0; ii < 120; ii++){
+        temp = HOCTL2R;        
+    }
+}
+
+BYTE I2C_ReadStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
+{
+    BYTE    i, j, ii;
+
+    (*(volatile unsigned char xdata *) 0x804) = 0x00;
+    (*(volatile unsigned char xdata *) 0x805) = 0x00;
+
+        HSPI_Misc1 = 0x00;
+    while(1) {
+        INVERSE_REG(GPDRC, 6);
+        __1s_delay();
+        if (HSPI_Misc1 == 0x55) {
+            break;
+        }
+    }
+
+    *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x03;
+    *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+    *asSMBus[I2C_Chn].SMBusADR = (I2C_Addr | 0x01);
+    *asSMBus[I2C_Chn].SMBusCTL = (_SMbusEXT | HOCTL_SRT);
+    if (Count == 0x01)
+    {
+        SET_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
+    }
+    // do
+    // {
+        i = 100;
+        while(1)
+        {
+            Loop_Delay(100);
+            // WNCKR = 0x00;   /* Delay 15.26 us young */
+            if (i > 0)
+            {
+                i--;
+            }
+            else
+            {
+                tem_i2C1 = 1;
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+               break;
+                //  return FALSE;
+            }
+            
+            j = *asSMBus[I2C_Chn].SMBusSTA;
+            if ((j & HOSTA_BDS) != 0x00)
+            {
+                tem_i2C1 = 2;
+                break;
+            }
+
+            if ((j & (HOSTA_BSER)) != 0x00)
+            {
+                ResetSMBus(I2C_Chn);
+                tem_i2C1 = 3;
+               break;
+                //  return FALSE;
+            }
+            if ((j & (HOSTA_FAIL)) != 0x00)
+            {
+                ResetSMBus(I2C_Chn);
+                tem_i2C1 = 4;
+               break;
+                //  return FALSE;
+            }
+            if ((j & (HOSTA_NACK)) != 0x00)
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C1 = 6;
+               break;
+                //  return FALSE;
+            }
+            if ((j & (HOSTA_TMOE)) != 0x00)
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C1 = 7;
+               break;
+                //  return FALSE;
+            }
+        }
+
+        if (Count == 2) {
+            (*(volatile unsigned char xdata *) 0x804) = tem_i2C1;
+
+        } else {
+           (*(volatile unsigned char xdata *) 0x805) = tem_i2C1; 
+        }
+
+
+        *Var = *asSMBus[I2C_Chn].SMBusBData;
+        Count--;
+        if (Count == 0x01)
+        {
+            SET_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
+        }
+        Var++;
+
+
+        HSPI_Misc1 = 0x00;
+    while(1) {
+        INVERSE_REG(GPDRC, 6);
+        __1s_delay();
+        if (HSPI_Misc1 == 0x66) {
+            break;
+        }
+    }
+
+        *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+
+
+    // } while (Count > 0);
+
+  /****************************************************/
+          ii = 100;
+        while(1)
+        {
+            // Loop_Delay(111);
+            __young_delay();
+            
+            // WNCKR = 0x00;   /* Delay 15.26 us young */
+            if (ii > 0)
+            {
+                ii--;
+            }
+            else
+            {
+                tem_i2C1 = 9;
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+               break;
+                //  return FALSE;
+            }
+            
+            j = *asSMBus[I2C_Chn].SMBusSTA;
+            if ((j & HOSTA_BDS) != 0x00)
+            {
+                tem_i2C1 = 10;
+                break;
+            }
+
+            if ((j & (HOSTA_BSER)) != 0x00)
+            {
+                ResetSMBus(I2C_Chn);
+                tem_i2C1 = 11;
+               break;
+                //  return FALSE;
+            }
+            if ((j & (HOSTA_FAIL)) != 0x00)
+            {
+                ResetSMBus(I2C_Chn);
+                tem_i2C1 = 12;
+               break;
+                //  return FALSE;
+            }
+            if ((j & (HOSTA_NACK)) != 0x00)
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C1 = 13;
+               break;
+                //  return FALSE;
+            }
+            if ((j & (HOSTA_TMOE)) != 0x00)
+            {
+                *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+                tem_i2C1 = 14;
+               break;
+                //  return FALSE;
+            }
+        }
+
+        if (Count == 2) {
+            (*(volatile unsigned char xdata *) 0x804) = tem_i2C1;
+
+        } else {
+           (*(volatile unsigned char xdata *) 0x805) = tem_i2C1; 
+        }
+
+ /********************************************************/   
+    *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x01;
+    *asSMBus[I2C_Chn].SMBusSTA = 0xFE;
+    // Loop_Delay(250);
+
+    CLEAR_MASK(*asSMBus[I2C_Chn].SMBusCTL, HOCTL_LABY);
+    return TRUE;
+}
+
+#endif

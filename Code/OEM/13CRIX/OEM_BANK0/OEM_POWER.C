@@ -46,6 +46,7 @@ BYTE STB_PWRGD_OK(void)
 {
 	if(Read_STB_PWRGD())
 	{
+		// BAT_LED2_ON();
 		POWER_RAMDEBUG(0x03);
 		return(1);
 	}
@@ -102,6 +103,8 @@ void VDD_EN_L(void)
 
 BYTE Wait_VDDQ_PG(void)
 {
+	// BAT_LED2_ON();
+
 	if(Read_VDDQ_PG())
 	{
 		POWER_RAMDEBUG(0x0D);
@@ -206,7 +209,7 @@ void V1P8_EN_L(void)
 }
 
 BYTE Wait_ALWGD(void)
-{
+{	
 	if(Read_ALWGD())
 	{
 		POWER_RAMDEBUG(0x1F);
@@ -249,7 +252,9 @@ const sPowerSEQ code asPowerSEQS5S0[]=
 	//TF_007--	{ STB_PWRGD_OK, 	   20,		 1, },	// 2
 	{ STB_PWRGD_OK, 	   80,		 1, },	// 2	//TF_007++
 	{ ALWON_H, 		       30,		 0, },	// 3
-    { InitSio,		      130,		 0,	},
+
+	// 先屏蔽这个操作
+     { InitSio,		      130,		 0,	},
     { VDD_EN_H, 		   10,		 0, },	// 9
 	{ VTT_EN_H, 		    0,		 0, },	// 9
 	{ Wait_VDDQ_PG,	       50,		 1,	},  // 5	//J80_012++
@@ -258,6 +263,8 @@ const sPowerSEQ code asPowerSEQS5S0[]=
     { V1P8_EN_H,		    0,		 0,	},  // 4
     { PX_EN_H,		        0,		 0,	},  // 4
     { PX_EN2_H,		       10,		 0,	},  // 4
+
+	// 这个时序过不了
     { Wait_ALWGD,		  220,		 1,	},  // 7	
     { PCIRST_H,		       20,		 0,	},  // 7
 	{ CPU_RST_L, 		   20,		 0, },	// 12
@@ -485,10 +492,11 @@ void S0_SXCommVar(void)
 
 	SPCTRL1 = Init_I2EC+0x80;
 
-	if(PLLFREQR != PLLFreqSetting03)
-	{
-		ChangePLLFrequency(PLLFreqSetting03);
-	}	
+	// fpga 验证的时候不要使用，因为进入sleep之后就不能唤醒了  young
+	// if(PLLFREQR != PLLFreqSetting03)
+	// {
+	// 	ChangePLLFrequency(PLLFreqSetting03);
+	// }	
 	FIN_PWR_EN_OFF();
 	M2PWR_ENT_OFF();
 	MUTE_OFF();
@@ -508,8 +516,11 @@ void S0_S5Variable(void)
 {
     SysPowState=SYSTEM_S5;
 
+
+	// 要用EC 验证是不是会进来
 	if(IS_MASK_SET(Oem_For_Bios_Flag,EC_flashed))
 	{
+		BAT_LED1_ON();
 		CLEAR_MASK(Oem_For_Bios_Flag,EC_flashed);
 		
 		BRAM_FLASH_ID0 = 0x55;
@@ -1223,6 +1234,7 @@ void Oem_SysPowerContrl(void)
             return;
         }
     }
+	
 
     // Check current System PowerState to see what should we do.
     switch (SysPowState)
@@ -1246,7 +1258,6 @@ void Oem_SysPowerContrl(void)
             break;
 
         case SYSTEM_S5_S0:
-			
 			Oem_S5S0Sequence();
 			break;
 				

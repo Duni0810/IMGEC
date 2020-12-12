@@ -193,7 +193,8 @@ void IRQ_INT18_PS2Interrupt2(void)
             }
             else
             {
-                WNCKR = 0x00;   // Delay 15.26 us
+                Loop_Delay(10);
+                // WNCKR = 0x00;   // Delay 15.26 us
             }
         }
     }
@@ -284,19 +285,21 @@ void IRQ_INT19_PS2Interrupt1(void)
                 }
                 else
                 {
-                    WNCKR = 0x00;   // Delay 15.26 us
+                    Loop_Delay(10);
+                    // WNCKR = 0x00;   // Delay 15.26 us
                 }
             }
         }
         else
         {
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
+            Loop_Delay(200);  
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
         }
         
 		PSCTL1 = PS2_InhibitMode;   // Inhibit clock pin1
@@ -343,7 +346,8 @@ void IRQ_INT20_PS2Interrupt0(void)
             }
             else
             {
-                WNCKR = 0x00;   // Delay 15.26 us
+                Loop_Delay(10);
+                // WNCKR = 0x00;   // Delay 15.26 us
             }
         }
     }
@@ -913,8 +917,7 @@ void IRQ_INT79_WKO77(void)
 //----------------------------------------------------------------------------
 void Isr_Int0(void) interrupt 0 using 2
 {
-    // BAT_LED1_ON();
-    // BAT_LED2_ON();
+
 }
 
 //----------------------------------------------------------------------------
@@ -936,8 +939,16 @@ void Isr_Int0(void) interrupt 0 using 2
 extern void Oem_Hook_Timer1ms(void);
 void Isr_Tmr0(void) interrupt 1 using 2
 {
+    static u8 __isr_tmr = 0;
     Load_Timer_A();
-    F_Service_MS_1 = 1;   // Request 1 mS timer service.
+
+    __isr_tmr++;
+    if (__isr_tmr > 2) {
+        F_Service_MS_1 = 1;   // Request 1 mS timer service.
+        __isr_tmr = 0;
+    }
+
+    
 
     // 不用这个方式
     // Oem_Hook_Timer1ms();
@@ -1094,6 +1105,7 @@ void Isr_Tmr1(void) interrupt 3 using 2
  * ------------------------------------------------------------------------- */
 void Isr_UART(void) interrupt 4 using 2
 {
+
 #if UART_Debug
 
 	if (RI)
