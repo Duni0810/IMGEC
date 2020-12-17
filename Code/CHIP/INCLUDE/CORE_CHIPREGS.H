@@ -20,10 +20,10 @@ extern ECReg 	SMHSR			;// 0x1022	 Shared Memory Host Semaphore
 extern ECReg	FLHCTRL1R		;// 0x1031	 Flash Control Register 1	
 #define SPIFR1		    BIT(5)  // SPI Flash Read Mode
 #define SPIFR0		    BIT(4)  // SPI Flash Read Mode
-                                //11b: Uses ¡§Fast Read Dual Input/Output (DIOFR)¡¨ cycle (instruction = BBh)
-                                //10b: Uses ¡§Fast Read Dual Output (DOFR)¡¨ cycle (instruction = 3Bh)
-                                //01b: Uses ¡§Fast Read (FREAD)¡¨ cycle (instruction = 0Bh)
-                                //00b: Uses ¡§Read¡¨ cycle (instruction = 03h)
+                                //11b: Uses ï¿½ï¿½Fast Read Dual Input/Output (DIOFR)ï¿½ï¿½ cycle (instruction = BBh)
+                                //10b: Uses ï¿½ï¿½Fast Read Dual Output (DOFR)ï¿½ï¿½ cycle (instruction = 3Bh)
+                                //01b: Uses ï¿½ï¿½Fast Read (FREAD)ï¿½ï¿½ cycle (instruction = 0Bh)
+                                //00b: Uses ï¿½ï¿½Readï¿½ï¿½ cycle (instruction = 03h)
 #define LFSW1T		    BIT(3)  // Serial Wait 1T
 
 extern ECReg	FLHCTRL2R		;// 0x1032	 Flash Control Register 2
@@ -100,7 +100,7 @@ extern ECReg	HRAMW1AAS		;// 0x105E;	// Host RAM Window 1 Access Allow Size
 
 extern ECReg	SCAR5H			;// 0x105F;
 extern ECReg	FLHCTRL3R		;// 0x1063;
-
+extern ECReg	SMFI_FIC_CTL1;
 //-----------------------------------------------------------------------------
 // (11xxh) Interrupt controller (INTC) 
 //-----------------------------------------------------------------------------
@@ -626,14 +626,16 @@ extern ECReg	HOCTL2_A      	;// 0x1C10	 Host Control2 A
 extern ECReg	HOCTL2_B      	;// 0x1C21	 Host Control2 B
 extern ECReg	HOCTL2_C      	;// 0x1C32	 Host Control2 C
 extern ECReg	HOCTL2_D      	;// 0x1C3E	 Host Control2 D
-extern ECReg	SMB4P7USL   	;// 0x1C22	 4.7 £gs Low Register
-extern ECReg	SMB4P0USH   	;// 0x1C23	 4.7 £gs High Register
+extern ECReg	SMB4P7USL   	;// 0x1C22	 4.7 ï¿½gs Low Register
+extern ECReg	SMB4P0USH   	;// 0x1C23	 4.7 ï¿½gs High Register
 extern ECReg	SMB300NS  		;// 0x1C24	 300 ns Register
 extern ECReg	SMB250NS  		;// 0x1C25	 250 ns Register
 extern ECReg	SMB25MS   		;// 0x1C26	 25 ms Register
-extern ECReg	SMB45P3USL 		;// 0x1C27	 45.3 £gs Low Register
-extern ECReg	SMBS4P3USH 		;// 0x1C28	 45.3 £gs High Register
-extern ECReg	SMB4P7A4P0H		;// 0x1C33	 4.7 £gs and 4.0 £gs High Register
+extern ECReg	SMB45P3USL 		;// 0x1C27	 45.3 ï¿½gs Low Register
+extern ECReg	SMBS4P3USH 		;// 0x1C28	 45.3 ï¿½gs High Register
+extern ECReg	SMB4P7A4P0H		;// 0x1C33	 4.7 ï¿½gs and 4.0 ï¿½gs High Register
+
+extern ECReg   SMB_FIC_CTRL1    ;   // æ–°å¢žåŠŸèƒ½
 
 extern ECReg	SLVISEL			;// 0x1C34   Slave Interface Select
 extern ECReg	SCLKTS_A		;// 0x1C40   SMCLK Timing Setting Register A

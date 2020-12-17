@@ -107,6 +107,7 @@ BYTE GetKB_PendingData(void)
 //-----------------------------------------------------------------------------
 void KBC_DataToHost(BYTE nKBData)
 {
+    // 这个就是主机没处理好数据或者EC没读取数据
     if(IS_MASK_SET(KBHISR,OBF)||IS_MASK_SET(KBHISR,IBF))
 	//if(IS_MASK_SET(KBHISR,OBF))
 	{
@@ -189,6 +190,7 @@ void service_send(void)
         return;
     }
 
+    // 挂起缓冲区有数值
     if ( KBPendingRXCount > 0 )
     {
         Data_To_Host(GetKB_PendingData());
@@ -199,7 +201,8 @@ void service_send(void)
 	{
 		return;
 	}
-  
+    
+    // 以下才是按键键值的东西
     data_word = Get_Buffer();
     if (data_word == 0xFF) 
     {   
@@ -461,7 +464,7 @@ static BYTE translate_to_pc(BYTE data_word, BYTE break_prefix_flag)
         data_word = scan2_table[data_word];
         check_break_bit = TRUE;
     }
-    else if (data_word == 0x83)  	/* ID code for 101/102 keys. */
+    else if (data_word == 0x83)  	/* ID code for 101/102 keys.   0x83 对应的是 F7 按键 */
     {
         data_word = 0x41;        	/* Translate ID code. */
         check_break_bit = TRUE;

@@ -172,7 +172,7 @@ void Core_Init_Regs(void)
 //-----------------------------------------------------------------------------
 void ChangePLLFrequency(BYTE newseting)
 {
-    if(newseting!=PLLFREQR)
+    if(newseting != (PLLFREQR & 0x07))  // 我们只使用 低3位
     {
         PLLFREQR = newseting;
         PLLCTRL = 1;

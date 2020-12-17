@@ -78,7 +78,6 @@ void FlashECCode(void)
 		}
 		else if(RamcodeCmd==0x03)
 		{							// write byte to spi
-			// BAT_LED2_ON();
 			RamcodeSend = 1;
 		}
 		else if(RamcodeCmd==0x04)

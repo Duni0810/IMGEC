@@ -947,26 +947,6 @@ extern volatile u8 tem_i2C1 ;
 extern volatile u8 tem_i2C ;
 
 
-static void __1s_delay(void)
-{
-//	int i = 0;
-//	int j = 0;
-//	
-//	for(;i < 250;i++) {
-//		for(;j < 250; j++) {
-//			
-//			_nop_();
-//		}
-//	}
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-}
-
 /*-----------------------------------------------------------------------------
  * @subroutine - i2c_read_reg
  * @function - i2c_read_reg
@@ -986,7 +966,6 @@ BYTE i2c_read_reg(BYTE i2c_addr, BYTE reg)
                         &SPIBuffer[0],
                         1);
 
-
     if (ret > 0)
     {
         ret = 0;
@@ -996,15 +975,9 @@ BYTE i2c_read_reg(BYTE i2c_addr, BYTE reg)
                             2);
     }
 
-    for(;;);
-
     if (ret == 0)
     {
         //TypeC_I2C_error++;
-        // BAT_LED1_ON();
-        // __1s_delay();
-        // BAT_LED1_OFF();
-
         return (0x00);  /* Error retun values */
     }
     ret = SPIBuffer[0];
@@ -1035,11 +1008,8 @@ void i2c_write_reg(BYTE i2c_addr, BYTE reg, BYTE data1)
     
     if (ret == 0)
     {
-        // uart_print("TypeC I2C write error :\r\n");
-        // uart_hex_show(tem_i2C);
-
-        // uart_print("\r\n");
-
+        // BAT_LED2_ON();
+        // for(;;);
         //TypeC_I2C_error++;
     }
 }

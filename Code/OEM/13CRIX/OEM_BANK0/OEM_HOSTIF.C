@@ -69,9 +69,11 @@ const BYTE code initsio_table[]=
 //----------------------------------------------------------------------------
 void InitSio(void)
 {
+	#if EC_MODE
     BYTE code * data_pntr;
     BYTE cnt;
 
+	// 0X1200
   	SET_MASK(LSIOHA,LKCFG);
   	SET_MASK(IBMAE,CFGAE);
   	SET_MASK(IBCTL,CSAE);
@@ -82,12 +84,23 @@ void InitSio(void)
     {
         IHIOA=0;              // Set indirect Host I/O Address
         IHD=*data_pntr;
-        while( IS_MASK_SET(IBCTL,CWIB));
+        while( IS_MASK_SET(IBCTL,CWIB)) {
+			BAT_LED1_ON();
+		};
+
+		BAT_LED1_OFF();
+		// for(;;);
+
+
         data_pntr ++;
 
         IHIOA=1;              // Set indirect Host I/O Address
         IHD=*data_pntr;
-        while( IS_MASK_SET(IBCTL,CWIB));
+        while( IS_MASK_SET(IBCTL,CWIB)) {
+			BAT_LED1_ON();
+		};
+		BAT_LED1_OFF();
+
         data_pntr ++;
         cnt ++;
     }
@@ -95,6 +108,44 @@ void InitSio(void)
  	CLEAR_MASK(LSIOHA,LKCFG);
   	CLEAR_MASK(IBMAE,CFGAE);
   	CLEAR_MASK(IBCTL,CSAE);
+
+	  #else
+
+
+    BYTE code * data_pntr;
+    BYTE cnt;
+
+	// 0X1200
+  	SET_MASK(LSIOHA,LKCFG);
+  	SET_MASK(IBMAE,CFGAE);
+  	SET_MASK(IBCTL,CSAE);
+
+    cnt=0;
+    data_pntr=initsio_table;
+    while(cnt < (sizeof(initsio_table)/2) ) {
+
+    	IHIOA=*data_pntr;              // Set indirect Host I/O Address
+		
+		data_pntr++;
+
+    	IHD=*data_pntr;
+
+    	while( IS_MASK_SET(IBCTL,CWIB)) {
+			//  BAT_LED1_ON();
+		};
+		//  BAT_LED1_OFF();
+
+		data_pntr ++;
+        cnt ++;
+	}
+    
+
+ 	CLEAR_MASK(LSIOHA,LKCFG);
+  	CLEAR_MASK(IBMAE,CFGAE);
+  	CLEAR_MASK(IBCTL,CSAE);
+
+
+	  #endif
 }
 
 //----------------------------------------------------------------------------

@@ -35,60 +35,129 @@ static void __1s_delay(void)
 }
 
 
-ECReg	GCR11     		_at_ 0x16FA;
 
-ECReg	SMBUS1_test1     		_at_ 0x1C49;
-ECReg	SMBUS1_test2     		_at_ 0x1C4a;
-ECReg	SMBUS1_test3     		_at_ 0x1C4b;
-ECReg	SMBUS1_test4     		_at_ 0x1C4c;
-ECReg	SMBUS1_test5     		_at_ 0x1Cac;
-ECReg	SMBUS1_test6     		_at_ 0x1Cbc;
+
+BYTE code __initsio_table[]=
+{
+				// Configure and Enable Logical Device 06h(KBD)
+	0x07 ,0x06,	// Select Logical Device 06h(KBD)
+  	0x70 ,0x33,	// Set IRQ=01h for Logical Device 06h(KBD)
+};
+
+
+
+static void __InitSio(BYTE Ldnumber, BYTE offset)
+{
+    # if 0
+    BYTE code * data_pntr;
+    BYTE cnt;
+
+	// 0X1200
+  	SET_MASK(LSIOHA,LKCFG);
+  	SET_MASK(IBMAE,CFGAE);
+  	SET_MASK(IBCTL,CSAE);
+
+    cnt=0;
+    data_pntr=__initsio_table;
+    while(cnt < (sizeof(__initsio_table)/2) )
+    {
+        IHIOA=0;              // Set indirect Host I/O Address
+        IHD=*data_pntr;
+        while( IS_MASK_SET(IBCTL,CWIB)) {
+			BAT_LED1_ON();
+		};
+
+		BAT_LED1_OFF();
+		// for(;;);
+
+
+        data_pntr ++;
+
+        IHIOA=1;              // Set indirect Host I/O Address
+        IHD=*data_pntr;
+        while( IS_MASK_SET(IBCTL,CWIB)) {
+			BAT_LED1_ON();
+		};
+		BAT_LED1_OFF();
+
+        data_pntr ++;
+        cnt ++;
+    }
+
+ 	CLEAR_MASK(LSIOHA,LKCFG);
+  	CLEAR_MASK(IBMAE,CFGAE);
+  	CLEAR_MASK(IBCTL,CSAE);
+        
+        #else
+
+	SET_MASK(LSIOHA,LKCFG);
+  	SET_MASK(IBMAE,CFGAE);
+  	SET_MASK(IBCTL,CSAE);
+
+    // while(1) {
+        IHIOA=Ldnumber;              // Set indirect Host I/O Address
+        IHD=offset;
+        Delay1MS(2);
+        while(IS_MASK_SET(IBCTL,CWIB)) {
+            BAT_LED1_ON();
+            for(;;);
+        };
+            BAT_LED1_OFF();
+
+    // }
+
+ 	CLEAR_MASK(LSIOHA,LKCFG);
+  	CLEAR_MASK(IBMAE,CFGAE);
+  	CLEAR_MASK(IBCTL,CSAE);
+
+
+
+
+
+        #endif
+
+}
 
 
 void main(void)
 {
     u8    young_flag  = 0x00;
     u8    young_flag1 = 0x00;
- 
+    
+
 	DisableAllInterrupt();
 	SP = 0xC0;					// Setting stack pointer
 
-	// if(Hook_ECRetunrMainFuncKeepCondition()==0x33)  // Exit from follow mode or EC scatch ROM
-	// {
-	// 	CLEAR_MASK(FBCFG,SSMC); // disable scatch ROM
-	// 	_nop_();
-	//     MPRECF = 0x01;
-	//     _nop_();
-	//     MPRECF = 0x01;
-	//     _nop_(); 
-	//     MPRECF = 0x01;
-	//     _nop_();
-	//     MPRECF = 0x01;
-	//     _nop_();
-	//     _nop_();
-    //     WinFlashMark = 0x00;
-    //     ResetBANKDATA();        // init bank mechanism to code bank 0
-    //     Hook_ECExitFollowMode();
-    //     Init_Timers();
-	// 	EnableModuleInterrupt();    
-	// }
-	// else
+	if(Hook_ECRetunrMainFuncKeepCondition()==0x33)  // Exit from follow mode or EC scatch ROM
 	{
-
-        SMBUS1_test1 = 0x10;
-        SMBUS1_test2 = 0x10;
-        SMBUS1_test3 = 0x10;
-        SMBUS1_test4 = 0x10;
-        SMBUS1_test5 = 0x10;
-        SMBUS1_test6 = 0x10;
-
+		CLEAR_MASK(FBCFG,SSMC); // disable scatch ROM
+		_nop_();
+	    MPRECF = 0x01;
+	    _nop_();
+	    MPRECF = 0x01;
+	    _nop_(); 
+	    MPRECF = 0x01;
+	    _nop_();
+	    MPRECF = 0x01;
+	    _nop_();
+	    _nop_();
+        WinFlashMark = 0x00;
+        ResetBANKDATA();        // init bank mechanism to code bank 0
+        Hook_ECExitFollowMode();
+        Init_Timers();
+		EnableModuleInterrupt();    
+	}
+	else
+	{
+        // SMBUS1_test1 = 0x00;
+        // SMBUS1_test2 = 0x00;
+        // SMBUS1_test3 = 0x00;
+        // SMBUS1_test4 = 0x00;
+        // SMBUS1_test5 = 0x00;
+        // SMBUS1_test6 = 0x00;
 
 		Core_Initialization();
 		Oem_Initialization();
-
-
-        // for(;;);
-
         InitEnableInterrupt();
 		
         #if UART_Debug
@@ -106,6 +175,12 @@ void main(void)
 	}
 
 
+    // __test_speed_code();
+
+    // BAT_LED2_ON();
+    // __1s_delay();
+    // BAT_LED1_OFF();
+
 	if((0x55==BRAM_FLASH_ID0)&&(0xaa==BRAM_FLASH_ID1)&&(0x55==BRAM_FLASH_ID2)&&(0xaa==BRAM_FLASH_ID3))
 	{
 		//PulseSBPowerButton();
@@ -116,8 +191,21 @@ void main(void)
 	BRAM_FLASH_ID2=0;
 	BRAM_FLASH_ID3=0;	
 
+#if !EC_MODE
+    // 使能Dcache 代码执行效率更高点
+     DCache         = 0x00;
 
-#if 1
+     // 控制flash 读写拍数
+     SMFI_FIC_CTL1  = 0x00;
+
+     (*(volatile unsigned char xdata *) 0x120B) = 0x00;   // FPGA 临时配置
+#endif
+
+#if 0
+    // 使能Dcache 代码执行效率更高点
+     DCache = 0x00;
+
+    // 设置时钟为100K
     SCLKTS_A = 0x02;
     SCLKTS_B = 0x02;
     SCLKTS_C = 0x02;
@@ -125,64 +213,18 @@ void main(void)
     CHARGER_OPTION_L = 0x08;
     CHARGER_OPTION_H = 0xE2;  // 默认为E1  建议别乱写
 
-    // ServiceSMBus();
 
-    // if(bRWSMBus(SmartChargerChannel, SMbusWW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0) == FALSE ) {
-    //     // UART_Print_Str("Write ERROR \r\n");
-    //     // BAT_LED1_ON();
-    //     // while(1);
-    // }
-    
-    // ServiceSMBus();
-
-    // CHARGER_OPTION_H = 0x00;
-
-    // if(bRWSMBus(SmartChargerChannel, SMbusRW, Charger_Addr, _CMD_ChargerOption0, &CHARGER_OPTION_L, 0)) {
-    //     // BAT_LED1_ON();
-    //     uart_print("CHARGER_OPTION:  ");
-    //     UART_Print_HEX(CHARGER_OPTION_L);
-    //     uart_print(" \r\nCHARGER_OPTION: ");
-    //     UART_Print_HEX(CHARGER_OPTION_H);
-    //     uart_print(" \r\n");
-    // }
-
-    // if (CHARGER_OPTION_H == 0xE2) {
-    //     BAT_LED1_ON();
-    // }
-
-    // ServiceSMBus();
-    
-
-    // anx_write_reg(0x58, 0xa1 , 0x20);
-
-    // // ServiceSMBus();
-    // young_flag = anx_read_reg(0x58, 0xa1); // ANALOG_CTRL_1  0xa1
-    // uart_print("anx_read_reg:  ");
-    // uart_hex_show(young_flag);
-    // young_flag = 0x00;
+    // GPDRM  =  0x00;
 
     // __1s_delay();
-    // BAT_LED1_ON();
-
-    // 
 
 
-    for(;;) {
-        anx_read_reg(0x58, 0xa1);
-        if(F_Service_MS_1)
-        {
-            F_Service_MS_1=0;
-            if(young_flag >= 10) {
-                    // INVERSE_REG(GPDRJ, 4);
-                    INVERSE_REG(GPDRC, 6);
-                // uart_print("test code \r\n");
-                young_flag = 0;
-            }
-            young_flag++;
-            continue;
-        }
-    };
+    //  (*(volatile unsigned char xdata *) 0x1206) = 0x01;
+    //  (*(volatile unsigned char xdata *) 0x1208) = 0x04;
 
+    
+
+  
 
 
 	for(;;) {
@@ -193,44 +235,39 @@ void main(void)
         {
             F_Service_MS_1=0;
             service_1mS();
-            if(young_flag >= 250) {
-                    // INVERSE_REG(GPDRJ, 4);
-                    INVERSE_REG(GPDRC, 6);
-                // uart_print("test code \r\n");
-                young_flag = 0;
-            }
-            young_flag++;
-            continue;
+        //     if(young_flag >= 250) {
+                // INVERSE_REG(GPDRC, 6);
+        //         young_flag = 0;
+        //     }
+        //     young_flag++;
+        //     continue;
         }
 
-        if(SysPowState == SYSTEM_S0) {
 
-        } else {
-            // BAT_LED1_OFF();
-        }
+        // if (SysPowState == SYSTEM_S0) {
+            // INVERSE_REG(GPDRC, 6);
 
+            // __InitSio();
+            __InitSio(0x07, 0x06);
+            // __InitSio(0x70, 0x33);
+
+            // __InitSio(0x07, 0x06);
+            // __InitSio(0x71, 0x55);
+            
+
+
+            // (*(volatile unsigned char xdata *) 0x812) = ReadSioInterface(0x06,0x70);
+
+
+            // (*(volatile unsigned char xdata *) 0x814) = ReadSioInterface(0x10,0x62);
+            // (*(volatile unsigned char xdata *) 0x813) = ReadSioInterface(0x06,0x71);
+        // }
         // INVERSE_REG(GPDRJ, 4);
-        // // uart_print("idle code \r\n");
-        // //-----------------------------------
-        // // Keyboard scanner service
-        // //-----------------------------------
-        // if(F_Service_KEY)
-        // {
-        // 	F_Service_KEY=0;
-        //     // uart_print("KBS code \r\n");
-		// 	service_scan();
-		// 	continue;
-        // }
 
-        // young_flag1 = Get_Buffer();
-        // if (young_flag1 != 0xff) {
-        //     uart_print("\r\ndata:");
-        //     uart_hex_show(young_flag1);
-        // }
 	};
-
-
 #endif
+
+    // __test_speed_code();
 
 	while(1)
    	{
@@ -256,12 +293,17 @@ void main(void)
             if((Service==0x00)&&(Service1==0x00))
             #endif
     		{
+                // 暂时   young
+                #if EC_MODE
          		PCON=1;      		// enter idle mode
+                 #endif
     		}
         }
   	} 
 }
 
+
+#define  __DEBUG__  1
 /* ----------------------------------------------------------------------------
  * FUNCTION: main_service - Check for new/more service requests.
  *
@@ -278,6 +320,10 @@ void main_service(void)
     while((Service!=0x00)||(Service1!=0x00))
     #endif
     {
+
+        // 这些其实不影响点亮，但是会卡在初始化位置（屏幕显示银河麒麟的界面）
+        // 
+        #if __DEBUG__
         //-----------------------------------
         // Host command/data service    6064
         //-----------------------------------
@@ -308,6 +354,7 @@ void main_service(void)
             continue;
         }
 
+#if 0
         //-----------------------------------
         // Send PS2 interface data	
         //-----------------------------------
@@ -327,7 +374,7 @@ void main_service(void)
             service_ps2();
             continue;
         }
-
+#endif
         //-----------------------------------
         // process SMBus interface data
         //-----------------------------------
@@ -340,8 +387,11 @@ void main_service(void)
 		
         #endif
 
+#endif
+
         //-----------------------------------
         // Secondary Host command/data service
+        // pm1 事件操作  与 ACPI 有关指令 bios
         //-----------------------------------
         if(F_Service_PCI2)
         {
@@ -361,7 +411,7 @@ void main_service(void)
             continue;
         }
 
-
+#if __DEBUG__
         //-----------------------------------
         // Keyboard scanner service
         //-----------------------------------
@@ -371,14 +421,10 @@ void main_service(void)
 			service_scan();
 			continue;
         }
+ #endif     
 
         //-----------------------------------
-        //
-        //-----------------------------------
-        Hook_main_service_H();
-        
-        //-----------------------------------
-        // Low level event
+        // Low level event  5ms 使能一次
         //-----------------------------------
         if(F_Service_Low_LV)
         {
@@ -387,8 +433,10 @@ void main_service(void)
             continue;
         } 
 
+#if __DEBUG__
         //-----------------------------------
         // Third Host command/data service
+        // 做PM2 操作  68/6c  这个好像与 系统 有关操作
         //-----------------------------------
         if(F_Service_PCI3)
         {
@@ -400,6 +448,7 @@ void main_service(void)
 
         //-----------------------------------
         // fourth command/data service
+        // 做PM3 操作  好像没进来过
         //-----------------------------------
         if(F_Service_PCI4)
         {
@@ -407,51 +456,7 @@ void main_service(void)
             service_pci4();
             continue;
         }
-
-        //------------------------------------
-        // service_OEM_1
-        //------------------------------------
-        if(F_Service_OEM_1)
-        {
-            F_Service_OEM_1=0;
-            service_OEM_1();
-            continue;
-        }
-
-        //------------------------------------
-        // service_OEM_2
-        //------------------------------------
-        if(F_Service_OEM_2)
-        {
-            F_Service_OEM_2=0;
-            service_OEM_2();
-            continue;
-        }
-
-        //------------------------------------
-        // service_OEM_3
-        //------------------------------------
-        if(F_Service_OEM_3)
-        {
-            F_Service_OEM_3=0;
-            service_OEM_3();
-            continue;
-        }
-
-        //------------------------------------
-        // service_OEM_4
-        //------------------------------------
-        if(F_Service_OEM_4)
-        {
-            F_Service_OEM_4=0;
-            service_OEM_4();
-            continue;
-        }
-
-        //-----------------------------------
-        //
-        //-----------------------------------
-        Hook_main_service_L();
+#endif
     }
 }
 
@@ -514,7 +519,7 @@ void service_1mS(void)
 		    Timer10msEventB();                          // ANX7447 事件
      	    switch( Timer5msCnt )   // Share Loading Branch Control
     	    {
-       		    case 2: //Timer50msEventA();              // LED 灯控制
+       		    case 2: Timer50msEventA();              // LED 灯控制
                     break;
           	    case 4: Timer50msEventB();              // 适配器热插拔事件
              	    break;

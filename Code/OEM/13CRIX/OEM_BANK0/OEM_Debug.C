@@ -15,6 +15,7 @@
  ;------------------*/	
 BYTE ReadSioInterface(BYTE Ldnumber, BYTE offset)
 {
+	#if EC_MODE
 	BYTE rval;
 
 	SET_MASK(LSIOHA,LKCFG);
@@ -44,6 +45,41 @@ BYTE ReadSioInterface(BYTE Ldnumber, BYTE offset)
   	CLEAR_MASK(IBCTL,CSAE);
 
 	return rval;
+	#else 
+
+	BYTE rval;
+
+	// 写操作
+	SET_MASK(LSIOHA,LKCFG);
+  	SET_MASK(IBMAE,CFGAE);
+  	SET_MASK(IBCTL,CSAE);
+
+    IHIOA=0x07;              // Set indirect Host I/O Address
+    IHD=Ldnumber;
+    while(IS_MASK_SET(IBCTL,CWIB));
+
+ 	CLEAR_MASK(LSIOHA,LKCFG);
+  	CLEAR_MASK(IBMAE,CFGAE);
+  	CLEAR_MASK(IBCTL,CSAE);
+
+
+	// 读操作
+	SET_MASK(LSIOHA,LKCFG);
+  	SET_MASK(IBMAE,CFGAE);
+  	//SET_MASK(IBCTL,CSAE);
+
+    IHIOA=offset;              // Set indirect Host I/O Address
+    SET_MASK(IBCTL, CRIB | CSAE);    
+	while(IS_MASK_SET(IBCTL, CRIB));
+	
+	rval = IHD;
+
+ 	CLEAR_MASK(LSIOHA,LKCFG);
+  	CLEAR_MASK(IBMAE,CFGAE);
+  	CLEAR_MASK(IBCTL,CSAE);
+
+	return rval;
+	#endif
 }
 
 

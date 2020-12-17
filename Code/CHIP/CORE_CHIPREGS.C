@@ -64,6 +64,8 @@ ECReg	HRAMW1AAS		_at_ 0x105E;	// Host RAM Window 1 Access Allow Size
 ECReg	SCAR5H			_at_ 0x105F;
 ECReg	FLHCTRL3R		_at_ 0x1063;
 
+
+ECReg	SMFI_FIC_CTL1	_at_ 0x10B1;
 //-----------------------------------------------------------------------------
 // (11xxh) Interrupt controller (INTC) 
 //-----------------------------------------------------------------------------
@@ -551,6 +553,7 @@ ECReg	SMB45P3USL 		_at_ 0x1C27;	// 45.3 �gs Low Register
 ECReg	SMBS4P3USH 		_at_ 0x1C28;	// 45.3 �gs High Register
 ECReg	SMB4P7A4P0H		_at_ 0x1C33;	// 4.7 �gs and 4.0 �gs High Register
 
+ECReg   SMB_FIC_CTRL1   _at_ 0x1CC1;   // 新增功能
 
 // 没用到-------------------------------------------------------------------->
 ECReg	SLVISEL			_at_ 0x1C34;	// Slave Interface Select

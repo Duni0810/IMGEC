@@ -43,7 +43,6 @@ void Hook_Timer1msEvent(IBYTE EventId)
 	// Oem_Hook_Timer1ms();
 	#endif
 
-	// 暂时屏蔽 young
 	// 事件状态检测，例如适配器插拔，电池插拔，开机按键等
     EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
     
@@ -322,8 +321,8 @@ void Hook_Timer500msEventC(void)
 	temp_cmd[4] = 0X00;
 	temp_cmd[5] = 0X8F;
 	I2C_WriteStream(2,0x82,&temp_cmd[0],6);
+
 	if(bRSMBusBlock(2,SMbusRBK,0x83,0x03,&dGPU_Temp[0])) {
-		BAT_LED1_ON();
 		GPUTm = ((dGPU_Temp[2] >> 1) + (dGPU_Temp[1] << 7));
 	}
 }

@@ -1551,7 +1551,7 @@ void Core_64Port(BYTE KBHICmd)
 //*****************************************************************************
 void ShortDelayAfterWriteDOR(void)
 {
-    Loop_Delay(20);
+    Loop_Delay(60);
     // WNCKR = 0x00;                   // Delay 15.26 us
     // WNCKR = 0x00;                   // Delay 15.26 us
 }

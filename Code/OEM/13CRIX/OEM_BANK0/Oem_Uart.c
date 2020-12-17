@@ -291,7 +291,7 @@ void uart_printf(const char *fmt,...)
 	va_end(ap);
 	#else
 
-	// UART_Print_Str(fmt);
+	UART_Print_Str(fmt);
 
 
 	#endif

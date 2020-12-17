@@ -117,6 +117,10 @@ void IRQ_INT10_SMBusB(void)
 //----------------------------------------------------------------------------
 void IRQ_INT11_KBMatrixScan(void)
 {
+    // BAT_LED1_ON();
+    // (*(volatile unsigned char xdata *) 0x822) = 0x78;
+    // while (1);
+    
 	CLEAR_MASK(IER1,Int_KB);
     ISR1 = Int_KB;
 	F_Service_KEY = 1;    	// Post service request to scan internal keyboard. 
@@ -137,6 +141,9 @@ void IRQ_INT12_WKO26(void)
 //----------------------------------------------------------------------------
 void IRQ_INT13_WKINTC(void)
 {
+    // CLEAR_MASK(IER1,Int_WKINTC);
+    // ISR1 = Int_WKINTC;
+
     Hook_IRQ_INT13_WKINTC();
 }
 
@@ -939,14 +946,14 @@ void Isr_Int0(void) interrupt 0 using 2
 extern void Oem_Hook_Timer1ms(void);
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    static u8 __isr_tmr = 0;
+    // static u8 __isr_tmr = 0;
     Load_Timer_A();
 
-    __isr_tmr++;
-    if (__isr_tmr > 2) {
+    // __isr_tmr++;
+    // if (__isr_tmr > 2) {
         F_Service_MS_1 = 1;   // Request 1 mS timer service.
-        __isr_tmr = 0;
-    }
+    //     __isr_tmr = 0;
+    // }
 
     
 

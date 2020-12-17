@@ -259,12 +259,11 @@ const sPowerSEQ code asPowerSEQS5S0[]=
 	{ VTT_EN_H, 		    0,		 0, },	// 9
 	{ Wait_VDDQ_PG,	       50,		 1,	},  // 5	//J80_012++
 	{ VCOR_EN,			   30,		 0,	},  // 4
-    { Wait_VCORE_OK,	   20,		 1,	},  // 5 
+    { Wait_VCORE_OK,	   50,		 1,	},  // 5   // 20 默认
     { V1P8_EN_H,		    0,		 0,	},  // 4
     { PX_EN_H,		        0,		 0,	},  // 4
     { PX_EN2_H,		       10,		 0,	},  // 4
 
-	// 这个时序过不了
     { Wait_ALWGD,		  220,		 1,	},  // 7	
     { PCIRST_H,		       20,		 0,	},  // 7
 	{ CPU_RST_L, 		   20,		 0, },	// 12
@@ -492,11 +491,10 @@ void S0_SXCommVar(void)
 
 	SPCTRL1 = Init_I2EC+0x80;
 
-	// fpga 验证的时候不要使用，因为进入sleep之后就不能唤醒了  young
-	// if(PLLFREQR != PLLFreqSetting03)
-	// {
-	// 	ChangePLLFrequency(PLLFreqSetting03);
-	// }	
+	if((PLLFREQR&0x07) != PLLFreqSetting03)
+	{
+		ChangePLLFrequency(PLLFreqSetting03);
+	}	
 	FIN_PWR_EN_OFF();
 	M2PWR_ENT_OFF();
 	MUTE_OFF();
@@ -520,7 +518,6 @@ void S0_S5Variable(void)
 	// 要用EC 验证是不是会进来
 	if(IS_MASK_SET(Oem_For_Bios_Flag,EC_flashed))
 	{
-		BAT_LED1_ON();
 		CLEAR_MASK(Oem_For_Bios_Flag,EC_flashed);
 		
 		BRAM_FLASH_ID0 = 0x55;

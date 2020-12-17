@@ -89,8 +89,6 @@ void PSWPressed(void)
  			//if(IS_MASK_SET(POWER_FLAG1, adapter_in))
 			{
 				Oem_TriggerS5S0();
-
-				// BAT_LED1_ON();
 				SET_MASK(Oem_Globe_Flag1,Oem_PCHBTN_En);
  			}
 			break;
@@ -115,7 +113,6 @@ void PSWPressed(void)
 			//J80_007A++>>
 			}
 			else {
-				// BAT_LED1_ON();
 				Oem_TriggerS0S5(SC_S0SLPOff);
 			}
 				
@@ -140,9 +137,6 @@ void PSWReleased(void)
 //-----------------------------------------------------------------------------
 void PSWOverrided(void)
 {
-	// 测试
-	// BAT_LED1_OFF();
-
 	if(Read_LID())
        return;
 	if(PSW_COUNTER != 0 )	
@@ -179,7 +173,6 @@ void HW_Reset_Released(void)
 	{
 		if(IS_MASK_SET(EVT_STATUS2,Sys_ResetPowerOn_f))
 		{
-			// BAT_LED1_ON();
 			Oem_TriggerS0S5(SC_Sys_Reset);
 			SET_MASK(EVT_STATUS2,Sys_ResetPowerOff_f);
 			CLEAR_MASK(EVT_STATUS2,Sys_ResetPowerOn_f);

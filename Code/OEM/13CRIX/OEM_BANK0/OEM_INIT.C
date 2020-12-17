@@ -652,13 +652,26 @@ void __deepdoze_to_wakeup(void)
 #if 0
 
 // 程序进入为 sleep 模式， 通过开机按钮唤醒
-void __sleep_to_wakeup(void)
+// void __sleep_to_wakeup(void)
 {
     // 只是写一个标志位而已
     (*(volatile unsigned char xdata *) 0x401) = 0x55;
 
     // 初始化默认的GPIO功能（主要是LED）
     Init_GPIO();
+
+    KSOCTRL = KSOOD + KSOPU;  
+    KSICTRL = KSIPU   ;    	
+
+
+    		// Core_Initialization();
+		// Oem_Initialization();
+        // InitEnableInterrupt();
+
+    BAT_LED1_ON();
+    __1s_delay();
+    __1s_delay();
+    BAT_LED1_OFF();
 
     GCR10 = 0x01;
 	GCR8 = 0x10;
@@ -670,27 +683,26 @@ void __sleep_to_wakeup(void)
 	// Set Wake up pin -> alt function
 	//*************************************************************************
 	GPCRE4 = ALT;			// pwrsw to alternate pin
-	WUEMR2 |= 0x20;         //  设置边缘触发方式
-	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
-	WUENR2 |= 0x20;  
-	ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
-	IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
+	// WUEMR2 |= 0x20;         //  设置边缘触发方式
+	// WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
+	// WUENR2 |= 0x20;  
+
+    // WUEMR3 |= 0xFF;         //  设置边缘触发方式
+	// WUESR3 |= 0xFF;			//  清除 电源按键唤醒中断状态并使能
+	// WUENR3 |= 0xFF;  
+
+    // ISR1 |= Int_WKINTC;		// 清除 int14 for  pwrsw
+	// IER1 |= Int_WKINTC;		// 使能 int14 for  pwrsw
+
+	// ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
+	// IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
 
 
-    EX1=1;					// enable external 1 interrupt 
-	EnableAllInterrupt();
-
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
+    // ISR1 |= Int_KB;		
+	// IER1 |= Int_KB;		
 
 
-    // 改变PLL
-    // PLLFREQR = 0x07;	
-
-
-	// InitEnableInterrupt();
+	InitEnableInterrupt();
 
     PLLCTRL = 0x01;
     PCON    = 2;      		
@@ -707,9 +719,12 @@ void __sleep_to_wakeup(void)
 	Init_GPIO();
 	GPCRE4 = INPUT; 		// pwrsw to alternate pin
 
-    BAT_LED2_ON();  // 橙色
+    // BAT_LED2_ON();  // 橙色
 
-    for(;;);
+    for(;;) {
+        INVERSE_REG(GPDRC, 6);
+        __1s_delay();
+    };
 }
 
 
@@ -1008,19 +1023,11 @@ static void __change_PLL_req(void)
 
     // 初始化默认的GPIO功能（主要是LED）
     Init_GPIO();
-    // BAT_LED2_ON(); 
-    // BAT_LED1_ON(); 
 
 
     EX1=1;					// enable external 1 interrupt 
 	EnableAllInterrupt();
-
-    // ChangePLLFrequency(PLLFreqSetting05);
-
-
-
 	Init_GPIO();
-
 
     DisableAllInterrupt();				// Disable all interrupt 
 	LoadSPIFucnToRam(__test_flash2sram);		// Load function to ram
@@ -1055,12 +1062,329 @@ static void __change_PLL_req(void)
 
 
 
+static void __test_speed_code(void)
+{
+    Init_ClearRam();
+    SP = 0xC0;					// Setting stack pointer
+
+    Init_GPIO();
+    // DCache         = 0x00;
+    for(;;){
+//         INVERSE_REG(GPDRC, 6);
+//		
+		GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+				GPDRC = 0x40;
+		GPDRC = 0x00;
+
+//        GPDRJ |= 0x20;
+
+//        GPDRJ &= 0xdf;
+    }
+
+    for(;;);
+}
+
+
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
 
+
+    // __test_speed_code();
+    // for(;;);
 
 
     // u8    young_flag = 0x00;
@@ -1099,11 +1423,11 @@ void Oem_StartUp(void)
 
 	//  Init_GPIO();
 
-//     // UART GPIO初始化
-//     GPCRB0 = ALT;
-//     GPCRB1 = ALT;
+    // UART GPIO初始化
+    // GPCRB0 = ALT;
+    // GPCRB1 = ALT;
 
-//     // LED GPIO 初始化
+    // LED GPIO 初始化
  	// GPCRJ4 = OUTPUT; // 0x40 
  	// GPCRC6 = OUTPUT;
     //  for(;;) {
@@ -1111,19 +1435,19 @@ void Oem_StartUp(void)
     //      __1s_delay();
     //  }
 	
-//     // init timer
-//     Init_Timers();
-//     // init uart
-// 	uart_Initial();
+    // init timer
+    // Init_Timers();
+    // // init uart
+	// uart_Initial();
 
-//     InitEnableInterrupt();
-//     uart_printf("FIC628 say hello\n");
+    // InitEnableInterrupt();
+    // uart_printf("FIC628 say hello\n");
 
-//     Bank1_Test();
-//     Bank2_Test();
+    // Bank1_Test();
+    // Bank2_Test();
     
-//     uart_printf("young_Test\n");
-//     // while(1);
+    // uart_printf("young_Test\n");
+    // while(1);
 
 // 	for(;;) {
 
@@ -1153,7 +1477,7 @@ void Oem_StartUp(void)
     // (*(volatile unsigned char xdata *) 0x400) = 0x55;
 
     /** \brief 测试电源状态寄存器 */
-    //  __test1_rets();
+    //   __test1_rets();
 
     /** \brief 测试外部看门狗 */
     //  __test_ETWD();
@@ -1214,7 +1538,6 @@ void Oem_Initialization(void)
 	Init_GPIO();
 	//TF_010++>>
 	if(IS_BOARD_ID1_HI()) {
-        BAT_LED1_ON();
         EC_PWR_CTR1_ON();
     }
 		
@@ -1223,9 +1546,21 @@ void Oem_Initialization(void)
 	GPIO_HSPI_INIT();
     #endif
 
+#if EC_MODE
+    
     #ifdef SPIReadMode
     ChangeSPIFlashReadMode(SPIReadMode);
     #endif
+
+#else
+
+    #ifdef SPIReadMode
+    ChangeSPIFlashReadMode(SPIReadMode);  // SPIReadMode_2
+    #endif
+
+ #endif
+
+
 
     #ifdef HSRSMode
     ChangeHSRSMode(HSRSMode);
@@ -1234,7 +1569,7 @@ void Oem_Initialization(void)
     #ifdef PLLFrequency
 
     // fpga 验证的时候不要使用，因为进入sleep之后就不能唤醒了  young
-    // ChangePLLFrequency(PLLFrequency);
+    ChangePLLFrequency(PLLFrequency);
     #endif
 
     #ifdef PECI_Support
@@ -1268,7 +1603,8 @@ void Oem_Initialization(void)
 	
     InitSMBus();
 
-    
+    // NACk 硬件处理
+    SMB_FIC_CTRL1 |= 0x40; 
 
 
     ResetSCIEvent();
@@ -1283,11 +1619,10 @@ void Oem_Initialization(void)
 	}
 	ExtWDTInit();	
 
-	// InitThermalChip();  // 98
-
+	InitThermalChip();  // 98
 
 	#if Support_ANX7447
-	// ucsi_init();
+	ucsi_init();
 	#endif
 
 	Warning_flag = 0xFF;	//TF_004++

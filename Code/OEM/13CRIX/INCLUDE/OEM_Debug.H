@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:34
- * @LastEditTime: 2020-12-08 08:58:30
+ * @LastEditTime: 2020-12-14 19:27:50
  */
 #ifndef	OEM_Debug_H
 #define OEM_Debug_H
@@ -44,4 +44,5 @@ extern void ClearBRam(void);
 
 extern void Copy_BRAM_SRAM(void);
 
+extern BYTE ReadSioInterface(BYTE Ldnumber, BYTE offset);
 #endif

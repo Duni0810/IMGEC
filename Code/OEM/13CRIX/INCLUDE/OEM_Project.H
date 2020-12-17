@@ -10,6 +10,12 @@
 #ifndef OEM_Project_H
 #define OEM_Project_H
 
+
+
+// 如果这个选择EC模式还是 FPGA 模式
+#define   EC_MODE         FALSE      //  FALSE or TRUE
+
+
 //OEM Version number
 #define	OEM_Version_PCB   0x01
 #define	OEM_Version_MSB	  0x09
@@ -201,7 +207,7 @@
 //-----------------------------------------------------------------------------
 //*****************************************************************************
 //J80_018--	#define Support_ANX7447			FALSE	
-#define Support_ANX7447			TRUE	//J80_018++
+#define Support_ANX7447			TRUE	//J80_018++  TRUE
 #define Two_PD_Chip				FALSE
 #define ADCFuncSupport			TRUE    // True : support ADC function
 #define LEDFuncSupport          TRUE    // True : support LEC control function

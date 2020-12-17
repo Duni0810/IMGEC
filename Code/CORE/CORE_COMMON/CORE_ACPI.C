@@ -34,11 +34,14 @@ void Loop_Delay(BYTE delay)
 //----------------------------------------------------------------------------
 void service_pci2(void)
 {
+	// 表示主机没有参数过来访问
     if ( IS_MASK_CLEAR(PM1STS,P_IBF) )  
     {
 		return; 
     }
 	SetTotalBurstTime();	// Set Burst mode total time (2ms)
+
+	// 处理 ACPI 指令操作
  	service_pci2f();		// Process Command/Data 	
 }
 
@@ -142,7 +145,6 @@ void ACPI_Cmd_93(void)		// Oem function of writing EC external ram
 //----------------------------------------------------------------------------
 void ACPI_Cmd_DC(void)
 {	
-	// BAT_LED2_ON();
 	ITE_Flash_Utility();    // for 8500 
 }
 
@@ -515,11 +517,16 @@ void service_pci2f(void)
               }
        }
  }while((IS_MASK_SET(PM1STS,BURST)||ECCheckBurstMode)&&(CheckBurstMode()==1));
+
+
+ 
 	 TR1 = 0;                    // disable timer1
 	 TF1 = 0;                     // clear overflow flag
 	 ET1 = 1;                     // Enable timer1 interrupt
 	 EnableAllInterrupt();
 	 EnablePMCIBFInt();
+
+	 // 临时排除SMBUS 的影响 其实里面做的是 电池电量操作 是否屏蔽对开机无影响
 	 Hook_ACPICommand();
 }
 

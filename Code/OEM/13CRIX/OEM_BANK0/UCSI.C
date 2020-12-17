@@ -2760,13 +2760,19 @@ u8 ucsi_init()
     memcpy((XBYTE *)&xUCSI_DS_VERSION, &msg->version, 2);
     #endif
 
+    // young modified
+    anx7447_ucsi_init();	
+	RamDebug(0xEC); 
+
 	RamDebug(0xE6);
     ppm_init();
+
 	RamDebug(0xE7);
     cancel_all_timer();	
 	RamDebug(0xEB);
-    anx7447_ucsi_init();	
-	RamDebug(0xEC);
+
+    // anx7447_ucsi_init();	
+	// RamDebug(0xEC);
     anx_dead_battery_checking_1();    
 	RamDebug(0xED);
     GOTO_STATE(PPM_IDLE_ND);	

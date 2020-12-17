@@ -2639,6 +2639,7 @@ void anx_dead_battery_checking_1()
 void anx_alert_message_isr()
 {
     if (0 == context[port_id].anx_power_status) {
+
         if (anx_read_reg(context[port_id].spi, OCM_VERSION_REG) == 0x00) {
 			anx_write_reg(context[port_id].addr, 0x10, 0xFF);
 			anx_write_reg(context[port_id].addr, 0x11, 0xFF);
