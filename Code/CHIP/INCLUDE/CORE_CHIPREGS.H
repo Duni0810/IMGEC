@@ -396,6 +396,11 @@ extern ECReg 	PSDAT1    		;// 0x170C	 PS/2 Data Register 1
 extern ECReg 	PSDAT2     		;// 0x170D	 PS/2 Data Register 2
 extern ECReg	PSDAT3 			;// 0x170E	 PS/2 Data Register 3
 
+
+extern ECReg	PSDCNUM1 		;// PS/2 Data Register 3
+extern ECReg	PSDCNUM2 		;// PS/2 Data Register 3
+extern ECReg	PSDCNUM3 		;// PS/2 Data Register 3
+extern ECReg	PSCLKEN 		;// PS/2 Data Register 3
 //-----------------------------------------------------------------------------
 // (18xxh) PWM & SmartAuto Fan Control (PWM) 
 //-----------------------------------------------------------------------------

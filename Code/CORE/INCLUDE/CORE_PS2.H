@@ -11,6 +11,7 @@
  
 #ifndef CORE_PS2_H
 #define CORE_PS2_H
+#include "OEM_Project.h"
 
 //-----------------------------------------------------------------------------
 // PS2 Interface Debug
@@ -80,8 +81,15 @@
 #define PS2_OnOffTimeOutCUNT    5           // EC On/Off PS2 device time-out
 #define ResetCmdTOTime          17          // Time base is 30ms 30x17=510ms
 
-#define PS2_ReceiveMode         0x17
-#define PS2_InhibitMode         0x11
+
+#if !EC_MODE
+#define PS2_ReceiveMode         0x57// 0x17
+#define PS2_InhibitMode         0x55// 0x11   0x55   0x15
+#else
+#define PS2_ReceiveMode          0x17
+#define PS2_InhibitMode          0x11
+#endif
+
 
 #define SendCmdToKB             0x01
 #define SendCmdToMS             0x02

@@ -117,10 +117,6 @@ void IRQ_INT10_SMBusB(void)
 //----------------------------------------------------------------------------
 void IRQ_INT11_KBMatrixScan(void)
 {
-    // BAT_LED1_ON();
-    // (*(volatile unsigned char xdata *) 0x822) = 0x78;
-    // while (1);
-    
 	CLEAR_MASK(IER1,Int_KB);
     ISR1 = Int_KB;
 	F_Service_KEY = 1;    	// Post service request to scan internal keyboard. 
@@ -141,9 +137,6 @@ void IRQ_INT12_WKO26(void)
 //----------------------------------------------------------------------------
 void IRQ_INT13_WKINTC(void)
 {
-    // CLEAR_MASK(IER1,Int_WKINTC);
-    // ISR1 = Int_WKINTC;
-
     Hook_IRQ_INT13_WKINTC();
 }
 
@@ -232,19 +225,21 @@ void IRQ_INT18_PS2Interrupt2(void)
                 }
                 else
                 {
-                    WNCKR = 0x00;   // Delay 15.26 us
+                    Loop_Delay(10);
+                    // WNCKR = 0x00;   // Delay 15.26 us
                 }
             }
         }
         else
         {
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
-            WNCKR = 0x00;           // Delay 15.26 us
+            Loop_Delay(80);
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
+            // WNCKR = 0x00;           // Delay 15.26 us
         }
         
 		PSCTL1 = PS2_InhibitMode;   // Inhibit clock pin1
@@ -279,6 +274,8 @@ void IRQ_INT19_PS2Interrupt1(void)
 {
 	if(IS_MASK_SET(PSSTS2, TDS))    // Transaction done interrupt 
 	{
+        PSSTS2 = TDS;
+
 		CLEAR_MASK(IER2,Int_PS2_1); // Disable PS2 interrupt 1  
 	    ISR2 = Int_PS2_1;           // Write to clear pending interrupt 
 	    
@@ -338,6 +335,17 @@ void IRQ_INT19_PS2Interrupt1(void)
 //----------------------------------------------------------------------------
 void IRQ_INT20_PS2Interrupt0(void)
 {
+    static unsigned char i = 0;
+    i++;
+    (*(volatile unsigned char xdata *) 0x832) = i; 
+
+
+
+    // BAT_LED1_ON();
+    // for(;;);
+
+
+
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_0); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_0;           // Write to clear pending interrupt
@@ -368,6 +376,10 @@ void IRQ_INT20_PS2Interrupt0(void)
     PS2StartBit=0;			    // clear start bit flag
     PS2_SSIRQ_Channel = 0xFF;   //
 	PS2PortxData[0]=PSDAT1;
+
+    // PSDAT1 = 0x00;
+    // SET_MASK(PSCTL1, BIT(6));
+    // PSCTL1 = 0x57;
     #else
 	if(IS_MASK_SET(PSSTS1, TDS))    // Transaction done interrupt 
 	{
@@ -946,19 +958,8 @@ void Isr_Int0(void) interrupt 0 using 2
 extern void Oem_Hook_Timer1ms(void);
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    // static u8 __isr_tmr = 0;
     Load_Timer_A();
-
-    // __isr_tmr++;
-    // if (__isr_tmr > 2) {
-        F_Service_MS_1 = 1;   // Request 1 mS timer service.
-    //     __isr_tmr = 0;
-    // }
-
-    
-
-    // 不用这个方式
-    // Oem_Hook_Timer1ms();
+    F_Service_MS_1 = 1;   // Request 1 mS timer service.
 
 	if(guoyong003 == 0x99)
 	guoyong001 = guoyong001 + 1;

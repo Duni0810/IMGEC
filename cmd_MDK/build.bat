@@ -108,7 +108,7 @@ FU /SIZE %EC_ROM_SIZE% %buildfile%.ALL %buildfile%.BIN FF
 :: OK
 ::-----------------------------------------------------------
 copy %buildfile%.bin .\bin\%filename%.bin
-
+copy %buildfile%.bin .\bin\%filename%.fd
 
 
 ::-----------------------------------------------------------
@@ -125,7 +125,7 @@ REM copy BANK0.BIN .\bin\%filename%.BBIN
 
 
 
-move %buildfile%.ALL .\bin
+::move %buildfile%.ALL .\bin
 DEL /q *.BIN*
 DEL /q *.H*
 DEL /q *.b0*
@@ -136,8 +136,8 @@ DEL /q *.ABS*
 move *.m51 .\KeilMisc\Map
 cls
 ECHO    ********************************************************************
-ECHO    *    IMGEC Embedded Controller Firmware Build Process              *
-ECHO    *    Copyright (c) 2006-2010, IMGEC Tech. Inc. All Rights Reserved.*
+ECHO    *    IMAGE+ Embedded Controller Firmware Build Process             *
+ECHO    *   Copyright (c) 2020-2025, IMAGE+ Tech. Inc. All Rights Reserved.*
 ECHO    ********************************************************************
 ECHO.  
 ECHO    Making EC bin file successfully !!!
@@ -168,8 +168,8 @@ REM GOTO End
 :NotExit
 cls
 ECHO    ********************************************************************
-ECHO    *    IMGEC Embedded Controller Firmware Build Process              *
-ECHO    *    Copyright (c) 2006-2010, IMGEC Tech. Inc. All Rights Reserved.*
+ECHO    *    IMAGE+ Embedded Controller Firmware Build Process             *
+ECHO    *   Copyright (c) 2020-2025, IMAGE+ Tech. Inc. All Rights Reserved.*
 ECHO    ********************************************************************
 ECHO.  
 ECHO    Project folder isn't exit.
@@ -182,8 +182,8 @@ GOTO done
 :OPTIONS
 cls
 ECHO    ********************************************************************
-ECHO    *    IMGEC Embedded Controller Firmware Build Process              *
-ECHO    *    Copyright (c) 2006-2010, IMGEC Tech. Inc. All Rights Reserved.*
+ECHO    *    IMAGE+ Embedded Controller Firmware Build Process             *
+ECHO    *   Copyright (c) 2020-2025, IMAGE+ Tech. Inc. All Rights Reserved.*
 ECHO    ********************************************************************
 ECHO.    
 ECHO    USAGE:  build [P1] [P2]

@@ -53,7 +53,7 @@ const thermal code ThermalTalbe2[]=
 //-----------------------------------------------------------------------------	
 void CheckFanRPM1(void)
 {
-	BYTE FanLevel_t = FanLevel;	
+	BYTE FanLevel_t = FanLevel;		// 保存上一个 参数
 	BYTE Fan1RPM_t = Fan1RPM;
 
 	temperature1 = CpuTm;
@@ -199,6 +199,7 @@ void Fan2MainControl(void)
 
 //-----------------------------------------------------------------------------
 // The function of fan rpm control
+// base 100ms-C
 //-----------------------------------------------------------------------------
 void FanControl(void)
 {
@@ -325,6 +326,7 @@ void Clear_Fan_Debug(void)
 
 //-----------------------------------------------------------------------------
 // The function of get fan current RPM
+// base 100ms events B
 //-----------------------------------------------------------------------------
 void GetRPM1(void)
 {
@@ -358,7 +360,6 @@ void GetRPM1(void)
 
 //-----------------------------------------------------------------------------
 // The function of smart fan
-// base 100ms-C
 //-----------------------------------------------------------------------------
 void GetRPM2(void)
 {
@@ -393,7 +394,7 @@ void GetRPM2(void)
 
 //-----------------------------------------------------------------------------
 // The function of smart fan
-// base 100ms-C
+// base 100ms-B
 //-----------------------------------------------------------------------------
 void FanManager(void)
 {

@@ -46,7 +46,6 @@ BYTE STB_PWRGD_OK(void)
 {
 	if(Read_STB_PWRGD())
 	{
-		// BAT_LED2_ON();
 		POWER_RAMDEBUG(0x03);
 		return(1);
 	}
@@ -103,8 +102,6 @@ void VDD_EN_L(void)
 
 BYTE Wait_VDDQ_PG(void)
 {
-	// BAT_LED2_ON();
-
 	if(Read_VDDQ_PG())
 	{
 		POWER_RAMDEBUG(0x0D);

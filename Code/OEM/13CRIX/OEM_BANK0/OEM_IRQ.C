@@ -125,12 +125,6 @@ void Hook_IRQ_INT14_WKO25(void)
 {
     ISR1 |= Int_WKO25;
     WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能    
-
-    // (*(volatile unsigned char xdata *) 0x410) = 0x66;
-
-    // BAT_LED1_ON();
-    // BAT_LED2_ON();
-
 }
 
 //----------------------------------------------------------------------------

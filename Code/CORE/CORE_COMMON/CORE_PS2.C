@@ -444,21 +444,25 @@ void RAM_Send2Port(BYTE p_PortNum, BYTE p_cmd)
 {
     if(p_PortNum==0x00)
     {
-        PSCTL1 = 0x1D;
+        //PSCTL1 = 0x1D;
+        PSCTL1 = 0x5D;
+        
         PSDAT1 = p_cmd;
         PSCTL1 = 0x1C;
         PSCTL1 = 0x1E;
     }
     else if(p_PortNum==0x01)
     {
-        PSCTL2 = 0x1D;
+        // PSCTL2 = 0x1D;
+        PSCTL2 = 0x5D;
         PSDAT2 = p_cmd;
         PSCTL2 = 0x1C;
         PSCTL2 = 0x1E;
     }
     else if(p_PortNum==0x02)
     {
-        PSCTL3 = 0x1D;
+        // PSCTL3 = 0x1D;
+        PSCTL3 = 0x5D;
         PSDAT3 = p_cmd;
         PSCTL3 = 0x1C;
         PSCTL3 = 0x1E;
@@ -507,6 +511,13 @@ void CheckNWaitReceiveDone(void)
     if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)
     ||F_Service_PS2 == 1||PS2StartBit == 1)
     {
+        // 手动清状态
+        PSSTS1 = SS;
+        PSSTS2 = SS;
+        PSSTS3 = SS;
+
+
+
         TR1 = 0;                 	    // Disable timer1
         ET1 = 0;                  	    // Disable timer1 interrupt
         _nop_();
@@ -1028,6 +1039,12 @@ void ScanAUXDevice(BYTE scan_selection)
 	BYTE index;
     BYTE timeout;
     
+    // if(scan_selection != ScanKeyboardChannel) {
+    //     BAT_LED1_ON();
+    //     BAT_LED2_ON();
+    //     for(;;);
+    // }
+
     if(scan_selection==ScanMouseChannel)    // Scan mouse channel
     {
         if(Main_MOUSE_CHN!=0x00)    // Main mouse is presetn
@@ -1454,6 +1471,9 @@ void TPOnlyLowLevelFunc(void)
         {
             if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)||F_Service_PS2)
             {
+                PSSTS1 = SS;
+                PSSTS2 = SS;
+                PSSTS3 = SS;
                 return;
             }
         }
@@ -1517,6 +1537,10 @@ void ExternalAUXLowLevelFunc(void)
  
         if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)||PS2StartBit==1)
         {
+            PSSTS1 = SS;
+            PSSTS2 = SS;
+            PSSTS3 = SS;
+
             AuxScanWDT++;
             
             if(AuxScanWDT>100)          // Interface watch dog for hot-plug  (1sec). 
@@ -1529,14 +1553,17 @@ void ExternalAUXLowLevelFunc(void)
                 
                 if(IS_MASK_SET(PSSTS1, SS)||PS2_SSIRQ_Channel == 0)
                 {
+                    PSSTS1 = SS;
 	                PSCTL1 = PS2_InhibitMode;
                 }
                 else if(IS_MASK_SET(PSSTS2, SS)||PS2_SSIRQ_Channel == 1)
                 {
+                    PSSTS2 = SS;
                     PSCTL2 = PS2_InhibitMode;
                 }
                 else if(IS_MASK_SET(PSSTS3, SS)||PS2_SSIRQ_Channel == 2)
                 {
+                    PSSTS3 = SS;
                     PSCTL3 = PS2_InhibitMode;
                 }
             }
@@ -2478,15 +2505,20 @@ BYTE PS2CheckPendingISR(void)
 
     if(IS_MASK_SET(PSSTS3, TDS))
     {
-        if(IS_MASK_SET(IER2,Int_PS2_2)&&IS_MASK_CLEAR(ISR2,Int_PS2_2)&&(PSCTL3==PS2_ReceiveMode))
+        PSSTS3 = TDS;
+        if(IS_MASK_SET(IER2,Int_PS2_2)&&IS_MASK_CLEAR(ISR2,Int_PS2_2)&&(PSCTL3==(PS2_ReceiveMode & 0xbf)))
         {
+
+            // PSCTL3 & (0x17);
+
             IRQ_INT18_PS2Interrupt2();
             pending=0x01;
         }
     }
     else if(IS_MASK_SET(PSSTS2, TDS))
     {
-        if(IS_MASK_SET(IER2,Int_PS2_1)&&IS_MASK_CLEAR(ISR2,Int_PS2_1)&&(PSCTL2==PS2_ReceiveMode))
+        PSSTS2 = TDS;
+        if(IS_MASK_SET(IER2,Int_PS2_1)&&IS_MASK_CLEAR(ISR2,Int_PS2_1)&&(PSCTL2==(PS2_ReceiveMode & 0xbf)))
         {
             IRQ_INT19_PS2Interrupt1();
             pending=0x01;
@@ -2494,7 +2526,9 @@ BYTE PS2CheckPendingISR(void)
     }
     else if(IS_MASK_SET(PSSTS1, TDS))
     {
-        if(IS_MASK_SET(IER2,Int_PS2_0)&&IS_MASK_CLEAR(ISR2,Int_PS2_0)&&(PSCTL1==PS2_ReceiveMode))
+        PSSTS1 = TDS;
+
+        if(IS_MASK_SET(IER2,Int_PS2_0)&&IS_MASK_CLEAR(ISR2,Int_PS2_0)&&(PSCTL1==(PS2_ReceiveMode & 0xbf)))
         {
             IRQ_INT20_PS2Interrupt0();
             pending=0x01;

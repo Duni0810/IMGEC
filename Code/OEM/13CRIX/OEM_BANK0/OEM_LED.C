@@ -62,26 +62,26 @@ void ProcessLED(void)
 	if(ledTestFlag)
 		return;
 
-	// if(SystemIsS4 || SystemIsS5)
-	// {
-	// 	GPCRA1=OUTPUT;
-	// 	PWM1LHE=0x00;
-	// 	PWR_LED_OFF();
-	// }
-	// else if(SystemIsS3)
-	// {
-	// 	GPCRA1=ALT;
-	// 	PWM1LHE = 0x01;				
-	// }
-	// else
-	// {
-	// 	//TF_005--	GPCRA1=OUTPUT;
-	// 	GPCRA1=ALT;	//TF_005++
-	// 	PWM1LHE=0x00;
-	// 	//TF_005--	PWR_LED_ON();	
-	// 	//TF_005A--	DCR1 = 0x20;	//TF_005++
-	// 	DCR1 = 0x2C;	//TF_005A++
-	// }
+	if(SystemIsS4 || SystemIsS5)
+	{
+		GPCRA1=OUTPUT;
+		PWM1LHE=0x00;
+		PWR_LED_OFF();
+	}
+	else if(SystemIsS3)
+	{
+		GPCRA1=ALT;
+		PWM1LHE = 0x01;				
+	}
+	else
+	{
+		//TF_005--	GPCRA1=OUTPUT;
+		GPCRA1=ALT;	//TF_005++
+		PWM1LHE=0x00;
+		//TF_005--	PWR_LED_ON();	
+		//TF_005A--	DCR1 = 0x20;	//TF_005++
+		DCR1 = 0x2C;	//TF_005A++
+	}
 
 	
 	if ((Read_ACIN()) && (IS_BATTERY1_IN()))
