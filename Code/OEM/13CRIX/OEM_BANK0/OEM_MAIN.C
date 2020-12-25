@@ -43,6 +43,7 @@ void Hook_Timer1msEvent(IBYTE EventId)
 	// Oem_Hook_Timer1ms();
 	#endif
 
+
 	// 事件状态检测，例如适配器插拔，电池插拔，开机按键等
     EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
     

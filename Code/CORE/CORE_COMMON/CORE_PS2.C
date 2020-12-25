@@ -498,6 +498,11 @@ void ECSend2Port( BYTE PortNum, BYTE PortData)
     EnableAllInterrupt();
    
     SET_MASK(*asPS2Struct[PortNum].ps2ier, asPS2Struct[PortNum].ctrlbit);    // Enable interrupt   
+
+
+    // BAT_LED1_ON();
+    // for(;;);
+
 }
 
 //-----------------------------------------------------------------
@@ -628,6 +633,9 @@ void Send2Port( BYTE PortNum, BYTE PortData, BYTE action)
     SET_MASK(*asPS2Struct[PortNum].ps2ier, asPS2Struct[PortNum].ctrlbit);    // Enable interrupt 
 
     WaitPS2DeviceACK(PortNum);
+
+    // BAT_LED1_ON();
+    // for(;;);
 }
 
 //-----------------------------------------------------------------
@@ -639,7 +647,7 @@ void Send2Port( BYTE PortNum, BYTE PortData, BYTE action)
 //-----------------------------------------------------------------
 BYTE Send2PortNWait( BYTE PortNum, BYTE cmd, BYTE bytecunt)
 {
-    BYTE result;
+    BYTE result = 0;
     BYTE index;
 
     PS2IFAck = 0x00;
@@ -657,13 +665,22 @@ BYTE Send2PortNWait( BYTE PortNum, BYTE cmd, BYTE bytecunt)
 
     result = bExtAUXTimeOutCheck(PortNum, PS2_Transmission_Mode);
 
+
+    // if (result != 0) {
+    //     (*(volatile unsigned char xdata *) 0x848) = result;
+    // }
+
+    // for(;;);
+
+
     if(result==0x00)                // Transaction done
     {
         for(index=0x00;index<bytecunt;index++)
         {
+            PSDCNUM1 = 0x03;
             *asPS2Struct[PortNum].ps2ctrl=PS2_ReceiveMode;  // Get Last ACK by bytecunt
             result = bExtAUXTimeOutCheck(PortNum, PS2_Receive_Mode);
-
+            
 			if(Oem_RTP_ID_CMD == 0)
 			{
 
@@ -713,8 +730,16 @@ BYTE Send2PortNWait( BYTE PortNum, BYTE cmd, BYTE bytecunt)
     }
 
     *asPS2Struct[PortNum].ps2ctrl=PS2_InhibitMode;
-    ISR2=(Int_PS2_0+Int_PS2_1+Int_PS2_2);       // Write to clear all PS2 pending interrupt
+    // ISR2=(Int_PS2_0+Int_PS2_1+Int_PS2_2);       // Write to clear all PS2 pending interrupt
   
+
+        (*(volatile unsigned char xdata *) 0x846) = result;
+        (*(volatile unsigned char xdata *) 0x847) = PS2IFAck;
+        // BAT_LED1_ON();
+        // for(;;);
+
+
+
     return(result);		                        
 }
 
@@ -1060,6 +1085,7 @@ void ScanAUXDevice(BYTE scan_selection)
         }
     }
    
+   // 扫描三个通道
 	for(index=0x00;index<3;index++)
 	{
         if(IS_MASK_SET(AuxFlags[index], DEVICE_IS_MOUSE)||IS_MASK_SET(AuxFlags[index], DEVICE_IS_KEYBOARD))
@@ -1086,6 +1112,11 @@ void ScanAUXDevice(BYTE scan_selection)
         
         if(Send2PortNWait(index,0xFF,1)==0x00 && (PS2IFAck==0xFA))
         {
+            // (*(volatile unsigned char xdata *) 0x846)++;
+            // BAT_LED1_ON();
+            // for(;;);
+
+
             SET_MASK(AuxFlags[index], DEVICE_IS_ATTACHED);
 
             *asPS2Struct[index].ps2ctrl=PS2_ReceiveMode;
@@ -1737,6 +1768,9 @@ void EnableAUXDevice(void)
 //----------------------------------------------------------------------------
 BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
 {
+    static u32 __cnt = 0;
+    u8 __tmp = 0;
+
     BYTE result;
     result = 0x01;      // pre-set resutl is fail
     
@@ -1746,11 +1780,21 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
     _nop_();
     _nop_();
     _nop_();
-    TH1 = Timer_30ms>>8;    // Set timer1 counter 30ms
-    TL1 = Timer_30ms;       // Set timer1 counter 30ms
+    TH1 = Timer_5ms>>8;    // Set timer1 counter 30ms
+    TL1 = Timer_5ms;       // Set timer1 counter 30ms
     TF1 = 0;			// clear overflow flag
 	TR1 = 1;			// enable timer1
 
+
+    // PSCTL1 = 0x5d;
+    
+
+    // IER2 = 0x00;
+
+    CLEAR_MASK(GPDRC, BIT5);
+    Loop_Delay(10);
+    SET_MASK(GPDRC, BIT5); 
+    
 	do
 	{                   // Wait PS2 transaction Done Status
         //if(IS_MASK_SET(*asPS2Struct[channel].ps2status, TDS))
@@ -1758,8 +1802,11 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
         //
         // Wait PS2 transaction Done
         //
+
         if(IS_MASK_SET(*asPS2Struct[channel].ps2isr, asPS2Struct[channel].ctrlbit))
+        // if (IS_MASK_SET(PSSTS1, BIT3) )
         {
+            __cnt++;
             if(p_mode == PS2_Transmission_Mode)
             {
                 for(PS2DataPinStatus=0x00;PS2DataPinStatus<5;PS2DataPinStatus++)
@@ -1820,8 +1867,19 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
             *asPS2Struct[channel].ps2ctrl=PS2_InhibitMode;
             PS2IFAck=*asPS2Struct[channel].ps2data;
             result = 0x00;
+            
+            //if (__cnt == 1)
+                // PSSTS1 = TDS;
+            
 
-            *asPS2Struct[channel].ps2isr = asPS2Struct[channel].ctrlbit;
+            for(__tmp = 0; __tmp < 250; __tmp++) {
+                Loop_Delay(200);
+            }
+
+            (*(volatile unsigned char xdata *) 0x84F) = ISR2;
+            for(;;);
+            
+            // *asPS2Struct[channel].ps2isr = asPS2Struct[channel].ctrlbit;
             break;
         }
 	}while(!TF1);					// waitting for overflow flag
@@ -1829,6 +1887,16 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
     TR1 = 0;			            // disable timer1
     TF1 = 0;						// clear overflow flag
     ET1 = 1;	
+
+     (*(volatile unsigned char xdata *) 0x84e) = PSSTS1;
+    
+
+
+    (*(volatile unsigned char xdata *) 0x84a) = (__cnt >> 24) & 0xff;
+    (*(volatile unsigned char xdata *) 0x84b) = (__cnt >> 16) & 0xff;
+    (*(volatile unsigned char xdata *) 0x84c) = (__cnt >> 8 ) & 0xff;
+    (*(volatile unsigned char xdata *) 0x84d) = (__cnt & 0xff);
+
 	return(result);
 }
 

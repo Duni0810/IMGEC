@@ -335,16 +335,13 @@ void IRQ_INT19_PS2Interrupt1(void)
 //----------------------------------------------------------------------------
 void IRQ_INT20_PS2Interrupt0(void)
 {
-    static unsigned char i = 0;
-    i++;
-    (*(volatile unsigned char xdata *) 0x832) = i; 
-
-
+    // static unsigned char i = 0;
+    // i++;
+    // (*(volatile unsigned char xdata *) 0x832) = i; 
 
     // BAT_LED1_ON();
+    // BAT_LED2_ON();
     // for(;;);
-
-
 
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_0); // Disable PS2 interrupt 0
@@ -958,9 +955,16 @@ void Isr_Int0(void) interrupt 0 using 2
 extern void Oem_Hook_Timer1ms(void);
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    Load_Timer_A();
-    F_Service_MS_1 = 1;   // Request 1 mS timer service.
+    // static char i = 0;
 
+    Load_Timer_A();
+
+    // i++;
+    // if (i > 1) {
+        F_Service_MS_1 = 1;   // Request 1 mS timer service.
+        // i = 0;
+    // }
+// 
 	if(guoyong003 == 0x99)
 	guoyong001 = guoyong001 + 1;
 }

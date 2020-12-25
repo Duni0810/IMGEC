@@ -308,16 +308,6 @@ void main(void)
 #endif
 
 
-    // for(;;);
-
-
-
-    // __test_speed_code();
-
-    // BAT_LED2_ON();
-    // __1s_delay();
-    // BAT_LED1_OFF();
-
 	if((0x55==BRAM_FLASH_ID0)&&(0xaa==BRAM_FLASH_ID1)&&(0x55==BRAM_FLASH_ID2)&&(0xaa==BRAM_FLASH_ID3))
 	{
 		//PulseSBPowerButton();
@@ -328,15 +318,17 @@ void main(void)
 	BRAM_FLASH_ID2=0;
 	BRAM_FLASH_ID3=0;	
 
+            
 #if !EC_MODE
 
     /* 提高代码执行效率 */
     // 使能Dcache 代码执行效率更高点
      DCache         = 0x00;
-     // 控制flash 读写拍数
-     SMFI_FIC_CTL1  = 0x00;
-     // 初始化 pS2 时钟
 
+    // 控制flash 读写拍数
+     SMFI_FIC_CTL1  = 0x00;
+
+    // 初始化 pS2 时钟
     PSDCNUM1 = 0x03;
     PSDCNUM2 = 0x03;
     PSDCNUM3 = 0x03;
@@ -344,7 +336,18 @@ void main(void)
     // 初始化 pS2 时钟
     PSCLKEN = 0x07;  // PSCLKEN
 
+    // IER2 = 0x1C;
+
+    // // 临时翻转PS2中断极性
+    // IPOLR2 = 0x1C;
+    // IPOLR2 = 0x00;
+    // IPOLR2 = 0x1C;
+
+
 #endif
+
+    
+
 
 #if 0
     // 使能Dcache 代码执行效率更高点
@@ -434,11 +437,14 @@ void main(void)
 #endif
 
     // __test_speed_code();
+            
 
 	while(1)
    	{
         if(OEM_SkipMainServiceFunc()==Normal_MainService)
         {
+
+
     		main_service();
     		EnableModuleInterrupt();
     		_nop_();
@@ -480,26 +486,12 @@ void main(void)
  * ------------------------------------------------------------------------- */
 void main_service(void) 
 {
-
-
-
-    //     PSCTL1 = 0x5D;
-        
-    //     PSDAT1 = 0x80;
-
-    //     PSCTL1 = 0x1C;
-    //     PSCTL1 = 0x1E;
-
-    // for(;;);
-
-
     #ifdef SMBusServiceCenterFunc
     while((Service!=0x00)||(Service1!=0x00)||(CheckSMBusNeedService()==SMBus_NeedService))
     #else
     while((Service!=0x00)||(Service1!=0x00))
     #endif
     {
-
         // 这些其实不影响点亮，但是会卡在初始化位置（屏幕显示银河麒麟的界面）
         // 
         #if __DEBUG__
@@ -533,7 +525,7 @@ void main_service(void)
             continue;
         }
 
-#if 1
+#if 0
         //-----------------------------------
         // Send PS2 interface data	
         //-----------------------------------
@@ -590,7 +582,7 @@ void main_service(void)
             continue;
         }
 
-#if 0
+#if 1
         //-----------------------------------
         // Keyboard scanner service
         //-----------------------------------

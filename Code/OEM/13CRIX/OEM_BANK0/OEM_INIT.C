@@ -1086,17 +1086,20 @@ static void __test_speed_code(void)
 {
 
    volatile u8 i = 0, j = 0;
-    // Init_ClearRam();
+    Init_ClearRam();
     SP = 0xC0;					// Setting stack pointer
 
 
-    // Init_GPIO();
+
+    ChangeSPIFlashReadMode(SPIReadMode_2);
+
+    Init_GPIO();
     // DCache         = 0x00;
 
-//    for(;;){
-//        INVERSE_REG(GPDRC, 6);
-//        __1s_delay();
-//    };
+   for(;;){
+       INVERSE_REG(GPDRC, 6);
+       __1s_delay();
+   };
 
 
     for(;;){
@@ -1596,7 +1599,7 @@ void Oem_Initialization(void)
 #if EC_MODE
     
     #ifdef SPIReadMode
-    ChangeSPIFlashReadMode(SPIReadMode);
+    ChangeSPIFlashReadMode(SPIReadMode);   // SPIReadMode_2   SPIReadMode
     #endif
 
 #else
