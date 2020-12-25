@@ -193,7 +193,7 @@ void IRQ_INT18_PS2Interrupt2(void)
             }
             else
             {
-                Loop_Delay(10);
+                Loop_Delay(20);
                 // WNCKR = 0x00;   // Delay 15.26 us
             }
         }
@@ -225,21 +225,19 @@ void IRQ_INT18_PS2Interrupt2(void)
                 }
                 else
                 {
-                    Loop_Delay(10);
-                    // WNCKR = 0x00;   // Delay 15.26 us
+                    WNCKR = 0x00;   // Delay 15.26 us
                 }
             }
         }
         else
         {
-            Loop_Delay(80);
-            // WNCKR = 0x00;           // Delay 15.26 us
-            // WNCKR = 0x00;           // Delay 15.26 us
-            // WNCKR = 0x00;           // Delay 15.26 us
-            // WNCKR = 0x00;           // Delay 15.26 us
-            // WNCKR = 0x00;           // Delay 15.26 us
-            // WNCKR = 0x00;           // Delay 15.26 us
-            // WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
+            WNCKR = 0x00;           // Delay 15.26 us
         }
         
 		PSCTL1 = PS2_InhibitMode;   // Inhibit clock pin1
@@ -274,8 +272,6 @@ void IRQ_INT19_PS2Interrupt1(void)
 {
 	if(IS_MASK_SET(PSSTS2, TDS))    // Transaction done interrupt 
 	{
-        PSSTS2 = TDS;
-
 		CLEAR_MASK(IER2,Int_PS2_1); // Disable PS2 interrupt 1  
 	    ISR2 = Int_PS2_1;           // Write to clear pending interrupt 
 	    
@@ -289,14 +285,14 @@ void IRQ_INT19_PS2Interrupt1(void)
                 }
                 else
                 {
-                    Loop_Delay(10);
+                    Loop_Delay(20);
                     // WNCKR = 0x00;   // Delay 15.26 us
                 }
             }
         }
         else
         {
-            Loop_Delay(200);  
+            Loop_Delay(200);
             // WNCKR = 0x00;           // Delay 15.26 us
             // WNCKR = 0x00;           // Delay 15.26 us
             // WNCKR = 0x00;           // Delay 15.26 us
@@ -335,14 +331,6 @@ void IRQ_INT19_PS2Interrupt1(void)
 //----------------------------------------------------------------------------
 void IRQ_INT20_PS2Interrupt0(void)
 {
-    // static unsigned char i = 0;
-    // i++;
-    // (*(volatile unsigned char xdata *) 0x832) = i; 
-
-    // BAT_LED1_ON();
-    // BAT_LED2_ON();
-    // for(;;);
-
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_0); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_0;           // Write to clear pending interrupt
@@ -358,7 +346,7 @@ void IRQ_INT20_PS2Interrupt0(void)
             }
             else
             {
-                Loop_Delay(10);
+                Loop_Delay(20);
                 // WNCKR = 0x00;   // Delay 15.26 us
             }
         }
@@ -373,10 +361,6 @@ void IRQ_INT20_PS2Interrupt0(void)
     PS2StartBit=0;			    // clear start bit flag
     PS2_SSIRQ_Channel = 0xFF;   //
 	PS2PortxData[0]=PSDAT1;
-
-    // PSDAT1 = 0x00;
-    // SET_MASK(PSCTL1, BIT(6));
-    // PSCTL1 = 0x57;
     #else
 	if(IS_MASK_SET(PSSTS1, TDS))    // Transaction done interrupt 
 	{

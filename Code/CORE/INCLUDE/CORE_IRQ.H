@@ -1,3 +1,12 @@
+/*
+ * @company: image+
+ * @Version: 1.0
+ * @Autor: young
+ * @Description: 
+ * @LastEditors: young
+ * @Date: 2020-11-05 16:18:34
+ * @LastEditTime: 2020-12-25 16:03:20
+ */
 /*-----------------------------------------------------------------------------
  * TITLE: CORE_IRQ.H - Interrupt Service Routines (ISR).
  *
@@ -15,9 +24,11 @@
 #ifndef CORE_IRQ_H
 #define CORE_IRQ_H
 
-#define PS2Interrupt2   (0x10+18)
+#define PS2Interrupt2   (0x10+20)   // 18
+
 #define PS2Interrupt1   (0x10+19)
-#define PS2Interrupt0   (0x10+20)
+
+#define PS2Interrupt0   (0x10+18)   // 20
 
 extern void DisableAllInterrupt(void);
 extern void EnableAllInterrupt(void);

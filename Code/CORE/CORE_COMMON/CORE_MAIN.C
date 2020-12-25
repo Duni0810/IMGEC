@@ -336,13 +336,6 @@ void main(void)
     // 初始化 pS2 时钟
     PSCLKEN = 0x07;  // PSCLKEN
 
-    // IER2 = 0x1C;
-
-    // // 临时翻转PS2中断极性
-    // IPOLR2 = 0x1C;
-    // IPOLR2 = 0x00;
-    // IPOLR2 = 0x1C;
-
 
 #endif
 
@@ -525,7 +518,7 @@ void main_service(void)
             continue;
         }
 
-#if 0
+#if 1
         //-----------------------------------
         // Send PS2 interface data	
         //-----------------------------------
