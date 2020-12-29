@@ -474,6 +474,10 @@ void DummyFunction(void)
 #if Lenovo_Support
 void Lenovo_PM_Cmd(void)
 {
+
+	// (*(volatile unsigned char xdata *) 0x826) = VCMD_Lenovo;
+	// for(;;);
+
 	switch(VCMD_Lenovo)
 	{	
 	case 0x10 :  //-----------------------------------read VPC  
@@ -763,9 +767,15 @@ void Lenovo_PM_Cmd(void)
 		break;
 		
 	default:
+	// ;
+		// EA =  0;
+		// for(;;);
 		break;	 
-
 	}
+
+
+	// EA =  0;
+	// for(;;);
 
 	VCMD_Lenovo = 0x00;
 }

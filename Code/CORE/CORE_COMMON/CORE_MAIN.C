@@ -339,8 +339,8 @@ void main(void)
 
 #endif
 
-    
-
+    // BAT_LED1_ON();
+    // for(;;);
 
 #if 0
     // 使能Dcache 代码执行效率更高点
@@ -446,10 +446,10 @@ void main(void)
     		_nop_();
 
 			#if TouchPad_only
-            if(PS2CheckPendingISR()==0x00)
-            {
-                ScanAUXDeviceStep();
-            }
+            // if(PS2CheckPendingISR()==0x00)
+            // {
+            //     ScanAUXDeviceStep();
+            // }
 			#endif
 
             #ifdef SMBusServiceCenterFunc
@@ -564,18 +564,20 @@ void main_service(void)
             continue;
         }
 
-
+        
         //-----------------------------------
         // 1 millisecond elapsed
         //-----------------------------------
         if(F_Service_MS_1)
         {
+            // BAT_LED1_ON();
             F_Service_MS_1=0;
             service_1mS();
+
             continue;
         }
 
-#if 1
+#if 0
         //-----------------------------------
         // Keyboard scanner service
         //-----------------------------------
@@ -596,6 +598,8 @@ void main_service(void)
             service_Low_LVEvent();
             continue;
         } 
+
+
 
 #if __DEBUG__
         //-----------------------------------
@@ -683,7 +687,7 @@ void service_1mS(void)
 		    Timer10msEventB();                          // ANX7447 事件
      	    switch( Timer5msCnt )   // Share Loading Branch Control
     	    {
-       		    case 2: Timer50msEventA();              // LED 灯控制
+       		    case 2: //Timer50msEventA();              // LED 灯控制
                     break;
           	    case 4: Timer50msEventB();              // 适配器热插拔事件
              	    break;

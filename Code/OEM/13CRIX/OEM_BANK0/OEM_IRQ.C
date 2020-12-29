@@ -486,7 +486,7 @@ void Hook_IRQ_INT58_ET2(void)
     static char i = 0;
     ISR7 = Int_ET2Intr;               // Write to clear external timer 1 interrupt 
         // young 外部定时器测试使用
-     INVERSE_REG(GPDRJ, 4);
+    //  INVERSE_REG(GPDRJ, 4);
 }
 
 //----------------------------------------------------------------------------

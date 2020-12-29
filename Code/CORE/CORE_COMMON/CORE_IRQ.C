@@ -178,6 +178,11 @@ void IRQ_INT17_WKO24(void)
 void IRQ_INT18_PS2Interrupt2(void)
 {
 
+    // BAT_LED1_OFF();
+    // BAT_LED2_ON();
+    // for(;;);
+
+
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_2); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_2;           // Write to clear pending interrupt
@@ -270,8 +275,14 @@ void IRQ_INT18_PS2Interrupt2(void)
 //----------------------------------------------------------------------------
 void IRQ_INT19_PS2Interrupt1(void)
 {
+    //     BAT_LED1_OFF();
+    // BAT_LED2_ON();
+    // for(;;);
+
 	if(IS_MASK_SET(PSSTS2, TDS))    // Transaction done interrupt 
 	{
+        PSSTS2 = TDS;
+
 		CLEAR_MASK(IER2,Int_PS2_1); // Disable PS2 interrupt 1  
 	    ISR2 = Int_PS2_1;           // Write to clear pending interrupt 
 	    
@@ -331,9 +342,15 @@ void IRQ_INT19_PS2Interrupt1(void)
 //----------------------------------------------------------------------------
 void IRQ_INT20_PS2Interrupt0(void)
 {
+    // BAT_LED2_ON();
+    // for(;;);
+   
+   
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_0); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_0;           // Write to clear pending interrupt
+
+    // (*(volatile unsigned char xdata *)(0x821 + (*(volatile unsigned char xdata *)0x820)++) ) = PSDAT1;
 
     if(SendtoAUXFlag)
     {
@@ -351,6 +368,11 @@ void IRQ_INT20_PS2Interrupt0(void)
             }
         }
     }
+
+    if (PSCTL1 == 0x07) {
+        Loop_Delay(200);
+    }
+    
 
 	PSCTL1 = PS2_InhibitMode;   // Inhibit clock pin1
 	PSCTL2 = PS2_InhibitMode;   // Inhibit clock pin2
@@ -939,16 +961,24 @@ void Isr_Int0(void) interrupt 0 using 2
 extern void Oem_Hook_Timer1ms(void);
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    // static char i = 0;
+    static char i = 0;
+    // static u8 j = 0;
 
     Load_Timer_A();
 
     // i++;
+    // j++;
     // if (i > 1) {
         F_Service_MS_1 = 1;   // Request 1 mS timer service.
-        // i = 0;
+    //     i = 0;
     // }
-// 
+
+    // if (j > 120) {
+    //     j= 0;
+    //     INVERSE_REG(GPDRC, 6);
+    //     INVERSE_REG(GPDRJ, 4);
+    // }
+
 	if(guoyong003 == 0x99)
 	guoyong001 = guoyong001 + 1;
 }

@@ -12,6 +12,9 @@
 #include <CORE_INCLUDE.H>
 #include <OEM_INCLUDE.H>
 
+
+extern u8 __ps2_flag ;
+
 //-----------------------------------------------------------------------
 // Process Command/Data received from System via the KBC interface
 //-----------------------------------------------------------------------
@@ -311,13 +314,21 @@ void Cmd_A9(void)
 	ResponseKBData(0x00);
 }
 
+
 //-----------------------------------------------------------------------
 // Handle command AA - Self Test
 // Returns: 0x55 to signify that the test passed
 //-----------------------------------------------------------------------
 void Cmd_AA(void)
-
 {
+
+
+    // if (__ps2_flag == 1) {
+        (*(volatile unsigned char xdata *) 0x841) = 0xaa;
+        //  BAT_LED1_ON();
+        // for(;;);
+    // }
+
     #if TouchPad_only
     ScanAUXDevice(ScanMouseChannel);    // Scan Mouse channel
     #else
@@ -664,6 +675,7 @@ void Cmd_77Data(void)
 //-----------------------------------------------------------------------
 void Cmd_90Data(void)			// always send timeout error to system 
 {
+
     if(PS2_MSCMD)
     {
         #if UART_Debug
@@ -684,7 +696,12 @@ void Cmd_90Data(void)			// always send timeout error to system
     
     if(KBHIData==0xFF)
     {
-        ScanAUXDevice(ScanAllPS2Channel);
+        // if (__ps2_flag == 1) {
+            (*(volatile unsigned char xdata *) 0x841) = 0x90;
+            // BAT_LED1_ON();
+            // for(;;);
+            ScanAUXDevice(ScanAllPS2Channel);
+        // }
     }
         
     KBHISR = 0x24;				    // set error bit and AUX bit, source bits is 00
@@ -878,7 +895,12 @@ void Cmd_D4Data(void)
     }
     if(KBHIData==0xFF)                      // if is reset command
     {
-        ScanAUXDevice(ScanMouseChannel);    // Scan mouse channel
+        // if (__ps2_flag == 1) {
+            (*(volatile unsigned char xdata *) 0x841) = 0xd4;
+            // BAT_LED1_ON();
+            // for(;;);
+            ScanAUXDevice(ScanMouseChannel);    // Scan mouse channel
+        // }
     }
               
     if(Main_MOUSE_CHN!=0x00)                // mouse device is attached 

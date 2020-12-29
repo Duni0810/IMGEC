@@ -84,7 +84,7 @@
 
 #if !EC_MODE
 #define PS2_ReceiveMode         0x47// 0x17
-#define PS2_InhibitMode         0x11// 0x11   0x55   0x15
+#define PS2_InhibitMode         0x01// 0x11   0x55   0x15
 #else
 #define PS2_ReceiveMode          0x17
 #define PS2_InhibitMode          0x11

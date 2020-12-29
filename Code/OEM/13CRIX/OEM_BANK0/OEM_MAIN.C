@@ -43,17 +43,23 @@ void Hook_Timer1msEvent(IBYTE EventId)
 	// Oem_Hook_Timer1ms();
 	#endif
 
-
 	// 事件状态检测，例如适配器插拔，电池插拔，开机按键等
     EventManager(EventId);      // Polling system event, EventId is 0 ~ 9 cycle
     
+	
+
     Oem_SysPowerContrl();       // System Power Control EC电源状态控制
     SMBusCenter(); 
+
+
+	// for(;;);
 
 	//Label:BLD_TIPIA_20161118_021
 	#if Lenovo_Support
 	Lenovo_PM_Cmd();
 	#endif
+
+// for(;;);
 
 	// 暂时屏蔽 young
 	#if Support_ANX7447

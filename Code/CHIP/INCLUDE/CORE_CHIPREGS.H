@@ -957,9 +957,17 @@ extern ECReg	TMEIE			;// 0x290C  TMR Interrupt Enable Register
 #define	Int_SMBUS2			BIT(0)	// SMBUS2 Interrupt
 #define Int_WKO24			BIT(1)	// WKO[24]
 
-#define	Int_PS2_2			BIT(4)	// PS/2 Interrupt 2
+// #if EC_MODE
+#define	Int_PS2_2			BIT(2)	// PS/2 Interrupt 2
 #define	Int_PS2_1			BIT(3)	// PS/2 Interrupt 1
-#define	Int_PS2_0			BIT(2)	// PS/2 Interrupt 0
+#define	Int_PS2_0			BIT(4)	// PS/2 Interrupt 0
+// #else
+// #define	Int_PS2_2			BIT(4)	// PS/2 Interrupt 2
+// #define	Int_PS2_1			BIT(3)	// PS/2 Interrupt 1
+// #define	Int_PS2_0			BIT(2)	// PS/2 Interrupt 0
+
+// #endif
+
 
 #define	Int_WKO22			BIT(5)	// WKO[22]
 #define	SMFIS				BIT(6)	// SMFI Semaphore Interrupt
