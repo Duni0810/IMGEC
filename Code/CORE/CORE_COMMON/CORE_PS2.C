@@ -124,7 +124,6 @@ void SendFromAux(BYTE auxdata)
 	KBHIMDOR = auxdata;
 	ShortDelayAfterWriteDOR();
 
-    // (*(volatile unsigned char xdata *)(0x801 + (*(volatile unsigned char xdata *)0x800)++) ) = auxdata;
 	if(PS2_MSCMD)
 	{   
         #if UART_Debug
@@ -216,7 +215,11 @@ void ProcessMouseData(BYTE channel)
     else
     {
         AUXPortNum = channel;
+
+        
+
 	    SendFromAux(PS2PortxData[channel]);
+
 	    if(TPACKCounter!=0x00)
 	    {
 		    TPACKCounter--;
@@ -254,6 +257,7 @@ void ProcessMouseData(BYTE channel)
                 PS2Deviceactive();              // Enable all ps2 interface
                 SetPS2InhibitTime(InactiveTime);
             }
+
 	    }
     }
 } 
@@ -347,6 +351,9 @@ void ProcessECTestAUXACK(BYTE PortNum, BYTE enablenow)
     {
         if(PS2PortxData[PortNum]==0xFA)
         {
+            // BAT_LED1_ON();
+            //     for(;;);
+            // F4 没进来
             //CLEAR_MASK(AuxFlags2[AUX_SCAN_INDEX],DEVICE_NEED_ENABLED);
             AuxFlags2[AUX_SCAN_INDEX] = 0x00;
             SET_MASK(AuxFlags2[AUX_SCAN_INDEX],DEVICE_IS_ENABLED);
@@ -438,6 +445,7 @@ void SendAUXData(BYTE PortNum)  // Dino 0907
             else
             {
                 PS2Deviceactive();              // Enable all ps2 interface
+                // PS2DeviceInactive();
             }
         }
     }
@@ -464,21 +472,21 @@ void RAM_Send2Port(BYTE p_PortNum, BYTE p_cmd)
 
     if(p_PortNum==0x00)
     {
-        PSCTL1 = 0x4D;
+        PSCTL1 = 0x5D;
         PSDAT1 = p_cmd;
-        PSCTL1 = 0x0C;
-        PSCTL1 = 0x0E;
+        PSCTL1 = 0x1C;
+        PSCTL1 = 0x1E;
     }
     else if(p_PortNum==0x01)
     {
-        PSCTL2 = 0x4D;
+        PSCTL2 = 0x5D;
         PSDAT2 = p_cmd;
         PSCTL2 = 0x0C;
         PSCTL2 = 0x0E;
     }
     else if(p_PortNum==0x02)
     {
-        PSCTL3 = 0x4D;
+        PSCTL3 = 0x5D;
         PSDAT3 = p_cmd;
         PSCTL3 = 0x0C;
         PSCTL3 = 0x0E;
@@ -500,6 +508,7 @@ void ClearPS2IFPendingEvent(void)
 //-----------------------------------------------------------------
 // EC Send command to ps2 interface no ack to host
 //-----------------------------------------------------------------
+// 第二次FF没进入
 void ECSend2Port( BYTE PortNum, BYTE PortData)
 {
     DisableAllInterrupt();
@@ -510,6 +519,7 @@ void ECSend2Port( BYTE PortNum, BYTE PortData)
 	//*asPS2Struct[PortNum].ps2data = PortData;
 	//*asPS2Struct[PortNum].ps2ctrl = 0x1C;
 	//*asPS2Struct[PortNum].ps2ctrl = 0x1E;
+
 	RAM_Send2Port(PortNum, PortData);
     EnableAllInterrupt();
    
@@ -519,6 +529,7 @@ void ECSend2Port( BYTE PortNum, BYTE PortData)
 //-----------------------------------------------------------------
 // Before sending command to PS2 device to make sure no any data is done
 //-----------------------------------------------------------------
+// 没用到
 void CheckNWaitReceiveDone(void)
 {
     BYTE busy;
@@ -527,16 +538,6 @@ void CheckNWaitReceiveDone(void)
     if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)
     ||F_Service_PS2 == 1||PS2StartBit == 1)
     {
-
-        // if (IS_MASK_SET(PSSTS1, SS)) {
-        //     BAT_LED1_ON();
-        //     BAT_LED2_ON();
-        //     for(;;);
-        // }
-        // (*(volatile unsigned char xdata *) 0x814) = PSDAT1;
-
-
-
         TR1 = 0;                 	    // Disable timer1
         ET1 = 0;                  	    // Disable timer1 interrupt
         _nop_();
@@ -647,6 +648,15 @@ void Send2Port( BYTE PortNum, BYTE PortData, BYTE action)
     SET_MASK(*asPS2Struct[PortNum].ps2ier, asPS2Struct[PortNum].ctrlbit);    // Enable interrupt 
 
     WaitPS2DeviceACK(PortNum);
+
+    // if (PortData == 0xF4) {
+    //     BAT_LED1_ON();
+    //     BAT_LED2_ON();
+    //     for(;;);
+    // }
+//     BAT_LED1_ON();
+//     BAT_LED2_ON();
+//     for(;;);
 }
 
 //-----------------------------------------------------------------
@@ -673,11 +683,11 @@ BYTE Send2PortNWait( BYTE PortNum, BYTE cmd, BYTE bytecunt)
 	//*asPS2Struct[PortNum].ps2ctrl = 0x1E;
 
 
-    PSDCNUM1 = 0x03;
-    PSDCNUM2 = 0x03;
-    PSDCNUM3 = 0x03;
+    // PSDCNUM1 = 0x03;
+    // PSDCNUM2 = 0x03;
+    // PSDCNUM3 = 0x03;
 	RAM_Send2Port(PortNum, cmd);
-
+ 
      EnableAllInterrupt();
 
     result = bExtAUXTimeOutCheck(PortNum, PS2_Transmission_Mode);
@@ -741,9 +751,6 @@ BYTE Send2PortNWait( BYTE PortNum, BYTE cmd, BYTE bytecunt)
     *asPS2Struct[PortNum].ps2ctrl=PS2_InhibitMode;
     ISR2=(Int_PS2_0+Int_PS2_1+Int_PS2_2);       // Write to clear all PS2 pending interrupt
   
-
-    // (*(volatile unsigned char xdata *)(0x801 + (*(volatile unsigned char xdata *)0x800)++) ) = PS2IFAck;
-
     return(result);		                        
 }
 
@@ -1025,12 +1032,9 @@ void PS2Deviceactive(void)
 void PS2ReceiveMode_OneChannel(BYTE PortNum, BYTE SetInhibitTime)
 {
     *asPS2Struct[PortNum].ps2ctrl=PS2_ReceiveMode;
-    // BAT_LED1_ON();
-//     for(;;);
 
     SET_MASK(*asPS2Struct[PortNum].ps2ier, asPS2Struct[PortNum].ctrlbit); 
 
-    // for(;;);
     if(SetInhibitTime==0x01)
     {
         SetPS2InhibitTime(InactiveTime);
@@ -1140,7 +1144,6 @@ void ScanAUXDevice(BYTE scan_selection)
                         break;
                     }
                 }
-                // (*(volatile unsigned char xdata *)(0x801 + (*(volatile unsigned char xdata *)0x800)++) ) = PS2IFAck;
 
                 if(timeout>ResetCmdTOTime)                  // wait 00 time-out
                 {
@@ -1155,39 +1158,6 @@ void ScanAUXDevice(BYTE scan_selection)
                 {
                     if(PS2IFAck==0x00)      // Mouse
                     {
-                    //     BAT_LED1_ON();
-                        
-
-                    //     if(Send2PortNWait(index,0xFF,1)==0x00 && (PS2IFAck==0xFA)) {
-                           
-                    //         DelayXms(50);
-                    //         *asPS2Struct[index].ps2ctrl=PS2_ReceiveMode;
-                    //         for(timeout=0x00;timeout<=ResetCmdTOTime;timeout++) // 510 ms time-out
-                    //         {
-                    //             if(!bExtAUXTimeOutCheck(index, PS2_Receive_Mode))
-                    //             {
-                    //                 break;
-                    //             }
-                    //         }
-
-                    //         *asPS2Struct[index].ps2ctrl=PS2_ReceiveMode;
-                    //         for(timeout=0x00;timeout<=ResetCmdTOTime;timeout++) // 510 ms time-out
-                    //         {
-                    //             if(!bExtAUXTimeOutCheck(index, PS2_Receive_Mode))
-                    //             {
-                    //                 BAT_LED2_ON();
-                    //                 break;
-                    //             }
-                    //         }
-
-                    //     }
-
-                    //    for(;;);
-                        // if (scan_selection==ScanMouseChannel) {
-                        //     __ps2_flag++;
-                        //     (*(volatile unsigned char xdata *) 0x844) = __ps2_flag;
-                        // }   
-
                         SET_MASK(AuxFlags[index], DEVICE_IS_MOUSE);
                         CheckNSetMainMSCHN(index);
                         if(scan_selection==ScanMouseChannel)    // Scan mouse channel
@@ -1223,9 +1193,6 @@ void ScanAUXDevice(BYTE scan_selection)
         ClearAUXScanTimeOutCunt();
         SetAUXScanIndexHS(AUXScanIndexFree);
     }
-
-    // for(;;);
-
 }
 
 //----------------------------------------------------------------------------
@@ -1248,8 +1215,8 @@ void CheckAUXDeviceType(void)
             *asPS2Struct[AUX_SCAN_INDEX].ps2ctrl=PS2_ReceiveMode;
             for(timeout=0x00;timeout<=ResetCmdTOTime;timeout++) // 510 ms time-out
             {
-                    if(!bExtAUXTimeOutCheck(AUX_SCAN_INDEX, PS2_Receive_Mode))
-                    {
+                if(!bExtAUXTimeOutCheck(AUX_SCAN_INDEX, PS2_Receive_Mode))
+                {
                     break;
                 }
             }
@@ -1511,6 +1478,7 @@ void InitAUXDevice(void)
 //
 //      Note : If want to enable mouse device. Please ensrue "MouseDriverIn" is set.
 //----------------------------------------------------------------------------
+// 没用
 void TPOnlyLowLevelFunc(void)
 {
     BYTE index;
@@ -1762,6 +1730,9 @@ void ScanAUXPortX(void)
             }
             else if(IS_MASK_SET(AuxFlags2[AUX_SCAN_INDEX],DEVICE_NEED_ENABLED))
             {
+                // BAT_LED1_ON();
+                // for(;;);
+                // F4 没进来
                 ECSend2Port(AUX_SCAN_INDEX, 0xF4);
             }
             else
@@ -1800,13 +1771,6 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
     BYTE result;
     result = 0x01;      // pre-set resutl is fail
     
-    // if (__ps2_flag == 1) {
-    //     (*(volatile unsigned char xdata *) 0x844) = __ps2_flag;
-    //     BAT_LED1_ON();
-    //     BAT_LED2_ON();
-    //     for(;;);
-    // }
-    
     TR1 = 0;            // Disable timer 1
 	ET1 = 0;			// Disable timer1 interrupt
     _nop_();
@@ -1840,9 +1804,6 @@ BYTE bExtAUXTimeOutCheck(BYTE channel, BYTE p_mode)
 
         if(IS_MASK_SET(*asPS2Struct[channel].ps2isr, asPS2Struct[channel].ctrlbit))
         {
-
-            (*(volatile unsigned char xdata *)(0x811 + (*(volatile unsigned char xdata *)0x810)++) ) = PSDAT1;
-
             *asPS2Struct[channel].ps2status = TDS;
 
             if(p_mode == PS2_Transmission_Mode)
@@ -1946,6 +1907,7 @@ void ConfigExtKeyboard(BYTE portnum)
 // The function of setting Resolution
 //  return : 1 OK, 0 fail
 //----------------------------------------------------------------------------
+// 没用
 BYTE EnableMouse(BYTE port)
 {
     BYTE resault;
@@ -2066,6 +2028,7 @@ BYTE ReadMouseID(BYTE port)
 //----------------------------------------------------------------------------
 // The function of setting external mouse device
 //----------------------------------------------------------------------------
+// 没用
 BYTE ConfigExtMouse(BYTE portnum)
 {  
     BYTE result;
@@ -2606,17 +2569,9 @@ BYTE PS2CheckPendingISR(void)
     }
     else if(IS_MASK_SET(PSSTS1, TDS))
     {
-        
-        // if (IS_MASK_SET(PSSTS1, TDS)) {
-        //     BAT_LED1_ON();
-        //     BAT_LED2_ON();
-        //     for(;;);
-        // }
     
         if(IS_MASK_SET(IER2,Int_PS2_0)&&IS_MASK_CLEAR(ISR2,Int_PS2_0)&&(PSCTL1==(PS2_ReceiveMode & 0xbf)))
         {
-
-            (*(volatile unsigned char xdata *)(0x821 + (*(volatile unsigned char xdata *)0x820)++) ) = PSDAT1;
             IRQ_INT20_PS2Interrupt0();
             pending=0x01;
         }

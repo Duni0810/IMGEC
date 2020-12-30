@@ -649,29 +649,22 @@ void __deepdoze_to_wakeup(void)
 
 #endif
 
-#if 0
+#if 1
 
 // 程序进入为 sleep 模式， 通过开机按钮唤醒
-// void __sleep_to_wakeup(void)
+void __sleep_to_wakeup(void)
 {
     // 只是写一个标志位而已
     (*(volatile unsigned char xdata *) 0x401) = 0x55;
 
+ 	Init_ClearRam();
+     SP = 0xC0;					// Setting stack pointer
+
+    Init_Timers();
     // 初始化默认的GPIO功能（主要是LED）
     Init_GPIO();
 
-    KSOCTRL = KSOOD + KSOPU;  
-    KSICTRL = KSIPU   ;    	
-
-
-    		// Core_Initialization();
-		// Oem_Initialization();
-        // InitEnableInterrupt();
-
-    BAT_LED1_ON();
-    __1s_delay();
-    __1s_delay();
-    BAT_LED1_OFF();
+    ExtWDTInit();	
 
     GCR10 = 0x01;
 	GCR8 = 0x10;
@@ -683,48 +676,53 @@ void __deepdoze_to_wakeup(void)
 	// Set Wake up pin -> alt function
 	//*************************************************************************
 	GPCRE4 = ALT;			// pwrsw to alternate pin
-	// WUEMR2 |= 0x20;         //  设置边缘触发方式
-	// WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
-	// WUENR2 |= 0x20;  
-
-    // WUEMR3 |= 0xFF;         //  设置边缘触发方式
-	// WUESR3 |= 0xFF;			//  清除 电源按键唤醒中断状态并使能
-	// WUENR3 |= 0xFF;  
-
-    // ISR1 |= Int_WKINTC;		// 清除 int14 for  pwrsw
-	// IER1 |= Int_WKINTC;		// 使能 int14 for  pwrsw
-
-	// ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
-	// IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
+	WUEMR2 |= 0x20;         //  设置边缘触发方式
+	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
+	WUENR2 |= 0x20;  
+	ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
+	IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
 
 
-    // ISR1 |= Int_KB;		
-	// IER1 |= Int_KB;		
-
-
-	InitEnableInterrupt();
-
-    PLLCTRL = 0x01;
-    PCON    = 2;      		
+    EX1=1;					// enable external 1 interrupt 
+	EnableAllInterrupt();
 
     _nop_();
 	_nop_();
     _nop_();
 	_nop_();
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
 
-	Init_GPIO();
-	GPCRE4 = INPUT; 		// pwrsw to alternate pin
+    __1s_delay();
+    BAT_LED1_ON();
+    __1s_delay();
+    BAT_LED1_OFF();
+    __1s_delay();
 
-    // BAT_LED2_ON();  // 橙色
 
-    for(;;) {
-        INVERSE_REG(GPDRC, 6);
-        __1s_delay();
-    };
+			ETWCFG   = 0x10;
+            // ETWCFG   = 0x00;
+            // Loop_Delay(20);
+            // ETWCFG   = 0x01;
+        	EWDCNTLR = 2;    
+        	EWDKEYR  = 0x5A ;   
+
+    // PLLCTRL = 0x01;
+    // PCON    = 2;      		
+
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+
+	// Init_GPIO();
+	// GPCRE4 = INPUT; 		// pwrsw to alternate pin
+
+    BAT_LED2_ON();  // 橙色
+
+    for(;;);
 }
 
 
@@ -767,7 +765,7 @@ void __test_dac_pin_invert()
     Init_ClearRam();
 
 	SP = 0xC0;					// Setting stack pointer
-
+    
     // DCache &= 0xFC;
     DCache |= 0x03;
 
@@ -1107,12 +1105,57 @@ static void __test_speed_code(void)
 
 }
 
-
+u32 test_timer = 0;
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
+
+// 	volatile u32 i;
+// 	u32 time = 0;
+// //	char a[16] = "aaaaaaaaaaa";
+// //	char b[16] = "aaaaaaaaaa";
+	
+// 	Init_ClearRam();
+	
+// #if !EC_MODE
+//     // 控制flash 读写拍数
+//     SMFI_FIC_CTL0  = 0x98; // 0x98
+//     SMFI_FIC_CTL1  = 0x00;
+// #endif
+
+	
+// 	Init_Timers();
+// 	Init_GPIO();
+// 	InitEnableInterrupt();
+	
+// 	uart_Initial();
+// 	GPCRB0 = ALT;
+// 	GPCRB1 = ALT;
+	
+// 	ChangeSPIFlashReadMode(SPIReadMode_1); 
+// 	// (*((volatile unsigned char *)0x10B0)) = 0x10;
+// 	// (*((volatile unsigned char *)0x10B1)) = 0x00;
+
+	
+// 	test_timer = 0;
+	
+// 	for(i = 0;i < 1000000;i++) 
+// 	{
+// //		sky_strcmp(a,b);
+// 		INVERSE_REG(GPDRJ,4);
+// 	}
+	
+// 	time = test_timer;
+// 	BAT_LED1_ON();
+// 	BAT_LED2_ON();
+	
+// 	uart_hex_show(time >> 24);
+// 	uart_hex_show(time >> 16);
+// 	uart_hex_show(time >> 8);
+// 	uart_hex_show(time);
+//     for(;;);
 
 
     //  __test_speed_code();

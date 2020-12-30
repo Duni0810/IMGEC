@@ -342,15 +342,11 @@ void IRQ_INT19_PS2Interrupt1(void)
 //----------------------------------------------------------------------------
 void IRQ_INT20_PS2Interrupt0(void)
 {
-    // BAT_LED2_ON();
-    // for(;;);
-   
-   
+
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_0); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_0;           // Write to clear pending interrupt
 
-    // (*(volatile unsigned char xdata *)(0x821 + (*(volatile unsigned char xdata *)0x820)++) ) = PSDAT1;
 
     if(SendtoAUXFlag)
     {
@@ -369,9 +365,9 @@ void IRQ_INT20_PS2Interrupt0(void)
         }
     }
 
-    if (PSCTL1 == 0x07) {
-        Loop_Delay(200);
-    }
+    // if (PSCTL1 == 0x07) {
+    //     Loop_Delay(200);
+    // }
     
 
 	PSCTL1 = PS2_InhibitMode;   // Inhibit clock pin1
@@ -383,6 +379,7 @@ void IRQ_INT20_PS2Interrupt0(void)
     PS2StartBit=0;			    // clear start bit flag
     PS2_SSIRQ_Channel = 0xFF;   //
 	PS2PortxData[0]=PSDAT1;
+
     #else
 	if(IS_MASK_SET(PSSTS1, TDS))    // Transaction done interrupt 
 	{
@@ -959,11 +956,13 @@ void Isr_Int0(void) interrupt 0 using 2
  * ------------------------------------------------------------------------- */
 
 extern void Oem_Hook_Timer1ms(void);
+extern u32 test_timer ;
+
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    static char i = 0;
+    // static char i = 0;
     // static u8 j = 0;
-
+    test_timer++;
     Load_Timer_A();
 
     // i++;

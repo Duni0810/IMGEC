@@ -51,15 +51,10 @@ void Hook_Timer1msEvent(IBYTE EventId)
     Oem_SysPowerContrl();       // System Power Control EC电源状态控制
     SMBusCenter(); 
 
-
-	// for(;;);
-
 	//Label:BLD_TIPIA_20161118_021
 	#if Lenovo_Support
 	Lenovo_PM_Cmd();
 	#endif
-
-// for(;;);
 
 	// 暂时屏蔽 young
 	#if Support_ANX7447

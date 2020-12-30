@@ -120,6 +120,12 @@ void main(void)
     u8    young_flag  = 0x00;
     u8    young_flag1 = 0x00;
 
+#if !EC_MODE
+    // 控制flash 读写拍数
+    SMFI_FIC_CTL0  = 0x98;
+    SMFI_FIC_CTL1  = 0x00;
+#endif
+
 	DisableAllInterrupt();
 	SP = 0xC0;					// Setting stack pointer
 
@@ -215,34 +221,35 @@ void main(void)
         //-----------------------------------
         // 1 millisecond elapsed
         //-----------------------------------
-        if(F_Service_MS_1)
-        {
-            F_Service_MS_1=0;
-            service_1mS();
+        // if(F_Service_MS_1)
+        // {
+        //     F_Service_MS_1=0;
+        //     service_1mS();
 
-            // if(young_flag >= 250) {
-            //     INVERSE_REG(GPDRC, 6);
-            //     uart_print("test code \r\n");
-            //     young_flag = 0;
-            // }
-            // young_flag++;
+        //     // if(young_flag >= 250) {
+        //     //     INVERSE_REG(GPDRC, 6);
+        //     //     uart_print("test code \r\n");
+        //     //     young_flag = 0;
+        //     // }
+        //     // young_flag++;
 
-            continue;
-        }
+        //     continue;
+        // }
 
         // INVERSE_REG(GPDRJ, 4);
         // uart_print("idle code \r\n");
         //-----------------------------------
         // Keyboard scanner service
         //-----------------------------------
-        if(F_Service_KEY)
-        {
-        	F_Service_KEY=0;
+        // if(F_Service_KEY)
+        // {
+        	// F_Service_KEY=0;
             // uart_print("KBS code \r\n");
 			service_scan();
-			continue;
-        }
-
+			// continue;
+        // }
+        // KSOL  = 0x00;
+        // KSOH1 = 0x00;
         young_flag1 = Get_Buffer();
         if ((young_flag1 != 0xff) && ((young_flag1 != 0x00))) {
             uart_print("\r\ndata:");
@@ -256,6 +263,12 @@ void main(void)
     u8    young_flag  = 0x00;
     u8    young_flag1 = 0x00;
     
+
+#if !EC_MODE
+    // 控制flash 读写拍数
+    SMFI_FIC_CTL0  = 0x98;
+    SMFI_FIC_CTL1  = 0x00;
+#endif
 
 	DisableAllInterrupt();
 	SP = 0xC0;					// Setting stack pointer
@@ -325,8 +338,10 @@ void main(void)
     // 使能Dcache 代码执行效率更高点
      DCache         = 0x00;
 
-    // 控制flash 读写拍数
-     SMFI_FIC_CTL1  = 0x00;
+    // // 控制flash 读写拍数
+    // SMFI_FIC_CTL0  = 0x98;
+    SMFI_FIC_CTL1  = 0x00;
+
 
     // 初始化 pS2 时钟
     PSDCNUM1 = 0x03;
@@ -335,109 +350,12 @@ void main(void)
 
     // 初始化 pS2 时钟
     PSCLKEN = 0x07;  // PSCLKEN
-
-
 #endif
-
-    // BAT_LED1_ON();
-    // for(;;);
-
-#if 0
-    // 使能Dcache 代码执行效率更高点
-     DCache = 0x00;
-
-    // 设置时钟为100K
-    SCLKTS_A = 0x02;
-    SCLKTS_B = 0x02;
-    SCLKTS_C = 0x02;
-
-    CHARGER_OPTION_L = 0x08;
-    CHARGER_OPTION_H = 0xE2;  // 默认为E1  建议别乱写
-
-
-    // GPDRM  =  0x00;
-
-    // __1s_delay();
-
-
-    //  (*(volatile unsigned char xdata *) 0x1206) = 0x01;
-    //  (*(volatile unsigned char xdata *) 0x1208) = 0x04;
-
-    
-
-  
-
-
-	for(;;) {
-        //-----------------------------------
-        // 1 millisecond elapsed
-        //-----------------------------------
-        if(F_Service_MS_1)
-        {
-            F_Service_MS_1=0;
-            service_1mS();
-
-            if(young_flag >= 250) {
-                INVERSE_REG(GPDRC, 6);
-                young_flag = 0;
-            }
-            young_flag++;
-            continue;
-        }
-
-
-        if (SysPowState == SYSTEM_S0) {
-            // INVERSE_REG(GPDRC, 6);
-
-            // __InitSio();
-            __InitSio(0x07, 0x06);
-            __InitSio(0x70, 0x33);
-
-            // __InitSio(0x07, 0x06);
-            // __InitSio(0x71, 0x55);
-            
-
-
-            (*(volatile unsigned char xdata *) 0x812) = ReadSioInterface(0x06,0x70);
-
-            if ((*(volatile unsigned char xdata *) 0x812) != 0x13) {
-                BAT_LED2_ON();
-                    for(;;);
-            }   
-
-
-            __InitSio(0x07, 0x06);
-            __InitSio(0x70, 0x11);
-
-            // __InitSio(0x07, 0x06);
-            // __InitSio(0x71, 0x55);
-            
-
-
-            (*(volatile unsigned char xdata *) 0x813) = ReadSioInterface(0x06,0x70);
-            if ((*(volatile unsigned char xdata *) 0x813) != 0x11) {
-                BAT_LED2_ON();
-                    for(;;);
-            }  
-
-
-            // (*(volatile unsigned char xdata *) 0x814) = ReadSioInterface(0x10,0x62);
-            // (*(volatile unsigned char xdata *) 0x813) = ReadSioInterface(0x06,0x71);
-        }
-        // INVERSE_REG(GPDRJ, 4);
-
-	};
-#endif
-
-    // __test_speed_code();
-            
 
 	while(1)
    	{
         if(OEM_SkipMainServiceFunc()==Normal_MainService)
         {
-
-
     		main_service();
     		EnableModuleInterrupt();
     		_nop_();
@@ -446,10 +364,10 @@ void main(void)
     		_nop_();
 
 			#if TouchPad_only
-            // if(PS2CheckPendingISR()==0x00)
-            // {
-            //     ScanAUXDeviceStep();
-            // }
+            if(PS2CheckPendingISR()==0x00)
+            {
+                ScanAUXDeviceStep();
+            }
 			#endif
 
             #ifdef SMBusServiceCenterFunc
@@ -687,7 +605,7 @@ void service_1mS(void)
 		    Timer10msEventB();                          // ANX7447 事件
      	    switch( Timer5msCnt )   // Share Loading Branch Control
     	    {
-       		    case 2: //Timer50msEventA();              // LED 灯控制
+       		    case 2: Timer50msEventA();              // LED 灯控制
                     break;
           	    case 4: Timer50msEventB();              // 适配器热插拔事件
              	    break;

@@ -100,7 +100,10 @@ extern ECReg	HRAMW1AAS		;// 0x105E;	// Host RAM Window 1 Access Allow Size
 
 extern ECReg	SCAR5H			;// 0x105F;
 extern ECReg	FLHCTRL3R		;// 0x1063;
+
+extern ECReg	SMFI_FIC_CTL0;
 extern ECReg	SMFI_FIC_CTL1;
+
 //-----------------------------------------------------------------------------
 // (11xxh) Interrupt controller (INTC) 
 //-----------------------------------------------------------------------------

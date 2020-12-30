@@ -1008,8 +1008,6 @@ void i2c_write_reg(BYTE i2c_addr, BYTE reg, BYTE data1)
     
     if (ret == 0)
     {
-        // BAT_LED2_ON();
-        // for(;;);
         //TypeC_I2C_error++;
     }
 }

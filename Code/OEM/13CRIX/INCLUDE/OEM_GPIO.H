@@ -307,7 +307,7 @@
 //TF_002++<<
 
 #define BAT_LED1_ON()    		SET_MASK(GPDRJ,BIT(4))
-#define BAT_LED1_OFF()   		//CLEAR_MASK(GPDRJ,BIT(4))
+#define BAT_LED1_OFF()   		CLEAR_MASK(GPDRJ,BIT(4))
 
 #define KBLED_ON()				SET_MASK(GPDRJ,BIT(5))
 #define KBLED_OFF()				CLEAR_MASK(GPDRJ,BIT(5))

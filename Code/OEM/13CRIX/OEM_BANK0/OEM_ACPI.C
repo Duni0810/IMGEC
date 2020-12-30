@@ -767,15 +767,8 @@ void Lenovo_PM_Cmd(void)
 		break;
 		
 	default:
-	// ;
-		// EA =  0;
-		// for(;;);
 		break;	 
 	}
-
-
-	// EA =  0;
-	// for(;;);
 
 	VCMD_Lenovo = 0x00;
 }
