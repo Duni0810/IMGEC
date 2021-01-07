@@ -14,6 +14,7 @@
 
 
 u8 __ps2_flag = 0;
+volatile u8 __ps2_stat = 0;
 
 const sPS2Struct code asPS2Struct[] = 
 {
@@ -235,7 +236,7 @@ void ProcessMouseData(BYTE channel)
         }
         else
 	    {
-            if(!AUXInterfaceBusy)
+            if(!AUXInterfaceBusy) //& TPACKCounter!=0x00
             {
                 //for(index=0x00;index<3;index++)     // Check any keyboard is attached?
                 //{
@@ -257,6 +258,16 @@ void ProcessMouseData(BYTE channel)
                 PS2Deviceactive();              // Enable all ps2 interface
                 SetPS2InhibitTime(InactiveTime);
             }
+            // else{
+            //     if( __ps2_stat == 0) {
+            //         PS2DeviceInactive();              // Enable all ps2 interface
+            //         SetPS2InhibitTime(InactiveTime);
+            //     } else {
+            //         PS2Deviceactive();              // Enable all ps2 interface
+            //         SetPS2InhibitTime(InactiveTime);
+            //     }
+
+            // }
 
 	    }
     }
@@ -537,7 +548,13 @@ void CheckNWaitReceiveDone(void)
         
     if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)
     ||F_Service_PS2 == 1||PS2StartBit == 1)
+    // if(F_Service_PS2 == 1||PS2StartBit == 1)
     {
+        PSSTS1 = SS;
+        PSSTS2 = SS;
+        PSSTS3 = SS;
+
+
         TR1 = 0;                 	    // Disable timer1
         ET1 = 0;                  	    // Disable timer1 interrupt
         _nop_();
@@ -585,6 +602,8 @@ void CheckNWaitReceiveDone(void)
         PS2DeviceInactive();
     }
 }
+
+
 
 //-----------------------------------------------------------------
 // Send data to ps2 interface
@@ -649,11 +668,12 @@ void Send2Port( BYTE PortNum, BYTE PortData, BYTE action)
 
     WaitPS2DeviceACK(PortNum);
 
-    // if (PortData == 0xF4) {
-    //     BAT_LED1_ON();
-    //     BAT_LED2_ON();
-    //     for(;;);
-    // }
+    if (PortData == 0xF4) {
+        // BAT_LED1_ON();
+        // BAT_LED2_ON();
+        // for(;;);
+        __ps2_stat = 1;
+    }
 //     BAT_LED1_ON();
 //     BAT_LED2_ON();
 //     for(;;);
@@ -687,7 +707,7 @@ BYTE Send2PortNWait( BYTE PortNum, BYTE cmd, BYTE bytecunt)
     // PSDCNUM2 = 0x03;
     // PSDCNUM3 = 0x03;
 	RAM_Send2Port(PortNum, cmd);
- 
+     
      EnableAllInterrupt();
 
     result = bExtAUXTimeOutCheck(PortNum, PS2_Transmission_Mode);
@@ -1507,7 +1527,12 @@ void TPOnlyLowLevelFunc(void)
         else
         {
             if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)||F_Service_PS2)
+            // if(F_Service_PS2)
             {
+                PSSTS1 = SS;
+                PSSTS2 = SS;
+                PSSTS3 = SS;
+
                 return;
             }
         }
@@ -1571,7 +1596,11 @@ void ExternalAUXLowLevelFunc(void)
         }   
  
         if(IS_MASK_SET(PSSTS1, SS)||IS_MASK_SET(PSSTS2, SS)||IS_MASK_SET(PSSTS3, SS)||PS2StartBit==1)
+        // if(PS2StartBit==1)
         {
+            PSSTS1 = SS;
+            PSSTS2 = SS;
+            PSSTS3 = SS;
             AuxScanWDT++;
             
             if(AuxScanWDT>100)          // Interface watch dog for hot-plug  (1sec). 
@@ -1583,15 +1612,21 @@ void ExternalAUXLowLevelFunc(void)
                 PS2Deviceactive();
                 
                 if(IS_MASK_SET(PSSTS1, SS)||PS2_SSIRQ_Channel == 0)
+                //  if(PS2_SSIRQ_Channel == 0)
                 {
+                    PSSTS1 = SS;
 	                PSCTL1 = PS2_InhibitMode;
                 }
                 else if(IS_MASK_SET(PSSTS2, SS)||PS2_SSIRQ_Channel == 1)
+                // else if(PS2_SSIRQ_Channel == 1)
                 {
+                    PSSTS2 = SS;
                     PSCTL2 = PS2_InhibitMode;
                 }
                 else if(IS_MASK_SET(PSSTS3, SS)||PS2_SSIRQ_Channel == 2)
+                // else if(PS2_SSIRQ_Channel == 2)
                 {
+                    PSSTS3 = SS;
                     PSCTL3 = PS2_InhibitMode;
                 }
             }
@@ -2553,6 +2588,7 @@ BYTE PS2CheckPendingISR(void)
 
     if(IS_MASK_SET(PSSTS3, TDS))
     {
+        PSSTS3 = TDS;
         if(IS_MASK_SET(IER2,Int_PS2_2)&&IS_MASK_CLEAR(ISR2,Int_PS2_2)&&(PSCTL3==(PS2_ReceiveMode & 0xbf)))
         {
             IRQ_INT18_PS2Interrupt2();
@@ -2561,6 +2597,7 @@ BYTE PS2CheckPendingISR(void)
     }
     else if(IS_MASK_SET(PSSTS2, TDS))
     {
+        PSSTS2 = TDS;
         if(IS_MASK_SET(IER2,Int_PS2_1)&&IS_MASK_CLEAR(ISR2,Int_PS2_1)&&(PSCTL2==(PS2_ReceiveMode & 0xbf)))
         {
             IRQ_INT19_PS2Interrupt1();
@@ -2569,7 +2606,7 @@ BYTE PS2CheckPendingISR(void)
     }
     else if(IS_MASK_SET(PSSTS1, TDS))
     {
-    
+        PSSTS1 = TDS;
         if(IS_MASK_SET(IER2,Int_PS2_0)&&IS_MASK_CLEAR(ISR2,Int_PS2_0)&&(PSCTL1==(PS2_ReceiveMode & 0xbf)))
         {
             IRQ_INT20_PS2Interrupt0();

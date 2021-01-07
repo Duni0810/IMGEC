@@ -491,6 +491,20 @@ extern ECReg    VCH7CTL         ;// 0x1941 Voltage Channel 7 Control Register
 extern ECReg    VCH7DATM        ;// 0x1942 Volt Channel 7 Data Buffer MSB
 extern ECReg    VCH7DATL        ;// 0x1943 Volt Channel 7 Data Buffer LSB
 
+extern ECReg   ADCDVSTS         ;//_at_ 0x1944; 	// ADC Data Valid Status
+extern ECReg   VCMPSTS	        ;//_at_ 0x1945; 	// Voltage Compare Status
+extern ECReg   VCMP0CTL         ;//_at_ 0x1946; 	// Voltage Compare 0 Control Register
+extern ECReg   CMP0THRDATM      ;//_at_ 0x1947;     // Voltage Comparator 0 Threshold Data Buffer MSB
+extern ECReg   CMP0THRDATL      ;//_at_ 0x1948; 	// Voltage Comparator 0 Threshold Data Buffer LSB 
+extern ECReg   VCMP1CTL         ;//_at_ 0x1949; 	// Voltage Compare 1 Control Register 
+extern ECReg   CMP1THRDATM      ;//_at_ 0x194A; 	// Voltage Comparator 1 Threshold Data Buffer MSB
+extern ECReg   CMP1THRDATL      ;//_at_ 0x194B; 	// Voltage Comparator 1 Threshold Data Buffer LSB
+extern ECReg   VCMP2CTL         ;//_at_ 0x194C; 	// Voltage Compare 2 Control Register
+extern ECReg   CMP2THRDATM      ;//_at_ 0x194D; 	// Voltage Comparator 2 Threshold Data Buffer MSB
+extern ECReg   CMP2THRDATL      ;//_at_ 0x194E; 	// Voltage Comparator 2 Threshold Data Buffer LSB
+extern ECReg   VCMPOTR          ;//_at_ 0x194F; 	// Voltage Comparator Output Type Register
+extern ECReg   VCMPLR           ;//_at_ 0x1952; 	// Voltage Comparator Lock Register
+
 //-----------------------------------------------------------------------------
 // (19xxh) Analog to Digital converter (ADC) 
 //-----------------------------------------------------------------------------
@@ -762,6 +776,8 @@ extern ECReg	PI2ECL			;// 0x2015   Port I2EC Low-Byte Register
 extern ECReg	BINTADDR0R		;// 0x2019   BRAM Interrupt Address 0 Register
 extern ECReg	BINTADDR1R		;// 0x201A   BRAM Interrupt Address 1 Register
 extern ECReg	BINTCTRLR		;// 0x201B   BRAM Interrupt Control Register
+
+extern ECReg    GCR15;
 //-----------------------------------------------------------------------------
 // (21xxh) External GPIO Controller (EGPC) 
 //-----------------------------------------------------------------------------

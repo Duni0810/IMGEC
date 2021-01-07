@@ -654,27 +654,38 @@ void __deepdoze_to_wakeup(void)
 // 程序进入为 sleep 模式， 通过开机按钮唤醒
 void __sleep_to_wakeup(void)
 {
-    // 只是写一个标志位而已
-    (*(volatile unsigned char xdata *) 0x401) = 0x55;
 
- 	Init_ClearRam();
+
+    
+    Core_Init_ClearRam();
+    Init_ClearRam();
      SP = 0xC0;					// Setting stack pointer
 
-    Init_Timers();
-    // 初始化默认的GPIO功能（主要是LED）
-    Init_GPIO();
 
-    ExtWDTInit();	
+    	Core_Initialization();
+		Oem_Initialization();
+        InitEnableInterrupt();
+
+    // timer 8 bit
+    // GCR2 = 0x0f;
+    // GPCRB2 = 0x00;
+    // GPCRD7 = 0x00;
+    // GPCRF0 = 0x00;
+    // GPCRF1 = 0x00;
+
+    // PRSC   = 0x11;
+    // GCSMS  = 0x00;
+
+    // DCR_A0 = 0x80;    
+    // DCR_A1 = 0x80;
+    // DCR_B0 = 0x80;
+    // DCR_B1 = 0x80;
+    // TMRCE  = 0x02;
+
+
 
     GCR10 = 0x01;
 	GCR8 = 0x10;
-	
-    // 关总中断
-	DisableAllInterrupt();
-
-    //*************************************************************************
-	// Set Wake up pin -> alt function
-	//*************************************************************************
 	GPCRE4 = ALT;			// pwrsw to alternate pin
 	WUEMR2 |= 0x20;         //  设置边缘触发方式
 	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
@@ -685,44 +696,131 @@ void __sleep_to_wakeup(void)
 
     EX1=1;					// enable external 1 interrupt 
 	EnableAllInterrupt();
+    __1s_delay();   
+    // ETPSR = 0x00;                   
+    // ETCNTLHR = 0x80;        //
+    // ETCNTLLR = 0x00;        // "g_ECPowerDownPeriodWakeUpTime" second
 
-    _nop_();
-	_nop_();
-    _nop_();
-	_nop_();
+    // EWDCNTLR = 0x03;
+    // EWDCNTHR = 0x
+    // ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+    // SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
 
-    __1s_delay();
+    // ETWCTRL = 0x01;
+    // BAT_LED2_ON();  // 白色
     BAT_LED1_ON();
-    __1s_delay();
-    BAT_LED1_OFF();
-    __1s_delay();
 
+    // 电压比较器
+    // 1. 设置阈值
+    // CMP0THRDATL = 0xff;
 
-			ETWCFG   = 0x10;
-            // ETWCFG   = 0x00;
-            // Loop_Delay(20);
-            // ETWCFG   = 0x01;
-        	EWDCNTLR = 2;    
-        	EWDKEYR  = 0x5A ;   
+    // GPCRI0 = 0x00;
+    // GPCRI1 = 0x00;
+    // GPCRI2 = 0x00;
+    // GPCRI3 = 0x00;
+    // GPCRI4 = 0x00;
+    // GPCRI5 = 0x00;
+    // GPCRI6 = 0x00;
+    // GPCRI7 = 0x00;
 
-    // PLLCTRL = 0x01;
-    // PCON    = 2;      		
+    // 引脚复用
+    // GPCRJ3 = 0x00;
+    // GCR15  = 0x01;
 
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
+    // 使能
+    // VCMP0CTL = 0xA1;
+    
 
-	// Init_GPIO();
-	// GPCRE4 = INPUT; 		// pwrsw to alternate pin
+    __1s_delay();   
 
-    BAT_LED2_ON();  // 橙色
+    
+    // DisableADCModule();
 
+    // VCMP1CTL = 0xA1;
+    // VCMP2CTL = 0xA1;
+    // VCMP0CTL = 0x00;
+    PLLCTRL = 0x01;
+    PCON    = 2;      		
+
+    _nop_();
+	_nop_();
+    _nop_();
+	_nop_();
+    _nop_();
+	_nop_();
+    _nop_();
+	_nop_();
+
+    BAT_LED2_ON(); 
     for(;;);
+
+
+
+
+    // GCR10 = 0x01;
+	// GCR8 = 0x10;
+	
+    // // 关总中断
+	// DisableAllInterrupt();
+
+    // //*************************************************************************
+	// // Set Wake up pin -> alt function
+	// //*************************************************************************
+	// GPCRE4 = ALT;			// pwrsw to alternate pin
+	// WUEMR2 |= 0x20;         //  设置边缘触发方式
+	// WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
+	// WUENR2 |= 0x20;  
+	// ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
+	// IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
+
+
+    // EX1=1;					// enable external 1 interrupt 
+	// EnableAllInterrupt();
+
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+
+    // __1s_delay();
+    // BAT_LED1_ON();
+    // __1s_delay();
+    // BAT_LED1_OFF();
+    // __1s_delay();
+
+
+	// 		// ETWCFG   = 0x10;
+    //         // // ETWCFG   = 0x00;
+    //         // // Loop_Delay(20);
+    //         // // ETWCFG   = 0x01;
+    //     	// EWDCNTLR = 2;    
+    //     	// EWDKEYR  = 0x5A ;   
+
+    // // PLLCTRL = 0x01;
+    // // PCON    = 2;      		
+
+
+    // (*(volatile unsigned char xdata *) 0x802) = ET2CNTLHR;   
+    // (*(volatile unsigned char xdata *) 0x803) = ET2CNTLLR;
+    // (*(volatile unsigned char xdata *) 0x804) = ET2CNTLH2R;
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+    // _nop_();
+	// _nop_();
+    // (*(volatile unsigned char xdata *) 0x812) = ET2CNTLHR;  
+    // (*(volatile unsigned char xdata *) 0x813) = ET2CNTLLR;
+    // (*(volatile unsigned char xdata *) 0x814) = ET2CNTLH2R;
+
+	// // Init_GPIO();
+	// // GPCRE4 = INPUT; 		// pwrsw to alternate pin
+
+    // BAT_LED2_ON();  // 橙色
+
+    // for(;;);
 }
 
 
@@ -1112,50 +1210,22 @@ u32 test_timer = 0;
 void Oem_StartUp(void)
 {
 
-// 	volatile u32 i;
-// 	u32 time = 0;
-// //	char a[16] = "aaaaaaaaaaa";
-// //	char b[16] = "aaaaaaaaaa";
-	
-// 	Init_ClearRam();
-	
-// #if !EC_MODE
-//     // 控制flash 读写拍数
-//     SMFI_FIC_CTL0  = 0x98; // 0x98
-//     SMFI_FIC_CTL1  = 0x00;
-// #endif
 
-	
-// 	Init_Timers();
-// 	Init_GPIO();
-// 	InitEnableInterrupt();
-	
-// 	uart_Initial();
-// 	GPCRB0 = ALT;
-// 	GPCRB1 = ALT;
-	
-// 	ChangeSPIFlashReadMode(SPIReadMode_1); 
-// 	// (*((volatile unsigned char *)0x10B0)) = 0x10;
-// 	// (*((volatile unsigned char *)0x10B1)) = 0x00;
+    //     Init_GPIO();
 
-	
-// 	test_timer = 0;
-	
-// 	for(i = 0;i < 1000000;i++) 
-// 	{
-// //		sky_strcmp(a,b);
-// 		INVERSE_REG(GPDRJ,4);
-// 	}
-	
-// 	time = test_timer;
-// 	BAT_LED1_ON();
-// 	BAT_LED2_ON();
-	
-// 	uart_hex_show(time >> 24);
-// 	uart_hex_show(time >> 16);
-// 	uart_hex_show(time >> 8);
-// 	uart_hex_show(time);
-//     for(;;);
+    // EX1=1;					// enable external 1 interrupt 
+	// EnableAllInterrupt();
+
+    // ExtWDTInit();
+
+    // ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+    // SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
+
+    // ETWCTRL = 0x01;
+    // BAT_LED1_ON();  // 白色
+    // BAT_LED2_ON();  // 白色
+    
+    // for(;;);
 
 
     //  __test_speed_code();
@@ -1276,7 +1346,7 @@ void Oem_StartUp(void)
     // __deepdoze_to_wakeup();
 
     // __sleep_to_wakeup();
-
+// 
     // Init_ADC();
 
     
@@ -1331,7 +1401,7 @@ void Oem_Initialization(void)
 #else
 
     #ifdef SPIReadMode
-    ChangeSPIFlashReadMode(SPIReadMode_2);  // SPIReadMode_2
+    ChangeSPIFlashReadMode(SPIReadMode);  // SPIReadMode_2
     #endif
 
  #endif

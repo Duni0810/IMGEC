@@ -182,6 +182,7 @@ void HSPI_CmdRamCode(void)
 {
 	RamcodeCmd = 0x00;
 
+    
 	if(RamCodePort==0x64)
 	{
 		KBHIKDOR = 0xFA;

@@ -336,7 +336,7 @@ ECReg 	GPOTD			_at_ 0x1674;	// Output Type Register
 ECReg 	GPOTE			_at_ 0x1675;	// Output Type Register
 ECReg 	GPOTH			_at_ 0x1678;	// Output Type Register
 
-
+ECReg	GCR15			_at_ 0x16FE;	// General Control 15 Register
 
 
 //-----------------------------------------------------------------------------
@@ -446,6 +446,20 @@ ECReg   VCH6DATL        _at_ 0x1940;    // Volt Channel 6 Data Buffer LSB
 ECReg   VCH7CTL         _at_ 0x1941;    // Voltage Channel 7 Control Register
 ECReg   VCH7DATM        _at_ 0x1942;    // Volt Channel 7 Data Buffer MSB
 ECReg   VCH7DATL        _at_ 0x1943;    // Volt Channel 7 Data Buffer LSB
+
+ECReg   ADCDVSTS        _at_ 0x1944; 	// ADC Data Valid Status
+ECReg   VCMPSTS	        _at_ 0x1945; 	// Voltage Compare Status
+ECReg   VCMP0CTL        _at_ 0x1946; 	// Voltage Compare 0 Control Register
+ECReg   CMP0THRDATM     _at_ 0x1947;  	// Voltage Comparator 0 Threshold Data Buffer MSB
+ECReg   CMP0THRDATL     _at_ 0x1948; 	// Voltage Comparator 0 Threshold Data Buffer LSB 
+ECReg   VCMP1CTL        _at_ 0x1949; 	// Voltage Compare 1 Control Register 
+ECReg   CMP1THRDATM     _at_ 0x194A; 	// Voltage Comparator 1 Threshold Data Buffer MSB
+ECReg   CMP1THRDATL     _at_ 0x194B; 	// Voltage Comparator 1 Threshold Data Buffer LSB
+ECReg   VCMP2CTL        _at_ 0x194C; 	// Voltage Compare 2 Control Register
+ECReg   CMP2THRDATM     _at_ 0x194D; 	// Voltage Comparator 2 Threshold Data Buffer MSB
+ECReg   CMP2THRDATL     _at_ 0x194E; 	// Voltage Comparator 2 Threshold Data Buffer LSB
+ECReg   VCMPOTR        	_at_ 0x194F; 	// Voltage Comparator Output Type Register
+ECReg   VCMPLR        	_at_ 0x1952; 	// Voltage Comparator Lock Register
 
 //-----------------------------------------------------------------------------
 // (1Axxh) Digital to Analog Converter (DAC) 
@@ -642,6 +656,8 @@ ECReg	PI2ECL			_at_ 0x2015;	// Port I2EC Low-Byte Register
 ECReg	BINTADDR0R		_at_ 0x2019;	// BRAM Interrupt Address 0 Register
 ECReg	BINTADDR1R		_at_ 0x201A;	// BRAM Interrupt Address 1 Register
 ECReg	BINTCTRLR		_at_ 0x201B;	// BRAM Interrupt Control Register
+
+
 
 //-----------------------------------------------------------------------------
 // (21xxh) External GPIO Controller (EGPC) 

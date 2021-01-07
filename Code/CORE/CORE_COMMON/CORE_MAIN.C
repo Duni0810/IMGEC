@@ -217,7 +217,19 @@ void main(void)
     // young_flag = 0x00;
 
 
+    // KSI0 GPI
+    // KSIGCTRL = 0x01;
+    // KSIGOEN  = 0x00;
+
+    // // KSO12 GPO0
+    // KSOHGCTRL = 0x10;
+    // KSOHGOEN  = 0x10;
+    // KSOH1     = 0x00;
+    
 	for(;;) {
+        // DelayXms(5);
+        // INVERSE_REG(KSOH1, 4);
+        // KSOHGDMRR = 0x10;
         //-----------------------------------
         // 1 millisecond elapsed
         //-----------------------------------
@@ -258,11 +270,16 @@ void main(void)
 	};
 
 #else 
+
+    volatile u8    young_flag    = 0x00;
+    volatile u8    young_flag1   = 0x00;
+    volatile u8    __tmp_flag    = 0x00;
+    volatile u8    __tmp_arr[3]  = {0x15, 0xF0, 0x15};
+    volatile u8    __tm_stat     = 0x00;
+
+ extern BYTE send_to_pc(BYTE data_word, BYTE break_prefix_flag);
 void main(void)
 {
-    u8    young_flag  = 0x00;
-    u8    young_flag1 = 0x00;
-    
 
 #if !EC_MODE
     // 控制flash 读写拍数
@@ -344,9 +361,9 @@ void main(void)
 
 
     // 初始化 pS2 时钟
-    PSDCNUM1 = 0x03;
-    PSDCNUM2 = 0x03;
-    PSDCNUM3 = 0x03;
+    PSDCNUM1 = 0x01;
+    PSDCNUM2 = 0x01;
+    PSDCNUM3 = 0x01;
 
     // 初始化 pS2 时钟
     PSCLKEN = 0x07;  // PSCLKEN
@@ -403,8 +420,6 @@ void main_service(void)
     while((Service!=0x00)||(Service1!=0x00))
     #endif
     {
-        // 这些其实不影响点亮，但是会卡在初始化位置（屏幕显示银河麒麟的界面）
-        // 
         #if __DEBUG__
         //-----------------------------------
         // Host command/data service    6064
@@ -435,6 +450,47 @@ void main_service(void)
             service_send();
             continue;
         }
+
+        if ((*(volatile unsigned char xdata *) 0x802) == 0x44) {
+
+
+            #if 0
+            young_flag1 = young_flag;
+            young_flag  = 0;
+
+            if (send_to_pc(__tmp_arr[__tmp_flag++], young_flag1)) 
+		    {
+                young_flag = 1;    // Break prefix code. 
+            }
+
+            if (__tmp_flag == 3) {
+                __tmp_flag = 0;
+            }
+
+            __tm_stat++;
+
+            if ((__tm_stat > 180) && (__tmp_flag == 0)) {
+                (*(volatile unsigned char xdata *) 0x802) = 0x00;
+                __tm_stat = 0;
+            }
+            #else 
+            young_flag1 = young_flag;
+            young_flag  = 0;
+
+            if (send_to_pc(__tmp_arr[__tmp_flag++], young_flag1)) 
+		    {
+                young_flag = 1;    // Break prefix code. 
+            }
+
+            if (__tmp_flag == 3) {
+                __tmp_flag = 0;
+                (*(volatile unsigned char xdata *) 0x802) = 0x00;            
+            }
+            // __tm_stat++;
+
+            #endif
+        } 
+        
 
 #if 1
         //-----------------------------------
@@ -491,7 +547,6 @@ void main_service(void)
             // BAT_LED1_ON();
             F_Service_MS_1=0;
             service_1mS();
-
             continue;
         }
 
@@ -501,6 +556,7 @@ void main_service(void)
         //-----------------------------------
         if(F_Service_KEY)
         {
+            // INVERSE_REG(GPDRJ, 4);
         	F_Service_KEY=0;
 			service_scan();
 			continue;
@@ -605,7 +661,7 @@ void service_1mS(void)
 		    Timer10msEventB();                          // ANX7447 事件
      	    switch( Timer5msCnt )   // Share Loading Branch Control
     	    {
-       		    case 2: Timer50msEventA();              // LED 灯控制
+       		    case 2: //Timer50msEventA();              // LED 灯控制
                     break;
           	    case 4: Timer50msEventB();              // 适配器热插拔事件
              	    break;

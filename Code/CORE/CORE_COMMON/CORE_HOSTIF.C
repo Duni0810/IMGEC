@@ -193,12 +193,15 @@ void service_send(void)
     // 挂起缓冲区有数值
     if ( KBPendingRXCount > 0 )
     {
+        // BAT_LED1_ON
+        // INVERSE_REG(GPDRJ, 4);
         Data_To_Host(GetKB_PendingData());
         return;
     }
 
 	if((Ccb42_DISAB_KEY == 1)|| IS_MASK_SET(KBHISR,IBF))
 	{
+        // INVERSE_REG(GPDRC, 6);
 		return;
 	}
     
@@ -375,7 +378,7 @@ static BYTE get_multibyte(void)
  * Returns: TRUE if translation mode is enabled and
  *          scan code was a break prefix.
  * ----------------------------------------------------------------------------*/
-static BYTE send_to_pc(BYTE data_word, BYTE break_prefix_flag)
+ BYTE send_to_pc(BYTE data_word, BYTE break_prefix_flag)
 {
     return(common_send_to_pc(data_word, break_prefix_flag));
 }

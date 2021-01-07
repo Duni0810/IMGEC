@@ -256,10 +256,10 @@ void Hook_IRQ_INT29_EGPC(void)
 //----------------------------------------------------------------------------
 void Hook_IRQ_INT30_ET1(void)
 {
-    // static char i = 0;
+    static char i = 0;
     ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
     // young 外部定时器测试使用
-    //  INVERSE_REG(GPDRC, 6);
+    //  INVERSE_REG(GPDRJ, 4);
 }
 
 //----------------------------------------------------------------------------

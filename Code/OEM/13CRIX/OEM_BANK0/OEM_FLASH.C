@@ -22,6 +22,7 @@ void SetLPCClockFreeRun(void)
 //----------------------------------------------------------------------------
 void LPC_RamCode(void)
 {
+	
 
 	RamcodeCmd = 0x00;
 

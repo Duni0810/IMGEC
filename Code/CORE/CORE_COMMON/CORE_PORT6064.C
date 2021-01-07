@@ -667,6 +667,8 @@ void Cmd_77Data(void)
 //-----------------------------------------------------------------------
 void Cmd_90Data(void)			// always send timeout error to system 
 {
+    BAT_LED1_ON();
+    BAT_LED2_ON();
 
     if(PS2_MSCMD)
     {
@@ -1555,7 +1557,7 @@ void Core_64Port(BYTE KBHICmd)
 //*****************************************************************************
 void ShortDelayAfterWriteDOR(void)
 {
-    Loop_Delay(60);
+    Loop_Delay(100);
     // WNCKR = 0x00;                   // Delay 15.26 us
     // WNCKR = 0x00;                   // Delay 15.26 us
 }

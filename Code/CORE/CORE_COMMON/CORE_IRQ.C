@@ -347,6 +347,8 @@ void IRQ_INT20_PS2Interrupt0(void)
     CLEAR_MASK(IER2,Int_PS2_0); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_0;           // Write to clear pending interrupt
 
+    PSSTS1 = SS;
+    PSSTS1 = TDS;
 
     if(SendtoAUXFlag)
     {
@@ -359,7 +361,7 @@ void IRQ_INT20_PS2Interrupt0(void)
             }
             else
             {
-                Loop_Delay(20);
+                Loop_Delay(20); 
                 // WNCKR = 0x00;   // Delay 15.26 us
             }
         }
