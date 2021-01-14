@@ -33,7 +33,9 @@ void service_PS2_data(void)
 	
     if(IS_MASK_SET(KBHISR,OBF)||IS_MASK_SET(KBHISR,IBF))	        // Dino 0202
     //if(IS_MASK_SET(KBHISR,OBF))
-	{
+	{   
+        // BAT_LED1_ON();
+        INVERSE_REG(GPDRJ, 4);
         SetPS2InhibitTime(InactiveTime);
 		return;
 	}
@@ -83,14 +85,13 @@ void service_PS2_data(void)
     ResetMSPendingData();
 }
 
-
-
-
 //-----------------------------------------------------------------
 // Send data from aux mouse 
 //-----------------------------------------------------------------
 void SendFromAux(BYTE auxdata)
 {
+    u8 i = 0;
+
     KBHISR &= 0x0F;
 
 	if(MULPX_Multiplex)
@@ -122,7 +123,12 @@ void SendFromAux(BYTE auxdata)
     _nop_();
     _nop_();
 
+
 	KBHIMDOR = auxdata;
+    
+
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
 	ShortDelayAfterWriteDOR();
 
 	if(PS2_MSCMD)
@@ -490,14 +496,14 @@ void RAM_Send2Port(BYTE p_PortNum, BYTE p_cmd)
     }
     else if(p_PortNum==0x01)
     {
-        PSCTL2 = 0x5D;
+        PSCTL2 = 0x1D;
         PSDAT2 = p_cmd;
         PSCTL2 = 0x0C;
         PSCTL2 = 0x0E;
     }
     else if(p_PortNum==0x02)
     {
-        PSCTL3 = 0x5D;
+        PSCTL3 = 0x1D;
         PSDAT3 = p_cmd;
         PSCTL3 = 0x0C;
         PSCTL3 = 0x0E;
@@ -822,9 +828,12 @@ void SendCmdtoMouse(BYTE PortNum)
 			//EnableTP = 1;
 			MouseDriverIn = 1;
 
+            (*(volatile unsigned char xdata *) 0x805) = 0xF4;
+
 			break;
 			
 		case 0xF5:
+            (*(volatile unsigned char xdata *) 0x805) = 0xF5;
 			MouseDriverIn = 0;
 			break;	
 			
@@ -861,6 +870,7 @@ void SendCmdtoMouse(BYTE PortNum)
 			break;
 			
 		case 0xFF:
+            (*(volatile unsigned char xdata *) 0x805) = 0xFF;
 			MouseDriverIn = 0;
             MULPX_Multiplex = 0;	    // Disable Activate Multiplex mode 
 			//EnableTP = 0;
@@ -1035,7 +1045,7 @@ void PS2Deviceactive(void)
 
             // WNCKR = 0x00;           // Delay 15.26 us
             // WNCKR = 0x00;           // Delay 15.26 us
-            Loop_Delay(40);
+            Loop_Delay(100);
 
             if(PS2StartBit || F_Service_PS2)
             {
@@ -1498,7 +1508,6 @@ void InitAUXDevice(void)
 //
 //      Note : If want to enable mouse device. Please ensrue "MouseDriverIn" is set.
 //----------------------------------------------------------------------------
-// 没用
 void TPOnlyLowLevelFunc(void)
 {
     BYTE index;

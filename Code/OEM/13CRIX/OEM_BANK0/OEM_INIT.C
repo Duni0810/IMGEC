@@ -460,7 +460,7 @@ void __test_GPIO_GFLE(void)
 
 
 
-#if 0
+#if 1
 // 程序进入为 idle 模式， 通过开机按钮唤醒
 void __idle_to_wakeup(void)
 {
@@ -660,32 +660,17 @@ void __sleep_to_wakeup(void)
     Core_Init_ClearRam();
     Init_ClearRam();
      SP = 0xC0;					// Setting stack pointer
-
-
-    	Core_Initialization();
-		Oem_Initialization();
-        InitEnableInterrupt();
-
-    // timer 8 bit
-    // GCR2 = 0x0f;
-    // GPCRB2 = 0x00;
-    // GPCRD7 = 0x00;
-    // GPCRF0 = 0x00;
-    // GPCRF1 = 0x00;
-
-    // PRSC   = 0x11;
-    // GCSMS  = 0x00;
-
-    // DCR_A0 = 0x80;    
-    // DCR_A1 = 0x80;
-    // DCR_B0 = 0x80;
-    // DCR_B1 = 0x80;
-    // TMRCE  = 0x02;
-
-
-
+    Init_GPIO();
     GCR10 = 0x01;
 	GCR8 = 0x10;
+	
+    BAT_LED2_ON();
+    // // 关总中断
+	DisableAllInterrupt();
+
+    // //*************************************************************************
+	// // Set Wake up pin -> alt function
+	// //*************************************************************************
 	GPCRE4 = ALT;			// pwrsw to alternate pin
 	WUEMR2 |= 0x20;         //  设置边缘触发方式
 	WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
@@ -696,49 +681,7 @@ void __sleep_to_wakeup(void)
 
     EX1=1;					// enable external 1 interrupt 
 	EnableAllInterrupt();
-    __1s_delay();   
-    // ETPSR = 0x00;                   
-    // ETCNTLHR = 0x80;        //
-    // ETCNTLLR = 0x00;        // "g_ECPowerDownPeriodWakeUpTime" second
 
-    // EWDCNTLR = 0x03;
-    // EWDCNTHR = 0x
-    // ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
-    // SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
-
-    // ETWCTRL = 0x01;
-    // BAT_LED2_ON();  // 白色
-    BAT_LED1_ON();
-
-    // 电压比较器
-    // 1. 设置阈值
-    // CMP0THRDATL = 0xff;
-
-    // GPCRI0 = 0x00;
-    // GPCRI1 = 0x00;
-    // GPCRI2 = 0x00;
-    // GPCRI3 = 0x00;
-    // GPCRI4 = 0x00;
-    // GPCRI5 = 0x00;
-    // GPCRI6 = 0x00;
-    // GPCRI7 = 0x00;
-
-    // 引脚复用
-    // GPCRJ3 = 0x00;
-    // GCR15  = 0x01;
-
-    // 使能
-    // VCMP0CTL = 0xA1;
-    
-
-    __1s_delay();   
-
-    
-    // DisableADCModule();
-
-    // VCMP1CTL = 0xA1;
-    // VCMP2CTL = 0xA1;
-    // VCMP0CTL = 0x00;
     PLLCTRL = 0x01;
     PCON    = 2;      		
 
@@ -751,76 +694,12 @@ void __sleep_to_wakeup(void)
     _nop_();
 	_nop_();
 
-    BAT_LED2_ON(); 
+	Init_GPIO();
+	GPCRE4 = INPUT; 		// pwrsw to alternate pin
+
+    BAT_LED1_ON();  // 橙色
+
     for(;;);
-
-
-
-
-    // GCR10 = 0x01;
-	// GCR8 = 0x10;
-	
-    // // 关总中断
-	// DisableAllInterrupt();
-
-    // //*************************************************************************
-	// // Set Wake up pin -> alt function
-	// //*************************************************************************
-	// GPCRE4 = ALT;			// pwrsw to alternate pin
-	// WUEMR2 |= 0x20;         //  设置边缘触发方式
-	// WUESR2 |= 0x20;			//  清除 电源按键唤醒中断状态并使能
-	// WUENR2 |= 0x20;  
-	// ISR1 |= Int_WKO25;		// 清除 int14 for  pwrsw
-	// IER1 |= Int_WKO25;		// 使能 int14 for  pwrsw
-
-
-    // EX1=1;					// enable external 1 interrupt 
-	// EnableAllInterrupt();
-
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
-
-    // __1s_delay();
-    // BAT_LED1_ON();
-    // __1s_delay();
-    // BAT_LED1_OFF();
-    // __1s_delay();
-
-
-	// 		// ETWCFG   = 0x10;
-    //         // // ETWCFG   = 0x00;
-    //         // // Loop_Delay(20);
-    //         // // ETWCFG   = 0x01;
-    //     	// EWDCNTLR = 2;    
-    //     	// EWDKEYR  = 0x5A ;   
-
-    // // PLLCTRL = 0x01;
-    // // PCON    = 2;      		
-
-
-    // (*(volatile unsigned char xdata *) 0x802) = ET2CNTLHR;   
-    // (*(volatile unsigned char xdata *) 0x803) = ET2CNTLLR;
-    // (*(volatile unsigned char xdata *) 0x804) = ET2CNTLH2R;
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
-    // _nop_();
-	// _nop_();
-    // (*(volatile unsigned char xdata *) 0x812) = ET2CNTLHR;  
-    // (*(volatile unsigned char xdata *) 0x813) = ET2CNTLLR;
-    // (*(volatile unsigned char xdata *) 0x814) = ET2CNTLH2R;
-
-	// // Init_GPIO();
-	// // GPCRE4 = INPUT; 		// pwrsw to alternate pin
-
-    // BAT_LED2_ON();  // 橙色
-
-    // for(;;);
 }
 
 
@@ -1211,7 +1090,7 @@ void Oem_StartUp(void)
 {
 
 
-    //     Init_GPIO();
+    // Init_GPIO();
 
     // EX1=1;					// enable external 1 interrupt 
 	// EnableAllInterrupt();
@@ -1235,16 +1114,86 @@ void Oem_StartUp(void)
     // u8    young_flag = 0x00;
     // // 关闭内部看门狗
     
-    
+    // u8 __young_flag;
+
  	// Init_ClearRam();
     //  SP = 0xC0;					// Setting stack pointer
+
 
     // WDTEB = 0;
     // Init_Timers();
     // Init_GPIO();
     // InitEnableInterrupt();
 
-    // for(;;);
+    // while(1) {
+    //     if ((*(volatile unsigned char xdata *) 0x814) == 0x22) {
+    //         break;
+    //     }
+    //     Loop_Delay(5);
+    // };
+
+    // for(;;){
+    //     INVERSE_REG(GPDRC, 6);
+    //     __1s_delay();
+    // };
+
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // BAT_LED2_ON();
+    // __1s_delay();
+    // // 第一组
+    // ECINDAR3 = 0x0F;        // Enter follow mode
+   	// ECINDAR2 = 0xFF;
+	// ECINDAR1 = 0xFE;
+   	// ECINDAR0 = 0x00;   		// FFFFExx = 0xFF   
+   	// ECINDDR = 0x00;			// SCE# high level
+
+    // Loop_Delay(3);
+
+    // // 第二组
+	// ECINDAR3 = 0x0F;        // Enter follow mode
+   	// ECINDAR2 = 0xFF;
+	// ECINDAR1 = 0xFD;
+   	// ECINDAR0 = 0x00;   		// FFFFExx = 0xFF   
+   	// ECINDDR = 0x03;			// SCE# high level
+
+    // // 第三组
+    // ECINDDR = 0x00;			// SCE# high level
+    // ECINDDR = 0x00;			// SCE# high level
+    // ECINDDR = 0x00;			// SCE# high level
+
+    // // 连续读两次
+    // (*(volatile unsigned char xdata *) 0x824) = ECINDDR;
+    // (*(volatile unsigned char xdata *) 0x825) = ECINDDR;
+
+    // BAT_LED1_ON();
+
+
+    // while(1) {
+    //     if ((*(volatile unsigned char xdata *) 0x815) == 0x11) {
+    //         break;
+    //     }
+    //     Loop_Delay(5);
+    // }
+
+    // // BAT_LED2_ON();
+
+    // for(;;){
+    //     INVERSE_REG(GPDRC, 6);
+    //     __1s_delay();
+    // };
+
+
     // Oem_TriggerS5S0();
     
     // Oem_S5S0Sequence();
@@ -1467,6 +1416,9 @@ void Oem_Initialization(void)
     EnableInternalWDT();
 
 	ExtWDTInit();	
+
+    ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+    SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
 
 	InitThermalChip();  // 98
 

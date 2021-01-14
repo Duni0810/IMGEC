@@ -34,8 +34,14 @@ void Data_To_Host(BYTE data_byte)
 		SET_MASK(KBHICR,OBFKIE);
     }
 
+    // BAT_LED1_ON();
+    // BAT_LED1_OFF();
     KBHIKDOR = data_byte;
+
+    // WNCKR = 0x00;                   // Delay 15.26 us
+    // WNCKR = 0x00;                   // Delay 15.26 us
 	ShortDelayAfterWriteDOR();
+    // DelayXms(1);
 }
 
 void Data_To_Host_nWait(BYTE data_byte)

@@ -284,8 +284,8 @@ void Cmd_A6(void)
 // Handle command A7 - Disable Aux Device Interface
 //-----------------------------------------------------------------------
 void Cmd_A7(void)
-
 {
+    (*(volatile unsigned char xdata *) 0x806) = 0xA7;
 	Ccb42_DISAB_AUX = 1;   // Disable auxiliary device (mouse)	
 }
 
@@ -293,8 +293,8 @@ void Cmd_A7(void)
 // Handle command A8 - Enable Auxiliary Device Interface
 //-----------------------------------------------------------------------
 void Cmd_A8(void)
-
 {
+    (*(volatile unsigned char xdata *) 0x806) = 0xA8;
 	Ccb42_DISAB_AUX = 0; 	// Enable aux device (mouse) 
 }
 
@@ -1558,6 +1558,15 @@ void Core_64Port(BYTE KBHICmd)
 void ShortDelayAfterWriteDOR(void)
 {
     Loop_Delay(100);
+    Loop_Delay(100);
+
+    // Loop_Delay(100);
+    // Loop_Delay(100);
+    // Loop_Delay(100);
+
+    //     Loop_Delay(100);
+    // Loop_Delay(100);
+    // Loop_Delay(100);
     // WNCKR = 0x00;                   // Delay 15.26 us
     // WNCKR = 0x00;                   // Delay 15.26 us
 }

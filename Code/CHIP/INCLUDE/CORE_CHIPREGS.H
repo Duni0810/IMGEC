@@ -1184,6 +1184,7 @@ extern ECReg	TMEIE			;// 0x290C  TMR Interrupt Enable Register
 #define	SMIE				BIT(0)	// Software Mode Interrupt Enable
 
 // PS/2 Status Register
+#define	TOER			    BIT(6)	// Timer Out Error
 #define	FER					BIT(5)	// Frame Error
 #define	PER					BIT(4)	// Parity Error
 #define	TDS					BIT(3)	// Transaction Done Status

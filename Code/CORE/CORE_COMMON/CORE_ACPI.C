@@ -34,9 +34,9 @@ void Loop_Delay(BYTE delay)
 //----------------------------------------------------------------------------
 void service_pci2(void)
 {
-	// 表示主机没有参数过来访问
     if ( IS_MASK_CLEAR(PM1STS,P_IBF) )  
     {
+		// INVERSE_REG(GPDRJ, 4);
 		return; 
     }
 

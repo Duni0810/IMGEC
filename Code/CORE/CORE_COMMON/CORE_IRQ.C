@@ -45,6 +45,10 @@ void IRQ_INT1_WKO20(void)
 //----------------------------------------------------------------------------
 void IRQ_INT2_KBCOBE(void)
 {
+
+    ISR0 |= Int_KBCOBFE;		// 清除 int2 
+    CLEAR_MASK(IER0, Int_KBCOBFE); // 禁能
+
     Hook_IRQ_INT2_KBCOBE();
 }
 
@@ -349,6 +353,7 @@ void IRQ_INT20_PS2Interrupt0(void)
 
     PSSTS1 = SS;
     PSSTS1 = TDS;
+    // PSSTS1 = TOER;
 
     if(SendtoAUXFlag)
     {
@@ -962,23 +967,10 @@ extern u32 test_timer ;
 
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    // static char i = 0;
-    // static u8 j = 0;
     test_timer++;
     Load_Timer_A();
 
-    // i++;
-    // j++;
-    // if (i > 1) {
-        F_Service_MS_1 = 1;   // Request 1 mS timer service.
-    //     i = 0;
-    // }
-
-    // if (j > 120) {
-    //     j= 0;
-    //     INVERSE_REG(GPDRC, 6);
-    //     INVERSE_REG(GPDRJ, 4);
-    // }
+    F_Service_MS_1 = 1; 
 
 	if(guoyong003 == 0x99)
 	guoyong001 = guoyong001 + 1;

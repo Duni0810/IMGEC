@@ -271,16 +271,12 @@ void main(void)
 
 #else 
 
-    volatile u8    young_flag    = 0x00;
-    volatile u8    young_flag1   = 0x00;
-    volatile u8    __tmp_flag    = 0x00;
-    volatile u8    __tmp_arr[3]  = {0x15, 0xF0, 0x15};
-    volatile u8    __tm_stat     = 0x00;
 
- extern BYTE send_to_pc(BYTE data_word, BYTE break_prefix_flag);
 void main(void)
 {
+    
 
+    (*(volatile unsigned char xdata *) 0xE00) = 0x00;
 #if !EC_MODE
     // 控制flash 读写拍数
     SMFI_FIC_CTL0  = 0x98;
@@ -311,13 +307,6 @@ void main(void)
 	}
 	else
 	{
-        // SMBUS1_test1 = 0x00;
-        // SMBUS1_test2 = 0x00;
-        // SMBUS1_test3 = 0x00;
-        // SMBUS1_test4 = 0x00;
-        // SMBUS1_test5 = 0x00;
-        // SMBUS1_test6 = 0x00;
-
 		Core_Initialization();
 		Oem_Initialization();
         InitEnableInterrupt();
@@ -356,7 +345,7 @@ void main(void)
      DCache         = 0x00;
 
     // // 控制flash 读写拍数
-    // SMFI_FIC_CTL0  = 0x98;
+    SMFI_FIC_CTL0  = 0x98;
     SMFI_FIC_CTL1  = 0x00;
 
 
@@ -393,10 +382,7 @@ void main(void)
             if((Service==0x00)&&(Service1==0x00))
             #endif
     		{
-                // 暂时   young
-                #if EC_MODE
-         		PCON=1;      		// enter idle mode
-                 #endif
+         		// PCON=1;      		// enter idle mode
     		}
         }
   	} 
@@ -440,7 +426,7 @@ void main_service(void)
             service_unlock();
             continue;
         }
-
+ 
         //-----------------------------------
         // Send byte from KBC       6064
         //-----------------------------------
@@ -451,47 +437,8 @@ void main_service(void)
             continue;
         }
 
-        if ((*(volatile unsigned char xdata *) 0x802) == 0x44) {
 
-
-            #if 0
-            young_flag1 = young_flag;
-            young_flag  = 0;
-
-            if (send_to_pc(__tmp_arr[__tmp_flag++], young_flag1)) 
-		    {
-                young_flag = 1;    // Break prefix code. 
-            }
-
-            if (__tmp_flag == 3) {
-                __tmp_flag = 0;
-            }
-
-            __tm_stat++;
-
-            if ((__tm_stat > 180) && (__tmp_flag == 0)) {
-                (*(volatile unsigned char xdata *) 0x802) = 0x00;
-                __tm_stat = 0;
-            }
-            #else 
-            young_flag1 = young_flag;
-            young_flag  = 0;
-
-            if (send_to_pc(__tmp_arr[__tmp_flag++], young_flag1)) 
-		    {
-                young_flag = 1;    // Break prefix code. 
-            }
-
-            if (__tmp_flag == 3) {
-                __tmp_flag = 0;
-                (*(volatile unsigned char xdata *) 0x802) = 0x00;            
-            }
-            // __tm_stat++;
-
-            #endif
-        } 
-        
-
+    
 #if 1
         //-----------------------------------
         // Send PS2 interface data	
@@ -550,7 +497,7 @@ void main_service(void)
             continue;
         }
 
-#if 0
+#if 1
         //-----------------------------------
         // Keyboard scanner service
         //-----------------------------------
