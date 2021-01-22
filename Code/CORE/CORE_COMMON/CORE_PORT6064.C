@@ -13,8 +13,6 @@
 #include <OEM_INCLUDE.H>
 
 
-extern u8 __ps2_flag ;
-
 //-----------------------------------------------------------------------
 // Process Command/Data received from System via the KBC interface
 //-----------------------------------------------------------------------
@@ -285,7 +283,10 @@ void Cmd_A6(void)
 //-----------------------------------------------------------------------
 void Cmd_A7(void)
 {
-    (*(volatile unsigned char xdata *) 0x806) = 0xA7;
+    // (*(volatile unsigned char xdata *) 0x806) = 0xA7;
+    PSCTL1 = PS2_InhibitMode;
+	PSCTL2 = PS2_InhibitMode;
+	PSCTL3 = PS2_InhibitMode;
 	Ccb42_DISAB_AUX = 1;   // Disable auxiliary device (mouse)	
 }
 
@@ -294,7 +295,14 @@ void Cmd_A7(void)
 //-----------------------------------------------------------------------
 void Cmd_A8(void)
 {
-    (*(volatile unsigned char xdata *) 0x806) = 0xA8;
+    // (*(volatile unsigned char xdata *) 0x806) = 0xA8;
+
+    if ((Ccb42_DISAB_AUX == 1) ) {
+        PSCTL1 = PS2_ReceiveMode;
+        PSCTL2 = PS2_ReceiveMode;
+        PSCTL3 = PS2_ReceiveMode;
+    }
+
 	Ccb42_DISAB_AUX = 0; 	// Enable aux device (mouse) 
 }
 
@@ -667,9 +675,6 @@ void Cmd_77Data(void)
 //-----------------------------------------------------------------------
 void Cmd_90Data(void)			// always send timeout error to system 
 {
-    BAT_LED1_ON();
-    BAT_LED2_ON();
-
     if(PS2_MSCMD)
     {
         #if UART_Debug

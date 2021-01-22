@@ -36,12 +36,9 @@ void service_pci2(void)
 {
     if ( IS_MASK_CLEAR(PM1STS,P_IBF) )  
     {
-		// INVERSE_REG(GPDRJ, 4);
 		return; 
     }
 
-	// BAT_LED1_ON();
-	
 	SetTotalBurstTime();	// Set Burst mode total time (2ms)
 
 	// 处理 ACPI 指令操作

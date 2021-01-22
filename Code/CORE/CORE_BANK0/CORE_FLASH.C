@@ -34,6 +34,48 @@ void FuncAt_0xFE00(void)
     FlashECCode();
 }
 
+
+XBYTE   __data_buffer[256]            	_at_(0xE00);
+
+// unsigned int __cnt = 0x00;
+XBYTE   bios_data1            		_at_(0xFF0);
+XBYTE   bios_data2            		_at_(0xFF1);
+XBYTE   bios_data3            		_at_(0xFF2);
+XBYTE   bios_data4            		_at_(0xFF3);
+XBYTE   bios_data5            		_at_(0xFF4);
+// static unsigned char bios_data1;
+// static 
+
+
+
+static u8 __sram_tmp = 0;
+void FlashECCode_1(void)
+{
+    for(;;) {
+        GPCRA0 = 0x40;
+        Loop_Delay(10);
+        __sram_tmp = GPCRA0;
+        if (__sram_tmp != 0x40) {
+            BAT_LED1_ON();
+            for(;;);
+        }
+        Loop_Delay(10);
+
+        GPCRA0 = 0x00;
+        Loop_Delay(10);
+        __sram_tmp = GPCRA0;
+        if (__sram_tmp != 0x00) {
+            BAT_LED2_ON();
+            for(;;);
+        }
+        Loop_Delay(10);
+		INVERSE_REG(GPDRJ, 4);
+    }
+}
+
+
+
+
 //-----------------------------------------------------------------------------
 // The function of EC flash
 //-----------------------------------------------------------------------------
@@ -43,10 +85,19 @@ void FlashECCode(void)
 	RamcodeCmd = 0x00;
 	RamcodeSend = 0x00;
 
-    FLASH_EC_PMxDO = 0x33;		// ACK
+	bios_data1 = 0x00;
+	bios_data2 = 0x00;
+	bios_data3 = 0x00;
+	bios_data4 = 0x00;
+	bios_data5 = 0x00;
 
+    FLASH_EC_PMxDO = 0x33;		// ACK
+	// __data_buffer[0] = 0;
+	// (*(volatile unsigned char xdata *) 0xE00) = 0x00;
+	
  	while(1) 
   	{	
+
   		if( IS_MASK_SET(KBHISR,IBF))
   		{
 			RamcodeCmd = KBHIDIR;
@@ -55,6 +106,66 @@ void FlashECCode(void)
 		if( IS_MASK_CLEAR(FLASH_EC_PMxSTS,P_IBF) ) continue;
 		if( IS_MASK_CLEAR(FLASH_EC_PMxSTS,P_C_D) ) continue;
 		RamcodeCmd = FLASH_EC_PMxDI;
+		
+		
+		// if ((*(volatile unsigned int xdata *)0xE00)++ > 127 ) {
+		// 	if((*(volatile unsigned int xdata *)0xE00) < 256) {
+		// 		// ( *(volatile unsigned char xdata *)(0xE02 + ( (*(volatile unsigned int xdata *)0xE00) - 127) ) ) = RamcodeCmd;
+		// 	}
+		// }
+
+		
+		// if (((*(volatile unsigned char xdata *)0xE00) < 128)) {
+			
+			// (*(volatile unsigned int xdata *)0xE00)++;
+			// (*(volatile unsigned int xdata *)0xE00) = __cnt++;
+		// }
+
+		// (*(volatile unsigned int xdata *)0xE00)++;
+		
+		
+
+		// if (RamcodeCmd != 0x04) {
+		// 	bios_data1++;
+		// 	if ((bios_data2 == 0x40) && (bios_data3 == 0) && (bios_data4 == 0)) {
+		// 		__data_buffer[0] = bios_data1;
+		// 		__data_buffer[bios_data1] = RamcodeCmd; 
+		// 	}
+
+		// }
+
+
+		// bios_data1++;
+
+		// if ((bios_data2 == 3) && (bios_data3 == 0) && (bios_data4 == 0)) {
+
+		// 	// if (RamcodeCmd != 0x04) {
+		// 		__data_buffer[0] = bios_data1;
+		// 		__data_buffer[bios_data1] = RamcodeCmd; 
+		// 	// }
+			
+		// }
+
+		// if (RamcodeCmd == 0xff) {
+		// 	bios_data1++;
+		// }
+		// if(bios_data1 > 250) {
+		// 	bios_data2++;
+		// 	bios_data1 = 0;
+		// }
+		// if(bios_data2 > 250) {
+		// 	bios_data3++;
+		// 	bios_data2 = 0;
+		// }
+
+		// if(bios_data3 > 250) {
+		// 	bios_data4++;
+		// 	bios_data3 = 0;
+		// }
+		// if(bios_data4 > 250) {
+		// 	bios_data5++;
+		// 	bios_data4 = 0;
+		// }
 
 		if(RamcodeSend==1)
 		{
@@ -97,16 +208,24 @@ void FlashECCode(void)
 		}
 		else if(RamcodeCmd==0xFD)
 		{
-        	WDTRST = 1;				// Reset watch dog timer
-			WDTEB = 1;				// Enable watch dog
-       		while(1);				// Wait for watch dog time-out				
+        	// WDTRST = 1;				// Reset watch dog timer
+			// WDTEB = 1;				// Enable watch dog
+			// BAT_LED1_ON();
+			// BAT_LED2_OFF();
+			// __data_buffer[254] = 0xFD;
+       		while(1);				// Wait for watch dog time-out		
+			//    for(;;);		
 		}
 		else if(RamcodeCmd==0xFE)
 		{	
 			BRAM[63]=0x55;
         	WDTRST = 1;				// Reset watch dog timer
 			WDTEB = 1;				// Enable watch dog
+			// BAT_LED2_ON();
+			// BAT_LED1_OFF();
+			// __data_buffer[254] = 0xFE;
        		while(1);				// Wait for watch dog time-out
+			//    for(;;);
 		}
  	}
 
@@ -726,8 +845,11 @@ void SPI_Read_256Bytes(void)
 //-----------------------------------------------------------------------------
 // The function of loading function to external ram 0x600 ~ 0x6FF
 //-----------------------------------------------------------------------------
+XWORD __flash_data = 0x00;
+
 void LoadSPIFucnToRam(FUNCT_PTR_V_V funcpoint)
 {
+	// Tmp_XPntr = 0xC00;
 	Tmp_XPntr = 0x600;
 	Tmp_code_pointer = funcpoint;
 
@@ -750,13 +872,15 @@ void ITE_Flash_Utility(void)
 	DisableAllInterrupt();				// Disable all interrupt 
 	LoadSPIFucnToRam(FlashECCode);		// Load function to ram
 
-
-
 	// SET_MASK(FBCFG,SSMC);       		// enable scatch ROM
 
 	SCRA0L = 0x00;
 	SCRA0M = 0xF8;
 	SCRA0H = 0x00;
+
+	// SCRA2L = 0x00;
+	// SCRA2M = 0xFE;
+	// SCRA2H = 0x00;
 
 
 	FuncAt_0xFE00();					// do function in extern ram 0x600

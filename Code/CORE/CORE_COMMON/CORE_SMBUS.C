@@ -108,16 +108,16 @@ BYTE bRWSMBus(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var,BYTE PEC
 	BYTE counter;
 	BYTE error;
     BYTE status;
-    BYTE resutl;
+    BYTE result;
 
     if(CheckSMBusInterfaceCanbeUse(Channel, SMBus_AccessType_Fucn)==SMBus_CanNotUse)
     {
-        resutl = FALSE;                             // SMBus interface can't be used.
+        result = FALSE;                             // SMBus interface can't be used.
     }
     else
     {
         error = 0xEE;                               // Pre-set error
-        resutl = FALSE;                             // Pre-set result is fail
+        result = FALSE;                             // Pre-set result is fail
     
         SMBCRC8_A=0x00;                             // Clear CRC variable
 
@@ -215,7 +215,7 @@ BYTE bRWSMBus(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var,BYTE PEC
 	                  	                    
 	    if(error == 0xEE)                           // Fail
 	    {
-		    resutl = FALSE;
+		    result = FALSE;
 	    }
         else                                        // OK
         {
@@ -227,19 +227,13 @@ BYTE bRWSMBus(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var,BYTE PEC
 			        *(Var+0x01) = *asSMBus[Channel].SMBusData1;
 		        }							            // read data2
 	        }
-            resutl = TRUE;
+            result = TRUE;
         }
 
 	    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits
     }
 
-    // young modified 
-    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
-    DelayInact();
-
-
-
-	return(resutl);
+	return(result);
 }
 
 //----------------------------------------------------------------------------
@@ -337,9 +331,6 @@ BYTE bRSMBusBlock(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var)
 	    *asSMBus[Channel].SMBusSTA=0xFE;        // clear bits
     }
     
-    // young modified 
-    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
-    DelayInact();
 	return(ack);	
 }
 
@@ -460,10 +451,6 @@ BYTE bWSMBusBlock(BYTE Channel,BYTE Protocol,BYTE Addr,BYTE Comd,XBYTE *Var,BYTE
 	    *asSMBus[Channel].SMBusSTA=0xFE;        // clear bits
     }
     
-
-        // young modified 
-    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
-    DelayInact();
 	return(ack);
 } 
 
@@ -547,11 +534,7 @@ BYTE bSMBusSendByte(BYTE Channel,BYTE Addr,BYTE SData)
         }
 	    *asSMBus[Channel].SMBusSTA=0xFE;	// clear bits
     }
-
-
-      // young modified 
-    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
-    DelayInact();  
+    
 	return(result);
 }
 
@@ -636,10 +619,6 @@ BYTE bSMBusReceiveByte(BYTE Channel,BYTE Addr,XBYTE *Var)
 	    *asSMBus[Channel].SMBusSTA=0xFE;	    // clear bits
     }
     
-
-        // young modified 
-    *asSMBus[Channel].SMBusSTA=0xFE;	            // clear bits  
-    DelayInact();
 	return(result);
 }
 
@@ -777,19 +756,19 @@ void Core_Init_SMBus(void)
  *---------------------------------------------------------------------------*/
 
 
-volatile u8 tem_i2C = 0;
-volatile u8 tem_i2C1 = 0;
+// volatile u8 tem_i2C = 0;
+// volatile u8 tem_i2C1 = 0;
 
-static void __1s_delay(void)
-{
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-}
+// static void __1s_delay(void)
+// {
+//    Delay1MS(200);
+//    Delay1MS(200);
+//    Delay1MS(200);
+//    Delay1MS(200);
+//    Delay1MS(200);
+//    Delay1MS(200);
+//    Delay1MS(200);
+// }
 
 #if 1
 BYTE I2C_WriteStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
@@ -961,8 +940,6 @@ BYTE I2C_WriteStream(BYTE I2C_Chn, BYTE I2C_Addr, XBYTE *Var, BYTE Count)
     //*asSMBus[I2C_Chn].SMBusSTA = 0xFE;
     *asResetSMBusS[I2C_Chn].SMBusCTL2 = 0x01;   // 关闭I2C使能
     *asSMBus[I2C_Chn].SMBusSTA = 0xFE;          // 清状态
-
-    // BAT_LED1_ON();
 
     return TRUE;
 }

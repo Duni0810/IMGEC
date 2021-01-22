@@ -181,12 +181,6 @@ void IRQ_INT17_WKO24(void)
 //----------------------------------------------------------------------------
 void IRQ_INT18_PS2Interrupt2(void)
 {
-
-    // BAT_LED1_OFF();
-    // BAT_LED2_ON();
-    // for(;;);
-
-
     #if TouchPad_only
     CLEAR_MASK(IER2,Int_PS2_2); // Disable PS2 interrupt 0
     ISR2 = Int_PS2_2;           // Write to clear pending interrupt
@@ -279,9 +273,6 @@ void IRQ_INT18_PS2Interrupt2(void)
 //----------------------------------------------------------------------------
 void IRQ_INT19_PS2Interrupt1(void)
 {
-    //     BAT_LED1_OFF();
-    // BAT_LED2_ON();
-    // for(;;);
 
 	if(IS_MASK_SET(PSSTS2, TDS))    // Transaction done interrupt 
 	{
@@ -353,7 +344,7 @@ void IRQ_INT20_PS2Interrupt0(void)
 
     PSSTS1 = SS;
     PSSTS1 = TDS;
-    // PSSTS1 = TOER;
+    PSSTS1 = TOER;
 
     if(SendtoAUXFlag)
     {
@@ -963,15 +954,13 @@ void Isr_Int0(void) interrupt 0 using 2
  * ------------------------------------------------------------------------- */
 
 extern void Oem_Hook_Timer1ms(void);
-extern u32 test_timer ;
 
 void Isr_Tmr0(void) interrupt 1 using 2
 {
-    test_timer++;
     Load_Timer_A();
 
     F_Service_MS_1 = 1; 
-
+    
 	if(guoyong003 == 0x99)
 	guoyong001 = guoyong001 + 1;
 }

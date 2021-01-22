@@ -470,11 +470,11 @@ void __idle_to_wakeup(void)
 
     // 初始化默认的GPIO功能（主要是LED）
     Init_GPIO();
-
+    
     BAT_LED1_OFF();
     BAT_LED2_OFF();
 
-	
+	// Init_Timers();
     // 关总中断
 	DisableAllInterrupt();
 
@@ -1082,14 +1082,23 @@ static void __test_speed_code(void)
 
 }
 
-u32 test_timer = 0;
+
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
+    // // 控制flash 读写拍数
+    // SMFI_FIC_CTL0  = 0x98;
+    // SMFI_FIC_CTL1  = 0x00;
 
 
+    // Core_Initialization();
+	// Oem_Initialization();
+    // InitEnableInterrupt();
+
+    // ITE_Flash_Utility();
+    // for(;;);
     // Init_GPIO();
 
     // EX1=1;					// enable external 1 interrupt 
@@ -1322,20 +1331,12 @@ void Oem_StartUp(void)
 //----------------------------------------------------------------------------
 void Oem_Initialization(void)
 {
-
-	// LWORD *pnt;
-//	WORD Fvalue = 0x4000;
-
-//	pnt = sha1_auth(&HashRandom);           // only for compile
-	
-
 	Init_GPIO();
 	//TF_010++>>
 	if(IS_BOARD_ID1_HI()) {
         EC_PWR_CTR1_ON();
     }
     
-
 	//TF_010++<<
     #ifdef HSPI
 	GPIO_HSPI_INIT();
@@ -1413,12 +1414,12 @@ void Oem_Initialization(void)
 		}
 	}
 
-    EnableInternalWDT();
+    // EnableInternalWDT();
 
 	ExtWDTInit();	
 
-    ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
-    SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
+    // ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+    // SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
 
 	InitThermalChip();  // 98
 
@@ -1616,15 +1617,19 @@ void Init_SMBus_Regs(void)
 //----------------------------------------------------------------------------
 void Init_ClearRam(void)
 {
+    // u16 i = 0;
 	PORT_BYTE_PNTR byte_register_pntr;
 
     byte_register_pntr=0x100;
     while(byte_register_pntr<0x1000)// Clear external ram (0x100~0xFFF)
-    {
+    {   
+        // i++;
         *byte_register_pntr=0;
         byte_register_pntr ++;
     }
 
+    // (*(volatile unsigned char xdata *) 0x803) = (i >> 8) & 0xff;
+    // (*(volatile unsigned char xdata *) 0x804) = i & 0xFF;
 }
 
 //----------------------------------------------------------------------------
@@ -1690,7 +1695,7 @@ void Init_OEMVariable(void)
 	LED_FLASH_CNT = 0x0001;	// for LED control
 
 	ECMainVersionInfo = OEM_Version_MSB;    // OEM_Version_MSB
-	VCMD_Lenovo = OEM_Version_MSB;
+	VCMD_Lenovo   = OEM_Version_MSB;
 	ECVersionInfo = OEM_Version_LSB;
 	ECVersionPCB = OEM_Version_PCB;
 	

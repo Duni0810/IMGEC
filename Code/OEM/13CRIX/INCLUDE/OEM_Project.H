@@ -13,7 +13,7 @@
 
 
 // 如果这个选择EC模式还是 FPGA 模式
-#define   EC_MODE         TRUE      //  FALSE or TRUE
+#define   EC_MODE         FALSE      //  FALSE or TRUE
 
 #define   PS2_FLAG        FALSE      //  FALSE or TRUE
 

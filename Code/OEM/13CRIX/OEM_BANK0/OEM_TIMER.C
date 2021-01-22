@@ -69,11 +69,9 @@ void InternalWDTNow(void)
 //----------------------------------------------------------------------------
 void EnableInternalWDT(void)
 {
-	
-	CKCON |= 0xC0;		    // set 26 bit counter   0xC0
-
-	// WDTRST = 1;				// reset internal watch dog
-	// WDTEB = 1;				// enable internal watch dog		
+	CKCON |= 0xC0;		    // set 26 bit counter
+	WDTRST = 1;				// reset internal watch dog
+	WDTEB = 1;				// enable internal watch dog		
 }
 
 //----------------------------------------------------------------------------

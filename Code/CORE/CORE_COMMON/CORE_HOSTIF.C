@@ -34,8 +34,6 @@ void Data_To_Host(BYTE data_byte)
 		SET_MASK(KBHICR,OBFKIE);
     }
 
-    // BAT_LED1_ON();
-    // BAT_LED1_OFF();
     KBHIKDOR = data_byte;
 
     // WNCKR = 0x00;                   // Delay 15.26 us
@@ -186,12 +184,9 @@ void service_send(void)
     BYTE data_word;
     send = FALSE;
 
- 	//Load_Timer_B();
- 	//Timer_B.fbit.SEND_ENABLE = 1;
  	SetServiceSendFlag();
 	
     if( IS_MASK_SET(KBHISR,OBF) || IS_MASK_SET(KBHISR,IBF) )
-    //if(IS_MASK_SET(KBHISR,OBF))
     {
         return;
     }
@@ -199,15 +194,12 @@ void service_send(void)
     // 挂起缓冲区有数值
     if ( KBPendingRXCount > 0 )
     {
-        // BAT_LED1_ON
-        // INVERSE_REG(GPDRJ, 4);
         Data_To_Host(GetKB_PendingData());
         return;
     }
 
 	if((Ccb42_DISAB_KEY == 1)|| IS_MASK_SET(KBHISR,IBF))
 	{
-        // INVERSE_REG(GPDRC, 6);
 		return;
 	}
     

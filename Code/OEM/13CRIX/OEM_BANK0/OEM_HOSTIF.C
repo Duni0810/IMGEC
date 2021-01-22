@@ -22,6 +22,7 @@ const BYTE code initsio_table[]=
   	0x70 ,0x0C,	// Set IRQ=0Ch for Logical Device 05h(Mouse)
 	0x30 ,0x01,	// Enable Logical Device 05h(Mouse)
 	0x71 ,0x03,	//J80_017++
+	
 				// Enable Logical Device 11h(PM1)
    	0x07 ,0x11,	// Select Logical Device 11h(PM1)
   	0x70 ,0x00,	// Clear IRQ=0 for  Logical Device 11h(PM1)

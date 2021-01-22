@@ -23,96 +23,6 @@
  *  all service requests have been handled, return to idle state.
  * ------------------------------------------------------------------------- */
 
-static void __1s_delay(void)
-{
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-   Delay1MS(200);
-}
-
-
-
-
-BYTE code __initsio_table[]=
-{
-				// Configure and Enable Logical Device 06h(KBD)
-	0x07 ,0x06,	// Select Logical Device 06h(KBD)
-  	0x70 ,0x33,	// Set IRQ=01h for Logical Device 06h(KBD)
-};
-
-
-
-static void __InitSio(BYTE Ldnumber, BYTE offset)
-{
-    # if 0
-    BYTE code * data_pntr;
-    BYTE cnt;
-
-	// 0X1200
-  	SET_MASK(LSIOHA,LKCFG);
-  	SET_MASK(IBMAE,CFGAE);
-  	SET_MASK(IBCTL,CSAE);
-
-    cnt=0;
-    data_pntr=__initsio_table;
-    while(cnt < (sizeof(__initsio_table)/2) )
-    {
-        IHIOA=0;              // Set indirect Host I/O Address
-        IHD=*data_pntr;
-        while( IS_MASK_SET(IBCTL,CWIB)) {
-			BAT_LED1_ON();
-		};
-
-		BAT_LED1_OFF();
-		// for(;;);
-
-
-        data_pntr ++;
-
-        IHIOA=1;              // Set indirect Host I/O Address
-        IHD=*data_pntr;
-        while( IS_MASK_SET(IBCTL,CWIB)) {
-			BAT_LED1_ON();
-		};
-		BAT_LED1_OFF();
-
-        data_pntr ++;
-        cnt ++;
-    }
-
- 	CLEAR_MASK(LSIOHA,LKCFG);
-  	CLEAR_MASK(IBMAE,CFGAE);
-  	CLEAR_MASK(IBCTL,CSAE);
-        
-        #else
-
-	SET_MASK(LSIOHA,LKCFG);
-  	SET_MASK(IBMAE,CFGAE);
-  	SET_MASK(IBCTL,CSAE);
-
-    // while(1) {
-        IHIOA=Ldnumber;              // Set indirect Host I/O Address
-        IHD=offset;
-        Delay1MS(2);
-        while(IS_MASK_SET(IBCTL,CWIB)) {
-            BAT_LED1_ON();
-            for(;;);
-        };
-            BAT_LED1_OFF();
-
-    // }
-
- 	CLEAR_MASK(LSIOHA,LKCFG);
-  	CLEAR_MASK(IBMAE,CFGAE);
-  	CLEAR_MASK(IBCTL,CSAE);
-        #endif
-
-}
-
 
 #if 0
 void main(void)
@@ -271,12 +181,8 @@ void main(void)
 
 #else 
 
-
 void main(void)
 {
-    
-
-    (*(volatile unsigned char xdata *) 0xE00) = 0x00;
 #if !EC_MODE
     // 控制flash 读写拍数
     SMFI_FIC_CTL0  = 0x98;
@@ -344,12 +250,7 @@ void main(void)
     // 使能Dcache 代码执行效率更高点
      DCache         = 0x00;
 
-    // // 控制flash 读写拍数
-    SMFI_FIC_CTL0  = 0x98;
-    SMFI_FIC_CTL1  = 0x00;
-
-
-    // 初始化 pS2 时钟
+    // 初始化 pS2 消抖参数
     PSDCNUM1 = 0x01;
     PSDCNUM2 = 0x01;
     PSDCNUM3 = 0x01;
@@ -382,7 +283,19 @@ void main(void)
             if((Service==0x00)&&(Service1==0x00))
             #endif
     		{
+                // // 暂时   young
          		// PCON=1;      		// enter idle mode
+                _nop_();
+                _nop_();
+                _nop_();
+                _nop_();
+                _nop_();
+                _nop_();
+                _nop_();
+                _nop_();
+                INVERSE_REG(GPDRJ, 4);
+                INVERSE_REG(GPDRC, 6);
+
     		}
         }
   	} 
@@ -426,7 +339,7 @@ void main_service(void)
             service_unlock();
             continue;
         }
- 
+        
         //-----------------------------------
         // Send byte from KBC       6064
         //-----------------------------------
@@ -436,8 +349,6 @@ void main_service(void)
             service_send();
             continue;
         }
-
-
     
 #if 1
         //-----------------------------------
@@ -469,7 +380,6 @@ void main_service(void)
 	 	{
         	ServiceSMBus();
 		}	
-		
         #endif
 
 #endif
@@ -491,7 +401,6 @@ void main_service(void)
         //-----------------------------------
         if(F_Service_MS_1)
         {
-            // BAT_LED1_ON();
             F_Service_MS_1=0;
             service_1mS();
             continue;
@@ -503,7 +412,6 @@ void main_service(void)
         //-----------------------------------
         if(F_Service_KEY)
         {
-            // INVERSE_REG(GPDRJ, 4);
         	F_Service_KEY=0;
 			service_scan();
 			continue;
@@ -519,7 +427,6 @@ void main_service(void)
             service_Low_LVEvent();
             continue;
         } 
-
 
 
 #if __DEBUG__

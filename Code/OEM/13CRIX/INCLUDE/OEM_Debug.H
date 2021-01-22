@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:34
- * @LastEditTime: 2021-01-05 17:24:18
+ * @LastEditTime: 2021-01-18 09:51:12
  */
 #ifndef	OEM_Debug_H
 #define OEM_Debug_H
@@ -23,7 +23,7 @@
 //---------------------------------------
 // RAM debug range is 0x900--0x9FF
 //---------------------------------------
-#define RAM_Debug       TRUE
+#define RAM_Debug       FALSE
 #define DebugRamAddr    0x900
 #define DebugRamRange   0xFF
 
