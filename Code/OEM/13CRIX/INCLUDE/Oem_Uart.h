@@ -5,11 +5,10 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:35
- * @LastEditTime: 2020-12-07 15:04:36
+ * @LastEditTime: 2021-01-29 09:31:11
  */
 #ifndef OemUart_h
 #define OemUart_h
-
 
 #define Str_MAX_Len       64
 
@@ -53,5 +52,10 @@ extern void uart_hex_show(unsigned char ch);
 
 extern void uart_Initial_Host(void);
 extern void uart_Initial(void);
+
+// 16550 相关函数
+extern unsigned char   uart1_16550_check_rx(void);
+extern void TASK_UART_A_set_tx_data(unsigned char dat);
+extern void TASK_UART_cfg_set_base(unsigned char fifo_en);
 
 #endif

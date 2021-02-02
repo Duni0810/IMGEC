@@ -488,7 +488,7 @@ BYTE Hook_Only_Timer1msEvent(void)
     if((SysPowState==SYSTEM_S5_S0)||(SysPowState==SYSTEM_S4_S0)||(SysPowState==SYSTEM_S3_S0))
     {
 		// 超时机制
-        if(++PowerOnWDT >6000)  // > 4.4 sec    4400
+        if(++PowerOnWDT >4400)  // > 4.4 sec    4400
         {
             PowerOnWDT = 0x00;
             Oem_TriggerS0S5(SC_PowerOnWatchDog);

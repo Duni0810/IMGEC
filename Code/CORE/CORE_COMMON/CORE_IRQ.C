@@ -582,7 +582,10 @@ void IRQ_INT36_CIRGPINT(void)
 //----------------------------------------------------------------------------
 void IRQ_INT37_SSPI(void)
 {
+    SET_MASK(ISR4, Int_SSPI);  // clear
+
     Hook_IRQ_INT37_SSPI();
+    SPI_Flash_IntFlag = 1;     // 等SSPI中断的flag
 }
 
 //----------------------------------------------------------------------------
@@ -590,6 +593,7 @@ void IRQ_INT37_SSPI(void)
 //----------------------------------------------------------------------------
 void IRQ_INT38_UART1(void)
 {
+    SET_MASK(ISR4, Int_UART1);  // clear
     Hook_IRQ_INT38_UART1();
 }
 

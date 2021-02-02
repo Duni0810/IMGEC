@@ -18,6 +18,7 @@ extern ECReg 	FMSSR			;// 0x1007	 Flash Memory Size Select Registe
 extern ECReg 	SMECCS			;// 0x1020	 Shared Memory EC Control and Status
 extern ECReg 	SMHSR			;// 0x1022	 Shared Memory Host Semaphore
 extern ECReg	FLHCTRL1R		;// 0x1031	 Flash Control Register 1	
+#define SPIFR2		    BIT(6)  // SPI Flash Read Mode
 #define SPIFR1		    BIT(5)  // SPI Flash Read Mode
 #define SPIFR0		    BIT(4)  // SPI Flash Read Mode
                                 //11b: Uses ��Fast Read Dual Input/Output (DIOFR)�� cycle (instruction = BBh)

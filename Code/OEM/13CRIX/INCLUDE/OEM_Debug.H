@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:34
- * @LastEditTime: 2021-01-18 09:51:12
+ * @LastEditTime: 2021-01-29 09:21:17
  */
 #ifndef	OEM_Debug_H
 #define OEM_Debug_H
@@ -30,7 +30,7 @@
 //---------------------------------------
 // UART debug range is 0xE00--0xFFF
 //---------------------------------------
-#define UART_Debug      FALSE  //FALSE
+#define UART_Debug      FALSE  //FALSE TRUE
 #define Uart_Base_Add   (*(XBYTE *)0x0E00)
 #define DebugUartRange  0x1FF
 #define UART_RX_MAX_LEN 32

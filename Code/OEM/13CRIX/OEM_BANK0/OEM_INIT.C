@@ -1036,58 +1036,74 @@ static void __change_PLL_req(void)
 #endif
 
 
-    static const BYTE code table111[] =
-    {
-        0x00, 0x43, 0x41, 0x3F, 0x3D, 0x3B, 0x3C, 0x58,
-        0x64, 0x44, 0x42, 0x40, 0x3E, 0x0F, 0x29, 0x59,
-        0x65, 0x38, 0x2A, 0x70, 0x1D, 0x10, 0x02, 0x5A,
-        0x66, 0x71, 0x2C, 0x1F, 0x1E, 0x11, 0x03, 0x5B,
-        0x67, 0x2E, 0x2D, 0x20, 0x12, 0x05, 0x04, 0x5C,
-        0x68, 0x39, 0x2F, 0x21, 0x14, 0x13, 0x06, 0x5D,
-        0x69, 0x31, 0x30, 0x23, 0x22, 0x15, 0x07, 0x5E,
-        0x6A, 0x72, 0x32, 0x24, 0x16, 0x08, 0x09, 0x5F,
-        0x6B, 0x33, 0x25, 0x17, 0x18, 0x0B, 0x0A, 0x60,
-        0x6C, 0x34, 0x35, 0x26, 0x27, 0x19, 0x0C, 0x61,
-        0x6D, 0x73, 0x28, 0x74, 0x1A, 0x0D, 0x62, 0x6E,
-        0x3A, 0x36, 0x1C, 0x1B, 0x75, 0x2B, 0x63, 0x76,
-        0x55, 0x56, 0x77, 0x78, 0x79, 0x7A, 0x0E, 0x7B,
-        0x7C, 0x4F, 0x7D, 0x4B, 0x47, 0x7E, 0x7F, 0x6F,
-        0x52, 0x53, 0x50, 0x4C, 0x4D, 0x48, 0x01, 0x45,
-        0x57, 0x4E, 0x51, 0x4A, 0x37, 0x49, 0x46, 0x54
-    };
 
 
-static void __test_speed_code(void)
+static void __test_uart_code(void)
 {
-
+    u8 __tmp = 0x00;
     SP = 0xC0;					// Setting stack pointer
-    GPCRJ4 = OUTPUT;
-    GPCRC6 = OUTPUT;
-
-    VCMD_Lenovo = OEM_Version_MSB;
-
-    BAT_LED2_ON();
-
-    Lenovo_PM_Cmd();
-
-    BAT_LED1_ON();
+    Init_ClearRam();
+    Core_Initialization();
+	Oem_Initialization();
+    InitEnableInterrupt();
 
 
-    // Init_Timers();
-    // InitEnableInterrupt();
+#if 1
+    TASK_UART_cfg_set_base(0); 
+
+    SET_MASK(UART1_IER, BIT1);
     for(;;){
-        // INVERSE_REG(GPDRJ, 4);
-        // Delay1MS(200);
-    };
-
+        TASK_UART_A_set_tx_data(0x55);
+        DelayXms(200);
+        DelayXms(200);
+        DelayXms(200);
+        DelayXms(200);
+        DelayXms(200);
+    }
+#endif
 }
 
+
+static void __read_flash_function(void)
+{
+    static u32 addr = 0x00;
+    if (addr > 0x10) {
+        return;
+    }
+
+    TASK_UART_A_set_tx_data(Sensor_Flash_WR(addr++,SPI_Channel));
+}
+
+
+static void __test_sspi_code(void)
+{
+    SP = 0xC0;					// Setting stack pointer
+    Init_ClearRam();
+    Core_Initialization();
+	Oem_Initialization();
+    InitEnableInterrupt();
+
+    TASK_UART_cfg_set_base(0); 
+
+    RSTDMMC |= 0x02;  // sspi ec side
+    Enable_SPIInterface();
+
+    for(;;) {
+        __read_flash_function();
+
+        INVERSE_REG(GPDRJ, 4);
+        DelayXms(200);
+    };
+}
 
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
+    // __test_sspi_code();
+    // __test_uart_code();
+
     // // 控制flash 读写拍数
     // SMFI_FIC_CTL0  = 0x98;
     // SMFI_FIC_CTL1  = 0x00;
@@ -1096,6 +1112,10 @@ void Oem_StartUp(void)
     // Core_Initialization();
 	// Oem_Initialization();
     // InitEnableInterrupt();
+
+    // for(;;){
+
+    // };
 
     // ITE_Flash_Utility();
     // for(;;);
@@ -1324,7 +1344,24 @@ void Oem_StartUp(void)
 }
 
 
+// static unsigned char SpiFlash_Read_Status2()
+// {
+// 	unsigned char rData;
+// 	sfc_cmd cmd;
+//     memset(&cmd, 0,sizeof(sfc_cmd));
+// 	cmd.cmd_index = 0x35;
+// 	cmd.read_write = SFC_READ;
+// 	cmd.cmd_mode = SFC_CMD_MODE_CMD_DATA;
+// 	cmd.buf = &rData;
+// 	cmd.len = 1;
+// 	cmd.addr = 0;
 
+// 	SYS_SFC_Transmit(&cmd);
+
+// 	return rData;
+// }
+
+extern void Do_SPI_function(void);
 //----------------------------------------------------------------------------
 // Oem_Initialization - Initialize the registers, data variables, and oem 
 // functions after kernel init. function.

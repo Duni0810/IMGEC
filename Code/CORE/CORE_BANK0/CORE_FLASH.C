@@ -10,6 +10,229 @@
 #include <CORE_INCLUDE.H>
 #include <OEM_INCLUDE.H>
 
+
+// extern void FlashECCode(void);
+
+
+#define STATUS2_QE_MASK         (1<<1)
+#define STATUS2_QE_SHIFT        1
+
+static u8 __QE_data = 0x00;
+static void Winbond_SPI_Read_Status2(void)
+{
+    // 第一步
+	ECINDAR3 = 0x0F; 
+ 	ECINDAR2 = 0xFF;
+    ECINDAR1 = 0xFE; 
+	ECINDAR0 = 0x00;   				
+
+	ECINDDR =  0x00;			    // SCE# high level
+
+    // 第二步 读 status1
+    ECINDAR3 = 0x0F; 
+ 	ECINDAR2 = 0xFF;
+    ECINDAR1 = 0xFD; 
+	ECINDAR0 = 0x00; 
+	ECINDDR =  0x35;	// Read status command
+
+	SPIReadStatus = ECINDDR;		// 
+	
+	ECINDAR3 = 0x00;     			
+	ECINDAR2 = 0x00;
+}
+
+
+static void Winbond_SPI_Write_Status(void)
+{
+	ECINDAR3 = 0x0F; 
+ 	ECINDAR2 = 0xFF;
+	ECINDAR0 = 0x00;   				// FFFFExx = 0xFF  
+
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+	ECINDDR = SPICmd_ReadStatus;	// Read Status Register
+	while(1)						// waiting spi free
+	{
+		if((ECINDDR&SPIStatus_BUSY)==0x00)
+        {
+            break;
+        } 
+	}								
+
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+	ECINDDR = SPICmd_WREN;			// Write enable	
+	
+    // if(SPIID==SSTID)
+	// {
+		ECINDAR1 = 0xFE;
+		ECINDDR = 0xFF;				// SCE# high level
+		ECINDAR1 = 0xFD;
+		ECINDDR = SPICmd_EWSR;		// Enable Write Status Register
+	// }    
+	
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+
+	ECINDDR = 0x31;			// Write status command
+	ECINDDR = __QE_data;		// Write SPIWriteStatus to spi status register
+
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+	ECINDDR = SPICmd_ReadStatus;	// Read Status Register
+	while(1)						// waiting spi free
+	{
+		if((ECINDDR&SPIStatus_BUSY)==0x00)
+        {
+            break;
+        } 
+	}
+	
+	ECINDAR3 = 0x00;     			//Exit follow mode
+	ECINDAR2 = 0x00;
+}
+
+static void Winbond_SPI_Write_Enable(void)
+{
+	ECINDAR3 = 0x0F; 
+ 	ECINDAR2 = 0xFF;
+	ECINDAR0 = 0x00;   				// FFFFExx = 0xFF  
+	
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+	ECINDDR = SPICmd_ReadStatus;	// Read Status Register
+	while(1)						// waiting spi free
+	{
+		if((ECINDDR&SPIStatus_BUSY)==0x00)
+        {
+            break;
+        } 
+	}								
+
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+	ECINDDR = SPICmd_WREN;			// Write enable	
+	
+    // if(SPIID==SSTID)
+    // {
+        ECINDAR1 = 0xFE;
+        ECINDDR = 0xFF;				// SCE# high level
+        ECINDAR1 = 0xFD;
+        ECINDDR = SPICmd_EWSR;		// Enable Write Status Register
+    // }
+    
+	ECINDAR1 = 0xFE;
+	ECINDDR = 0xFF;					// SCE# high level
+	ECINDAR1 = 0xFD;
+	ECINDDR = SPICmd_ReadStatus;	// Read Status Register
+	while(1)						// waiting spi free
+	{
+		if((ECINDDR&(SPIStatus_WEL+SPIStatus_BUSY))==0x02) // Check write enable and spi not busy
+        {
+            break;
+        } 
+	}
+
+	ECINDAR3 = 0x00;     			//Exit follow mode
+	ECINDAR2 = 0x00;
+}
+
+static void Winbond_SpiFlash_SetQE(void)
+{
+    // u8 u8Status2;
+
+    Winbond_SPI_Read_Status2(); // SPIReadStatus 保存读取的状态
+    __QE_data = SPIReadStatus;
+
+    if (((__QE_data & STATUS2_QE_MASK) >> STATUS2_QE_SHIFT) == 0x01)
+    {
+        return ;
+    }
+    else 
+    {
+        __QE_data &= ~(STATUS2_QE_MASK);
+        __QE_data |= 0x01 << STATUS2_QE_SHIFT;
+    }
+}
+
+
+static void __led_on()
+{
+    BAT_LED1_ON();
+    BAT_LED2_ON();
+}
+
+
+void FlashECCode1(void)
+{
+	// 第一步
+	ECINDAR3 = 0x0F; 
+ 	ECINDAR2 = 0xFF;
+    ECINDAR1 = 0xFE; 
+	ECINDAR0 = 0x00;   				
+
+	ECINDDR =  0x00;			    // SCE# high level
+
+    // 第二步 
+    ECINDAR1 = 0xFD; 
+	ECINDDR =  0x06;	// Read status command
+    ECINDAR3 = 0x00;
+
+	for(;;){
+		if((*(volatile unsigned char xdata *)0x844) == 0x55){
+			break;
+		}
+	}
+   //
+	ECINDAR3 = 0x0F;
+	ECINDDR =  0x50;
+    ECINDAR3 = 0x00;
+
+	for(;;){
+		if((*(volatile unsigned char xdata *)0x844) == 0x66){
+			break;
+		}
+	}
+	
+	//
+	ECINDAR3 = 0x0F;
+	ECINDDR =  0x01;
+	ECINDDR =  0x00;
+	ECINDDR =  0x02;
+    ECINDAR3 = 0x00;
+
+	for(;;){
+		if((*(volatile unsigned char xdata *)0x844) == 0x77){
+			break;
+		}
+	}
+    // Winbond_SPI_Read_Status2();
+}
+
+
+void Do_SPI_function(void)
+{
+    DisableAllInterrupt();		// Disable all interrupt 
+    LoadSPIFucnToRam(FlashECCode);	// Load function to ram
+
+    SCRA2L = 0x00;
+	SCRA2M = 0xFE;
+	SCRA2H = 0x00;
+
+    FlashECCode();
+
+	EnableAllInterrupt();				// Enable all interrupt 
+
+}
+
+
+
 //-----------------------------------------------------------------------------
 // Always at 0xFF00 of code space
 //-----------------------------------------------------------------------------
@@ -35,47 +258,6 @@ void FuncAt_0xFE00(void)
 }
 
 
-XBYTE   __data_buffer[256]            	_at_(0xE00);
-
-// unsigned int __cnt = 0x00;
-XBYTE   bios_data1            		_at_(0xFF0);
-XBYTE   bios_data2            		_at_(0xFF1);
-XBYTE   bios_data3            		_at_(0xFF2);
-XBYTE   bios_data4            		_at_(0xFF3);
-XBYTE   bios_data5            		_at_(0xFF4);
-// static unsigned char bios_data1;
-// static 
-
-
-
-static u8 __sram_tmp = 0;
-void FlashECCode_1(void)
-{
-    for(;;) {
-        GPCRA0 = 0x40;
-        Loop_Delay(10);
-        __sram_tmp = GPCRA0;
-        if (__sram_tmp != 0x40) {
-            BAT_LED1_ON();
-            for(;;);
-        }
-        Loop_Delay(10);
-
-        GPCRA0 = 0x00;
-        Loop_Delay(10);
-        __sram_tmp = GPCRA0;
-        if (__sram_tmp != 0x00) {
-            BAT_LED2_ON();
-            for(;;);
-        }
-        Loop_Delay(10);
-		INVERSE_REG(GPDRJ, 4);
-    }
-}
-
-
-
-
 //-----------------------------------------------------------------------------
 // The function of EC flash
 //-----------------------------------------------------------------------------
@@ -85,15 +267,7 @@ void FlashECCode(void)
 	RamcodeCmd = 0x00;
 	RamcodeSend = 0x00;
 
-	bios_data1 = 0x00;
-	bios_data2 = 0x00;
-	bios_data3 = 0x00;
-	bios_data4 = 0x00;
-	bios_data5 = 0x00;
-
     FLASH_EC_PMxDO = 0x33;		// ACK
-	// __data_buffer[0] = 0;
-	// (*(volatile unsigned char xdata *) 0xE00) = 0x00;
 	
  	while(1) 
   	{	
@@ -106,66 +280,6 @@ void FlashECCode(void)
 		if( IS_MASK_CLEAR(FLASH_EC_PMxSTS,P_IBF) ) continue;
 		if( IS_MASK_CLEAR(FLASH_EC_PMxSTS,P_C_D) ) continue;
 		RamcodeCmd = FLASH_EC_PMxDI;
-		
-		
-		// if ((*(volatile unsigned int xdata *)0xE00)++ > 127 ) {
-		// 	if((*(volatile unsigned int xdata *)0xE00) < 256) {
-		// 		// ( *(volatile unsigned char xdata *)(0xE02 + ( (*(volatile unsigned int xdata *)0xE00) - 127) ) ) = RamcodeCmd;
-		// 	}
-		// }
-
-		
-		// if (((*(volatile unsigned char xdata *)0xE00) < 128)) {
-			
-			// (*(volatile unsigned int xdata *)0xE00)++;
-			// (*(volatile unsigned int xdata *)0xE00) = __cnt++;
-		// }
-
-		// (*(volatile unsigned int xdata *)0xE00)++;
-		
-		
-
-		// if (RamcodeCmd != 0x04) {
-		// 	bios_data1++;
-		// 	if ((bios_data2 == 0x40) && (bios_data3 == 0) && (bios_data4 == 0)) {
-		// 		__data_buffer[0] = bios_data1;
-		// 		__data_buffer[bios_data1] = RamcodeCmd; 
-		// 	}
-
-		// }
-
-
-		// bios_data1++;
-
-		// if ((bios_data2 == 3) && (bios_data3 == 0) && (bios_data4 == 0)) {
-
-		// 	// if (RamcodeCmd != 0x04) {
-		// 		__data_buffer[0] = bios_data1;
-		// 		__data_buffer[bios_data1] = RamcodeCmd; 
-		// 	// }
-			
-		// }
-
-		// if (RamcodeCmd == 0xff) {
-		// 	bios_data1++;
-		// }
-		// if(bios_data1 > 250) {
-		// 	bios_data2++;
-		// 	bios_data1 = 0;
-		// }
-		// if(bios_data2 > 250) {
-		// 	bios_data3++;
-		// 	bios_data2 = 0;
-		// }
-
-		// if(bios_data3 > 250) {
-		// 	bios_data4++;
-		// 	bios_data3 = 0;
-		// }
-		// if(bios_data4 > 250) {
-		// 	bios_data5++;
-		// 	bios_data4 = 0;
-		// }
 
 		if(RamcodeSend==1)
 		{
@@ -208,24 +322,17 @@ void FlashECCode(void)
 		}
 		else if(RamcodeCmd==0xFD)
 		{
-        	// WDTRST = 1;				// Reset watch dog timer
-			// WDTEB = 1;				// Enable watch dog
-			// BAT_LED1_ON();
-			// BAT_LED2_OFF();
-			// __data_buffer[254] = 0xFD;
-       		while(1);				// Wait for watch dog time-out		
-			//    for(;;);		
+        	WDTRST = 1;				// Reset watch dog timer
+			WDTEB = 1;				// Enable watch dog
+       		while(1);				// Wait for watch dog time-out			
 		}
 		else if(RamcodeCmd==0xFE)
 		{	
 			BRAM[63]=0x55;
         	WDTRST = 1;				// Reset watch dog timer
 			WDTEB = 1;				// Enable watch dog
-			// BAT_LED2_ON();
-			// BAT_LED1_OFF();
-			// __data_buffer[254] = 0xFE;
+
        		while(1);				// Wait for watch dog time-out
-			//    for(;;);
 		}
  	}
 
@@ -1056,7 +1163,7 @@ void ChangeSPIFlashReadMode(BYTE Mode)
 {
     XBYTE restore;
     restore = FLHCTRL1R;
-    CLEAR_MASK(restore, SPIFR0+SPIFR1);
+    CLEAR_MASK(restore, SPIFR0+SPIFR1+SPIFR2);
     
     switch(Mode)
     {
@@ -1075,6 +1182,9 @@ void ChangeSPIFlashReadMode(BYTE Mode)
             SET_MASK(restore, SPIFR0+SPIFR1);
             break;
             
+		case SPIReadMode_4:
+            SET_MASK(restore, SPIFR2);
+            break;
         default:
             break;
     }

@@ -32,7 +32,7 @@ void Loop_Delay(BYTE delay)
 //----------------------------------------------------------------------------
 // Process Command/Data received from System via the 2nd Host interface
 //----------------------------------------------------------------------------
-void service_pci2(void)
+void  service_pci2(void)
 {
     if ( IS_MASK_CLEAR(PM1STS,P_IBF) )  
     {
@@ -526,7 +526,6 @@ void service_pci2f(void)
 	 EnableAllInterrupt();
 	 EnablePMCIBFInt();
 
-	 // 临时排除SMBUS 的影响 其实里面做的是 电池电量操作 是否屏蔽对开机无影响
 	 Hook_ACPICommand();
 }
 

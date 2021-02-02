@@ -634,6 +634,8 @@ XBYTE   SPI_Mouse_Buf_Index     	_at_( SPI_Mouse + 0x08);
 XBYTE   SPI_Mouse_Misc          	_at_( SPI_Mouse + 0x09);
 XBYTE   SPI_Mouse_ID            	_at_( SPI_Mouse + 0x0A);
 
+XBYTE   SPI_Flash_IntFlag           _at_( SPI_Mouse + 0x0B);
+
 //Reserved offset 0x0B ~ 0x0F
 //===============================================================================
 

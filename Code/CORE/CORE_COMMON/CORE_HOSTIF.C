@@ -186,6 +186,12 @@ void service_send(void)
 
  	SetServiceSendFlag();
 	
+
+    // if (SystemNotS0) {
+    //     return;
+    // }
+
+
     if( IS_MASK_SET(KBHISR,OBF) || IS_MASK_SET(KBHISR,IBF) )
     {
         return;

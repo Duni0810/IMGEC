@@ -28,7 +28,7 @@ void service_pci1(void)
         KBHIStep = 0;   			// command start
        	KbdNeedResponseFlag = 0;
  		KBHICmd  = KBHIDIR;
-        
+   
         Core_64Port(KBHICmd);
         Hook_64Port(KBHICmd);
  	    if ( KbdNeedResponseFlag ) 
@@ -283,11 +283,8 @@ void Cmd_A6(void)
 //-----------------------------------------------------------------------
 void Cmd_A7(void)
 {
-    // (*(volatile unsigned char xdata *) 0x806) = 0xA7;
-    PSCTL1 = PS2_InhibitMode;
-	PSCTL2 = PS2_InhibitMode;
-	PSCTL3 = PS2_InhibitMode;
-	Ccb42_DISAB_AUX = 1;   // Disable auxiliary device (mouse)	
+    DisablePS2Port_0();
+    Ccb42_DISAB_AUX = 1;   // Disable auxiliary device (mouse)		
 }
 
 //-----------------------------------------------------------------------
@@ -295,15 +292,9 @@ void Cmd_A7(void)
 //-----------------------------------------------------------------------
 void Cmd_A8(void)
 {
-    // (*(volatile unsigned char xdata *) 0x806) = 0xA8;
-
-    if ((Ccb42_DISAB_AUX == 1) ) {
-        PSCTL1 = PS2_ReceiveMode;
-        PSCTL2 = PS2_ReceiveMode;
-        PSCTL3 = PS2_ReceiveMode;
-    }
-
-	Ccb42_DISAB_AUX = 0; 	// Enable aux device (mouse) 
+    EnablePS2Port_0();
+    Ccb42_DISAB_AUX = 0; 	// Enable aux device (mouse) 
+	
 }
 
 //-----------------------------------------------------------------------
@@ -316,7 +307,6 @@ void Cmd_A8(void)
 //             4 = Data line stuck high
 //-----------------------------------------------------------------------
 void Cmd_A9(void)
-
 {
     MULPX_Multiplex = 0;
 	ResponseKBData(0x00);

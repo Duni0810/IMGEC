@@ -786,7 +786,7 @@ void Oem_TriggerS0S4(BYTE causecode)
 
 
 //----------------------------------------------------------------------------
-//
+// S0 to S3
 //----------------------------------------------------------------------------
 void Oem_TriggerS0S5(BYTE causecode)
 {
@@ -864,6 +864,7 @@ void Oem_S0S3Sequence(void)
 //----------------------------------------------------------------------------
 void Oem_S0S4Sequence(void)
 {
+
     if ( PowSeqDelay != 0x00 )
     {
         PowSeqDelay--; 				//1m Sec count base

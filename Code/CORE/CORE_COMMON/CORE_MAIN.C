@@ -284,7 +284,7 @@ void main(void)
             #endif
     		{
                 // // 暂时   young
-         		// PCON=1;      		// enter idle mode
+         		PCON=1;      		// enter idle mode
                 _nop_();
                 _nop_();
                 _nop_();
@@ -293,8 +293,8 @@ void main(void)
                 _nop_();
                 _nop_();
                 _nop_();
-                INVERSE_REG(GPDRJ, 4);
-                INVERSE_REG(GPDRC, 6);
+                // INVERSE_REG(GPDRJ, 4);
+                // INVERSE_REG(GPDRC, 6);
 
     		}
         }
@@ -311,6 +311,7 @@ void main(void)
  * again.  Do not follow through to check the next flag.  The flags are to be
  * checked in order.
  * ------------------------------------------------------------------------- */
+
 void main_service(void) 
 {
     #ifdef SMBusServiceCenterFunc
@@ -386,7 +387,6 @@ void main_service(void)
 
         //-----------------------------------
         // Secondary Host command/data service
-        // pm1 事件操作  与 ACPI 有关指令 bios
         //-----------------------------------
         if(F_Service_PCI2)
         {
@@ -394,8 +394,7 @@ void main_service(void)
             service_pci2();
             continue;
         }
-
-        
+    
         //-----------------------------------
         // 1 millisecond elapsed
         //-----------------------------------
@@ -432,7 +431,7 @@ void main_service(void)
 #if __DEBUG__
         //-----------------------------------
         // Third Host command/data service
-        // 做PM2 操作  68/6c  这个好像与 系统 有关操作
+        // 做PM2 操作  68/6c  这个好像与 bios 有关操作
         //-----------------------------------
         if(F_Service_PCI3)
         {
@@ -515,7 +514,7 @@ void service_1mS(void)
 		    Timer10msEventB();                          // ANX7447 事件
      	    switch( Timer5msCnt )   // Share Loading Branch Control
     	    {
-       		    case 2: //Timer50msEventA();              // LED 灯控制
+       		    case 2: Timer50msEventA();              // LED 灯控制
                     break;
           	    case 4: Timer50msEventB();              // 适配器热插拔事件
              	    break;

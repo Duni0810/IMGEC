@@ -293,7 +293,6 @@ void uart_printf(const char *fmt,...)
 
 	UART_Print_Str(fmt);
 
-
 	#endif
 
 	#endif
@@ -420,5 +419,108 @@ void UART_RX_Command(void)
 	}
 }
 */
+
+
+static void UART_GPIO_INIT(void)
+{
+    // 第一步
+    // 16550 通用使能配置
+    GCR6 = 0x03; // UART SOUT0 Enable 
+    GCR1 = 0x01; // SIN0/SOUT0 are enabled
+
+    // init GPIO 设置复用模式
+    GPCRB0 = ALT;
+    GPCRB1 = ALT;
+
+    // set ec side  SSPI and uart to the ec side
+    RSTDMMC = 0x0a;
+}
+
+
+
+static void TASK_UART_A_cfg_set_bitlen(u8 len)
+{
+    UART1_LCR |= (len & 0x07);
+}
+
+static void TASK_UART_A_cfg_set_Parity(u8 Parity)
+{
+    UART1_LCR |= ((Parity << 4) | (1 << 3));
+}
+
+static void TASK_UART_A_cfg_set_Break(u8 break_data)
+{
+    UART1_LCR |= (break_data << 6);
+}
+
+static void TASK_UART_A_cfg_set_baud(u16 dl)
+{
+    UART1_LCR |= (1 << 7);
+
+    UART1_RBR |=   (dl & 0xff);
+    UART1_IER |=  ((dl >> 8) & 0xff);
+
+    CLEAR_MASK(UART1_LCR, BIT(7));
+
+    // 高速模式
+    if ((dl == 32770) || (dl == 32769)) {
+        SET_MASK(UART1_ECSPMR, BIT(1));
+    }
+}
+
+
+void TASK_UART_cfg_set_base(u8 fifo_en)
+{
+    UART_GPIO_INIT();
+
+    // 第二部配置信息
+    UART1_IER = 0x08;  // enable status
+    UART1_IIR = 0xC0 | fifo_en;
+    UART1_LCR = 0x03;  // 设置 8 数据位置，1 停止位 不进行奇偶校验
+    UART1_MCR = 0x00;
+
+    // 设置波特率
+    // UART1_LCR  = 0x83;
+    // UART1_RBR  = 0x01;
+    // UART1_IER  = 0x00;
+
+	TASK_UART_A_cfg_set_baud(1);
+    // UART1_LCR  = 0x03; 
+
+
+    // 使能INTC
+    SET_MASK(ISR4, Int_UART1);  // clear
+    SET_MASK(IER4, Int_UART1);  // enalbe
+    
+}
+
+
+
+static void TASK_UART_A_cfg_set_modem(u8 mode)
+{
+    UART1_MCR = mode;
+}
+
+void TASK_UART_A_set_tx_data(u8 dat)
+{
+    u8 tmp8_data = 0x00;
+    u8 width     = 0x00;  
+
+    // tmp8_data = UART1_LCR;
+    width = (UART1_LCR & 0x03) + 5;
+    UART1_RBR = dat;
+}
+
+u8 uart1_16550_check_rx(void)
+{
+    u8 tmp8_data = 0x00;
+    u8 width     = 0x00;  
+
+    while(!(UART1_LSR & 0x01)); // 等状态
+    width = (UART1_LCR & 0x03) + 5;
+    tmp8_data = UART1_RBR; // data 
+
+    return tmp8_data;
+}
 
 

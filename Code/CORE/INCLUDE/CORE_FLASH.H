@@ -5,7 +5,7 @@
  * @Description: 
  * @LastEditors: young
  * @Date: 2020-11-05 16:18:34
- * @LastEditTime: 2020-11-11 10:41:31
+ * @LastEditTime: 2021-01-30 14:27:55
  */
 /*-----------------------------------------------------------------------------
  * TITLE: CORE_FLASH.H
@@ -24,6 +24,7 @@
 //----------------------------------------------------------------------------
 #define SPICmd_WRSR				0x01	// Write Status Register
 #define SPICmd_BYTEProgram		0x02	// To Program One Data Byte
+#define SPICmd_Read_Data		0x03	// read data
 #define SPICmd_WRDI				0x04	// Write diaable
 
 #define SPICmd_ReadStatus		0x05	// Read Status Register
@@ -69,6 +70,7 @@
 #define SPIReadMode_1           0x01    // Fast read cycle
 #define SPIReadMode_2           0x02    // Fast read dual output
 #define SPIReadMode_3           0x03    // Fast read dual input/output
+#define SPIReadMode_4           0x04    // Fast read dual input/output
 
 
 

@@ -1165,6 +1165,7 @@ extern XBYTE    PECI_PkgPower_average_count ;//  _at_( PECICtrlRAM + 0x07a);
 //===============================================================================
 // OEMRAM5 Offset 0xC0 ~ 0xCF   For OEM SPI function 
 #define SPI_Mouse           OEMRAM5+0xC0
+#define SPI_Flash           OEMRAM5+0xC0
 
 extern XBYTE   SPI_Mouse_Buf[];         //( SPI_Mouse + 0x00)
 extern XBYTE   SPI_Mouse_DeltaX;        //( SPI_Mouse + 0x03)
@@ -1189,6 +1190,8 @@ extern XBYTE   SPI_Mouse_Misc;          //( SPI_Mouse + 0x09)
 #define SPI_Mouse_Need_Break    BIT0
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 extern XBYTE   SPI_Mouse_ID;            //( SPI_Mouse + 0x0A)
+
+extern XBYTE   SPI_Flash_IntFlag; 
 
 //Reserved offset 0x0A ~ 0x0F
 //===============================================================================

@@ -168,14 +168,18 @@ void service_pci3(void)
 	
 	if ( PM2STS & P_C_D)	// Command port
 	{
+
+
         PM2DataCount =0;
    		PM2Cmd  = PM2DI;	// Load command
+
 		EnablePMCIBFInt();
 		Hook_6CPort(PM2Cmd);    // Handle command
 	}
 	else					// Data port
 	{
         PM2Data = PM2DI;
+
         EnablePMCIBFInt();
         if (PM2DataCount!=0x00)
         {

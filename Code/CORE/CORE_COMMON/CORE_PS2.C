@@ -28,6 +28,10 @@ void service_PS2_data(void)
 {
     //BYTE index;
 	
+    // if (SystemNotS0) {
+    //     return;
+    // }
+
     if(IS_MASK_SET(KBHISR,OBF)||IS_MASK_SET(KBHISR,IBF))	        // Dino 0202
     //if(IS_MASK_SET(KBHISR,OBF))
 	{
@@ -448,8 +452,8 @@ void RAM_Send2Port(BYTE p_PortNum, BYTE p_cmd)
 {
     if(p_PortNum==0x00)
     {
-        // PSDAT1 = p_cmd;
-        // PSCTL1 = 0x3D;
+        //  PSDAT1 = p_cmd;
+        //  PSCTL1 = 0x3D;
         PSCTL1 = 0x1D;
         PSDAT1 = p_cmd;
         PSCTL1 = 0x1C;
