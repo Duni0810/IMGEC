@@ -932,6 +932,93 @@ void IRQ_INT79_WKO77(void)
     Hook_IRQ_INT79_WKO77();
 }
 
+
+
+//----------------------------------------------------------------------------
+// NULL
+//----------------------------------------------------------------------------
+void IRQ_INT80_Null(void)
+{
+
+}
+//----------------------------------------------------------------------------
+// SMbus Clock Held intr
+//---------------------------------------------------------------------------- 
+void IRQ_INT81_SMBC(void)
+{
+
+}
+//----------------------------------------------------------------------------
+// CEC Interrupt
+//---------------------------------------------------------------------------- 
+void IRQ_INT82_CEC (void)
+{
+
+}
+//----------------------------------------------------------------------------
+// H2RAM LPC Trigger
+//---------------------------------------------------------------------------- 
+void IRQ_INT83_H2RAM(void)
+{
+
+}
+//----------------------------------------------------------------------------
+// KB Scan Data Valid Interrupt
+//----------------------------------------------------------------------------
+void IRQ_INT84_KBSDV(void)
+{
+    ISR10 = 0x10;
+    
+    BAT_LED2_ON();
+
+    if ((SDSR & 0x01) == 0x01) {
+        (*(volatile unsigned char xdata *)0xF00) = KSO0LSDR;
+        (*(volatile unsigned char xdata *)0xF01) = KSO1LSDR;
+        (*(volatile unsigned char xdata *)0xF02) = KSO2LSDR;
+        (*(volatile unsigned char xdata *)0xF03) = KSO3LSDR;
+        (*(volatile unsigned char xdata *)0xF04) = KSO4LSDR;
+        (*(volatile unsigned char xdata *)0xF05) = KSO5LSDR;
+        (*(volatile unsigned char xdata *)0xF06) = KSO6LSDR;
+        (*(volatile unsigned char xdata *)0xF07) = KSO7LSDR;
+        (*(volatile unsigned char xdata *)0xF08) = KSO8LSDR;
+        (*(volatile unsigned char xdata *)0xF09) = KSO9LSDR;
+        (*(volatile unsigned char xdata *)0xF0a) = KSO10LSDR;
+        (*(volatile unsigned char xdata *)0xF0b) = KSO11LSDR;
+        (*(volatile unsigned char xdata *)0xF0c) = KSO12LSDR;
+        (*(volatile unsigned char xdata *)0xF0d) = KSO13LSDR;
+        (*(volatile unsigned char xdata *)0xF0e) = KSO14LSDR;
+        (*(volatile unsigned char xdata *)0xF0f) = KSO15LSDR;
+        (*(volatile unsigned char xdata *)0xF10) = KSO16LSDR;
+        (*(volatile unsigned char xdata *)0xF11) = KSO17LSDR;
+
+    }
+
+    while(1);
+
+     SDSR = 0x01;
+}
+//----------------------------------------------------------------------------
+// WKO[88]
+//----------------------------------------------------------------------------
+void IRQ_INT85_WK88(void)
+{
+
+}
+//----------------------------------------------------------------------------
+// WKO[89]
+//---------------------------------------------------------------------------- 
+void IRQ_INT86_WK89(void)
+{
+
+}
+//----------------------------------------------------------------------------
+// WKO[90]
+//---------------------------------------------------------------------------- 
+void IRQ_INT87_WK90(void)
+{
+
+} 
+
 //----------------------------------------------------------------------------
 // FUNCTION:   Isr_Int0
 // ISR for INT0 (Key Scan Interrupt).
@@ -1067,6 +1154,15 @@ const FUNCT_PTR_V_V code IRQ_Service[] =
     IRQ_INT77_WKO75,                    //   INT77  WKO[75]
     IRQ_INT78_WKO76,                    //   INT78  WKO[76]	
     IRQ_INT79_WKO77,                    //   INT79  WKO[77]   
+
+    IRQ_INT80_Null,                     //   INT80  --
+    IRQ_INT81_SMBC,                     //   INT81  SMbus Clock Held intr
+    IRQ_INT82_CEC ,                     //   INT82  CEC Interrupt
+    IRQ_INT83_H2RAM,                    //   INT83  H2RAM LPC Trigger
+    IRQ_INT84_KBSDV,                    //   INT84  KB Scan Data Valid Interrupt
+    IRQ_INT85_WK88,                     //   INT85  WKO[88]
+    IRQ_INT86_WK89,                     //   INT86  WKO[89]
+    IRQ_INT87_WK90,                     //   INT87  WKO[90]
 };
 							
 void Isr_Int1 (void) interrupt 2 using 2

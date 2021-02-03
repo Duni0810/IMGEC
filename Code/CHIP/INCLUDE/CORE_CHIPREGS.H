@@ -118,6 +118,7 @@ extern ECReg 	ISR6    		;// 0x111C	 Interrupt Status Register 6
 extern ECReg 	ISR7    		;// 0x1120	 Interrupt Status Register 7
 extern ECReg 	ISR8    		;// 0x1124	 Interrupt Status Register 8
 extern ECReg 	ISR9            ;// 0x1128   Interrupt Status Register 9
+extern ECReg 	ISR10           ;// 0x112C   Interrupt Status Register 10
 extern ECReg 	ISR15			;	//J80_011++
 
 extern ECReg 	IER0      		;// 0x1104	 Interrupt Enable Register 0
@@ -130,6 +131,7 @@ extern ECReg 	IER6    		;// 0x111D	 Interrupt Enable Register 6
 extern ECReg 	IER7    		;// 0x1121	 Interrupt Enable Register 7
 extern ECReg 	IER8    		;// 0x1125   Interrupt Enable Register 8
 extern ECReg 	IER9    		;// 0x1129   Interrupt Enable Register 9
+extern ECReg 	IER10    		;// 0x112D   Interrupt Enable Register 10
 extern ECReg 	IER15			;	//J80_011++
 
 extern ECReg 	IELMR0    		;// 0x1108	 Interrupt Edge/Level-Triggered Mode Register 0
@@ -685,6 +687,30 @@ extern ECReg	KSOHGDMRR       ;// 0x1D0C   Keyboard Scan Out [15:8] GPIO DATA Mir
 extern ECReg	KSOLGCTRL       ;// 0x1D0D   Keyboard Scan Out [7:0] GPIO Control
 extern ECReg	KSOLGOEN       	;// 0x1D0E   Keyboard Scan Out [7:0] GPIO Output Enable
 extern ECReg	KSOLGDMRR       ;// 0x1D0F   Keyboard Scan Out [7:0] GPIO DATA Mirror
+
+
+extern ECReg	KSO0LSDR        ;// 0x1D10 KSO0 Low Scan Data Register
+extern ECReg	KSO1LSDR        ;// 0x1D11 KSO1 Low Scan Data Register
+extern ECReg	KSO2LSDR      	;// 0x1D12 KSO2 Low Scan Data Register
+extern ECReg	KSO3LSDR	    ;// 0x1D13 KSO3 Low Scan Data Register
+extern ECReg	KSO4LSDR        ;// 0x1D14 KSO4 Low Scan Data Register
+extern ECReg	KSO5LSDR       	;// 0x1D15 KSO5 Low Scan Data Register
+extern ECReg	KSO6LSDR       	;// 0x1D16 KSO6 Low Scan Data Register
+extern ECReg	KSO7LSDR       	;// 0x1D17 KSO7 Low Scan Data Register
+extern ECReg	KSO8LSDR       	;// 0x1D18 KSO8 Low Scan Data Register
+extern ECReg	KSO9LSDR       	;// 0x1D19 KSO9 Low Scan Data Register
+extern ECReg	KSO10LSDR       ;// 0x1D1A KSO10 Low Scan Data Register
+extern ECReg	KSO11LSDR       ;// 0x1D1B KSO11 Low Scan Data Register
+extern ECReg	KSO12LSDR       ;// 0x1D1C KSO12 Low Scan Data Register
+extern ECReg	KSO13LSDR       ;// 0x1D1D KSO13 Low Scan Data Register
+extern ECReg	KSO14LSDR       ;// 0x1D1E KSO14 Low Scan Data Register
+extern ECReg	KSO15LSDR       ;// 0x1D1F KSO15 Low Scan Data Register
+extern ECReg	KSO16LSDR       ;// 0x1D20 KSO16 Low Scan Data Register
+extern ECReg	KSO17LSDR       ;// 0x1D21 KSO17 Low Scan Data Register
+extern ECReg	SDCR1      	    ;// 0x1D22 Scan Data Control1 Register 
+extern ECReg	SDCR2			;// 0x1D23 Scan Data Control2 Register 
+extern ECReg	SDCR3           ;// 0x1D24 Scan Data Control3 Register 
+extern ECReg	SDSR       	    ;// 0x1D25 Scan Data Status Register
 
 //-----------------------------------------------------------------------------
 // (1Exxh) EC Clock and Power Management controller (ECPM) 

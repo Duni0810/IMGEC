@@ -37,7 +37,7 @@ static void __1s_delay(void)
 }
 
 // 看门狗测试
-#if 0
+#if 1
 
 /**
  * 试验一内容  : RSTS 寄存器属性判断
@@ -109,6 +109,23 @@ static void __test_ETWD(void)
     uchar i = 0;
     Init_GPIO();
 
+    EX1=1;					// enable external 1 interrupt 
+	EnableAllInterrupt();
+
+    ETPSR = 0x00;                   
+    ETCNTLHR = 0x00;        //
+    ETCNTLLR = 0x01;        // "g_ECPowerDownPeriodWakeUpTime" second
+
+    ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
+    SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
+
+    ETWCTRL = 0x01;
+    // BAT_LED1_ON();  // 白色
+    // BAT_LED2_ON();  // 白色
+
+
+
+
     i = RSTS;  // 读取 电源状态状态
     
     if ((i & 0x03) == 0x02) {        // 内部看门狗
@@ -122,23 +139,19 @@ static void __test_ETWD(void)
         BAT_LED2_OFF();
     }
 
-    ETWCFG = 0x20;  // 使能外部看门狗
+    // ETWCFG = 0x20;  // 使能外部看门狗
 
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
+    EWDCNTLR = 0xff;
+    EWDCNTHR = 0xff;
 
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
-    __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
+    // __1s_delay();
 
-    EWDKEYR = 0xff;
+    // EWDKEYR = 0xff;
     for(;;);
 }
 
@@ -188,7 +201,7 @@ static void __test_ITWD(void)
 
 
 
-ECReg	SPCTRL4	    _at_ 0x201C;	// PG 状态寄存器
+
 
 #if 0
 /**
@@ -1096,15 +1109,95 @@ static void __test_sspi_code(void)
     };
 }
 
+
+// PRSC			    _at_ 0x2900;
+// GCSMS			_at_ 0x2901;
+// CTR_A0			_at_ 0x2902;
+// CTR_A1			_at_ 0x2903;
+// CTR_B0			_at_ 0x2904;
+// CTR_B1			_at_ 0x2905;
+// DCR_A0			_at_ 0x2906;
+// DCR_A1			_at_ 0x2907;
+// DCR_B0			_at_ 0x2908;
+// DCR_B1			_at_ 0x2909;
+// CCGSR			_at_ 0x290A;
+// TMRCE			_at_ 0x290B;
+// TMEIE			_at_ 0x290C;
+
+static void __tmr(void)
+{
+    SP = 0xC0;					// Setting stack pointer
+    Init_ClearRam();
+    // Core_Initialization();
+	// Oem_Initialization();
+    // InitEnableInterrupt();
+
+
+    GPCRB2 = 0x00;
+    GPCRD7 = 0x00;
+    GPCRF0  = 0x00;
+    GPCRF1  = 0x00;
+
+
+    GCR2   = 0x0f;
+
+
+    PRSC      = 0X11   ;	
+    GCSMS	  = 0X00   ;
+    CTR_A0    = 0XFF   ;
+    CTR_A1    = 0XFF   ;
+    CTR_B0    = 0XFF   ;
+    CTR_B1    = 0XFF   ;
+    DCR_A0    = 0X80   ;
+    DCR_A1    = 0X80   ;
+    DCR_B0    = 0X80   ;
+    DCR_B1    = 0X80   ;
+    CCGSR	  = 0X00   ;
+    TMRCE	  = 0X02   ;
+    TMEIE	  = 0X00   ;   
+
+
+    for(;;){
+        INVERSE_REG(GPDRJ, 4);
+        DelayXms(200);
+    };
+}
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
 void Oem_StartUp(void)
 {
+
+    SP = 0xC0;					// Setting stack pointer
+    Init_ClearRam();
+
+    Init_GPIO();
+    Init_Timers();
+    IER10 = 0x10;
+    ISR10 = 0x10;
+
+    SDCR1 = 0XA4;
+    SDCR2 = 0X01;
+    SDCR3 = 0X01;
+
+    EX1=1;					// enable external 1 interrupt 
+	InitEnableInterrupt();
+   
+    for(;;){
+
+        INVERSE_REG(GPDRJ, 4);
+        DelayXms(200);
+    };
+
+
+
+    // for(;;);
+    // __tmr();
+
     // __test_sspi_code();
     // __test_uart_code();
 
-    // // 控制flash 读写拍数
+    // 控制flash 读写拍数
     // SMFI_FIC_CTL0  = 0x98;
     // SMFI_FIC_CTL1  = 0x00;
 
