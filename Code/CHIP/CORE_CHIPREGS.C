@@ -5,8 +5,8 @@
  *
  *---------------------------------------------------------------------------*/
  
-#include <CORE_INCLUDE.H>
-#include <OEM_INCLUDE.H>
+#include "CORE_INCLUDE.H"
+#include "OEM_INCLUDE.H"
 #if 0
 
 #define		FIC628_REG_SMFI_BASE	(0x1000)

@@ -1,5 +1,5 @@
 cd   .\cmd_MDK
-call clear.bat
+call make.bat clear
 cd ..
 
 

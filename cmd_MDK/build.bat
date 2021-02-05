@@ -12,7 +12,7 @@ REM 	path=C:\keil3\C51\BIN;.\Tools;.\Tools\NMake;
 		path=C:\Keil_v5\C51\BIN;.\..\Tools;.\..\Tools\NMake;
 REM -----------------------------------------------------------------------------------------------------------
 set filename=%2
-set buildfile=IMGEC
+set buildfile=FIC628
 set workspace=cmd_MDK
 REM ***********************************************************************************************************
 REM	Parameter
@@ -108,7 +108,7 @@ FU /SIZE %EC_ROM_SIZE% %buildfile%.ALL %buildfile%.BIN FF
 :: OK
 ::-----------------------------------------------------------
 copy %buildfile%.bin .\bin\%filename%.bin
-copy %buildfile%.bin .\bin\%filename%.fd
+
 
 
 ::-----------------------------------------------------------
@@ -125,7 +125,7 @@ REM copy BANK0.BIN .\bin\%filename%.BBIN
 
 
 
-::move %buildfile%.ALL .\bin
+move %buildfile%.ALL .\bin
 DEL /q *.BIN*
 DEL /q *.H*
 DEL /q *.b0*
