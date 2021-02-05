@@ -259,6 +259,12 @@ void main(void)
     PSCLKEN = 0x07;  // PSCLKEN
 #endif
 
+
+    // BAT_LED1_ON();
+    // BAT_LED2_ON();
+
+
+
 	while(1)
    	{
         if(OEM_SkipMainServiceFunc()==Normal_MainService)

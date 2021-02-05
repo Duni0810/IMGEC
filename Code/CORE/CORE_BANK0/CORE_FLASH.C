@@ -221,9 +221,9 @@ void Do_SPI_function(void)
     DisableAllInterrupt();		// Disable all interrupt 
     LoadSPIFucnToRam(FlashECCode);	// Load function to ram
 
-    SCRA2L = 0x00;
-	SCRA2M = 0xFE;
-	SCRA2H = 0x00;
+    SCRA0L = 0x00;
+	SCRA0M = 0xF8;
+	SCRA0H = 0x00;
 
     FlashECCode();
 

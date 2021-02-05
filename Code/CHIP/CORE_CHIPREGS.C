@@ -7,6 +7,7 @@
  
 #include <CORE_INCLUDE.H>
 #include <OEM_INCLUDE.H>
+#if 0
 
 #define		FIC628_REG_SMFI_BASE	(0x1000)
 #define		FIC628_REG_INTC_BASE	(0x1100)	//(0x2100)
@@ -36,7 +37,38 @@
 #define		FIC628_REG_TMR_BASE		(0x2900)
 
 #define		FIC628_REG_PECI_BASE	(0x3000)
+#else
 
+#define		FIC628_REG_SMFI_BASE	(0x1000)
+#define		FIC628_REG_INTC_BASE	(0x2100)	//(0x2100)
+#define		FIC628_REG_EC2I_BASE	(0x1200)
+#define		FIC628_REG_KBC_BASE	    (0x1300)
+#define		FIC628_REG_SWUC_BASE	(0x2400)
+#define		FIC628_REG_PMC_BASE	    (0x1500)
+#define		FIC628_REG_GPIO_BASE	(0x2600)
+#define		FIC628_REG_PS2_BASE	    (0x2700)
+#define		FIC628_REG_PWM_BASE	    (0x2800)
+#define		FIC628_REG_ADC_BASE		(0x2900)
+#define		FIC628_REG_DAC_BASE		(0x2A00)
+#define		FIC628_REG_WUC_BASE		(0x2B00)
+#define		FIC628_REG_SMBUS_BASE	(0x2C00)
+#define		FIC628_REG_KBS_BASE		(0x2D00)
+#define		FIC628_REG_ECPM_BASE	(0x2E00)
+#define		FIC628_REG_ETWD_BASE	(0x2F00)
+
+#define		FIC628_REG_GCTRL_BASE	(0x2000)
+#define		FIC628_REG_EGPC_BASE	(0x3100)
+#define		FIC628_REG_BRAM_BASE	(0x2200)
+#define		FIC628_REG_CIR_BASE		(0x3300)
+#define		FIC628_REG_DBGR_BASE	(0x3500)
+#define		FIC628_REG_SSPI_BASE	(0x3600)
+#define		FIC628_REG_UART1_BASE	(0x3700)
+#define		FIC628_REG_UART2_BASE	(0x3800)
+#define		FIC628_REG_TMR_BASE		(0x3900)
+
+#define		FIC628_REG_PECI_BASE	(0x4000)
+
+#endif
 
 //-----------------------------------------------------------------------------
 // (10XXh) Shared Memory Flash Interface Bridge (SMFI) 

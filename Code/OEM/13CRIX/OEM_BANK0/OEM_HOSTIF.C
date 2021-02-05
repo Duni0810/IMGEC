@@ -42,9 +42,6 @@ const BYTE code initsio_table[]=
     //0xF4 ,0x1F, // P80 value end of BRAM
     //0xF5 ,0x20, // P80 value index of BRAM
 	0x30 ,0x01,	// Enable BRAM
-
-	// young 添加
-	0x70, 0x00,
 	
 				// Enable Logical Device 0Fh(Shared Memory)
  	0x07 ,0x0F,	// Logical Device 0Fh(Shared Memory)

@@ -113,8 +113,8 @@ static void __test_ETWD(void)
 	EnableAllInterrupt();
 
     ETPSR = 0x00;                   
-    ETCNTLHR = 0x00;        //
-    ETCNTLLR = 0x01;        // "g_ECPowerDownPeriodWakeUpTime" second
+    ETCNTLHR = 0xFF;        //
+    ETCNTLLR = 0xFF;        // "g_ECPowerDownPeriodWakeUpTime" second
 
     ISR3 = Int_EXTimer;             // Write to clear external timer 1 interrupt 
     SET_MASK(IER3, Int_EXTimer);    // Enable external timer 1 interrupt 
@@ -141,8 +141,8 @@ static void __test_ETWD(void)
 
     // ETWCFG = 0x20;  // 使能外部看门狗
 
-    EWDCNTLR = 0xff;
-    EWDCNTHR = 0xff;
+    EWDCNTLR = 0x01;
+    EWDCNTHR = 0x00;
 
     // __1s_delay();
     // __1s_delay();
@@ -1162,32 +1162,111 @@ static void __tmr(void)
         DelayXms(200);
     };
 }
+
+// #include <string.h>
+// static u8 __array[20] = {0};
+
+static void __dptr2_test(void)
+{
+    SP = 0xC0;					// Setting stack pointer
+    Init_ClearRam();
+    Init_GPIO();
+    Init_Timers();
+    
+
+    for(;;){
+        (*(volatile unsigned char xdata *)0xE00) = SP    ;
+        (*(volatile unsigned char xdata *)0xE00) = DPL   ;
+        (*(volatile unsigned char xdata *)0xE00) = DPH   ;
+        
+    //    memcpy(__array, "hello world!\r\n", 15); 
+    };
+}
 //----------------------------------------------------------------------------
 // Oem_StartUp
 //----------------------------------------------------------------------------
+XBYTE   scanf_kbs[256]                    _at_ 0xe00;
+u8 g_kbs_flag = 0x00;
 void Oem_StartUp(void)
 {
+    // u8 i = 0;
+    // __dptr2_test();
+    // SP = 0xC0;					// Setting stack pointer
+    // Init_ClearRam();
 
-    SP = 0xC0;					// Setting stack pointer
-    Init_ClearRam();
+    // Init_GPIO();
+    // Init_Timers();
+    // IER10 = 0x10;
+    // ISR10 = 0x10;
 
-    Init_GPIO();
-    Init_Timers();
-    IER10 = 0x10;
-    ISR10 = 0x10;
+    // KSOCTRL = 0x05;
+    // SDCR1 = 0XA4;
+    // SDCR2 = 0X09;
+    // SDCR3 = 0X01;
 
-    SDCR1 = 0XA4;
-    SDCR2 = 0X01;
-    SDCR3 = 0X01;
 
-    EX1=1;					// enable external 1 interrupt 
-	InitEnableInterrupt();
+    // uart_Initial();
+    // GPCRB0 = ALT;
+    // GPCRB1 = ALT;
+
+    // uart_print("\r\n------------------------------------\r\n");
+    // uart_print("  EC Init OK !!! ");
+    // uart_print("\r\n------------------------------------\r\n");
+
+    // EX1=1;					// enable external 1 interrupt 
+	// InitEnableInterrupt();
    
-    for(;;){
+    // for(;;){
 
-        INVERSE_REG(GPDRJ, 4);
-        DelayXms(200);
-    };
+    //     if (g_kbs_flag == 0x01) {
+    //         // EA = 0x00;
+
+    //         g_kbs_flag = 0x00;
+    //         INVERSE_REG(GPDRJ, 4);
+
+
+    //         for(i = 0; i < 16; i++){
+    //             if ((*(volatile unsigned char xdata *)(0xE00 + i)) != 0xff) {
+
+    //                 if ((*(volatile unsigned char xdata *)0xF00) != 0xff){
+    //                     (*(volatile unsigned char xdata *)(0xF01 + (*(volatile unsigned char xdata *)0xF00)++) ) = (*(volatile unsigned char xdata *)(0xE00 + i));
+    //                 }
+
+    //                 if ((*(volatile unsigned char xdata *)0xF00) == 0xff){
+    //                     (*(volatile unsigned char xdata *)0xF00) = 0x00;
+    //                 }
+    //                 // uart_hex_show((*(volatile unsigned char xdata *)(0xF00 + i)));
+    //                 // uart_print(" \0");  
+    //             }
+                
+    //         }
+
+    //     (*(volatile unsigned char xdata *)0xE00) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE01) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE02) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE03) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE04) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE05) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE06) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE07) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE08) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE09) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE0a) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE0b) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE0c) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE0d) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE0e) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE0f) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE10) = 0xFF;
+    //     (*(volatile unsigned char xdata *)0xE11) = 0xFF;
+
+    //     // uart_print("\r\n");  
+    //         // EA   = 0x01;
+    //         SET_MASK(IER10, BIT4);
+    //     }
+    //     // 
+    //     // DelayXms(200);
+    // };
 
 
 

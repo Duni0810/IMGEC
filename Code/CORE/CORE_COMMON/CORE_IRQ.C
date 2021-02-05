@@ -965,35 +965,39 @@ void IRQ_INT83_H2RAM(void)
 //----------------------------------------------------------------------------
 // KB Scan Data Valid Interrupt
 //----------------------------------------------------------------------------
+extern u8 g_kbs_flag ;
 void IRQ_INT84_KBSDV(void)
 {
+    g_kbs_flag = 0x01;
     ISR10 = 0x10;
+
+    CLEAR_MASK(IER10, BIT4);
     
-    BAT_LED2_ON();
+    // BAT_LED2_ON();
 
-    if ((SDSR & 0x01) == 0x01) {
-        (*(volatile unsigned char xdata *)0xF00) = KSO0LSDR;
-        (*(volatile unsigned char xdata *)0xF01) = KSO1LSDR;
-        (*(volatile unsigned char xdata *)0xF02) = KSO2LSDR;
-        (*(volatile unsigned char xdata *)0xF03) = KSO3LSDR;
-        (*(volatile unsigned char xdata *)0xF04) = KSO4LSDR;
-        (*(volatile unsigned char xdata *)0xF05) = KSO5LSDR;
-        (*(volatile unsigned char xdata *)0xF06) = KSO6LSDR;
-        (*(volatile unsigned char xdata *)0xF07) = KSO7LSDR;
-        (*(volatile unsigned char xdata *)0xF08) = KSO8LSDR;
-        (*(volatile unsigned char xdata *)0xF09) = KSO9LSDR;
-        (*(volatile unsigned char xdata *)0xF0a) = KSO10LSDR;
-        (*(volatile unsigned char xdata *)0xF0b) = KSO11LSDR;
-        (*(volatile unsigned char xdata *)0xF0c) = KSO12LSDR;
-        (*(volatile unsigned char xdata *)0xF0d) = KSO13LSDR;
-        (*(volatile unsigned char xdata *)0xF0e) = KSO14LSDR;
-        (*(volatile unsigned char xdata *)0xF0f) = KSO15LSDR;
-        (*(volatile unsigned char xdata *)0xF10) = KSO16LSDR;
-        (*(volatile unsigned char xdata *)0xF11) = KSO17LSDR;
+    // if ((SDSR & 0x01) == 0x01) {
+        (*(volatile unsigned char xdata *)0xE00) = KSO0LSDR;
+        (*(volatile unsigned char xdata *)0xE01) = KSO1LSDR;
+        (*(volatile unsigned char xdata *)0xE02) = KSO2LSDR;
+        (*(volatile unsigned char xdata *)0xE03) = KSO3LSDR;
+        (*(volatile unsigned char xdata *)0xE04) = KSO4LSDR;
+        (*(volatile unsigned char xdata *)0xE05) = KSO5LSDR;
+        (*(volatile unsigned char xdata *)0xE06) = KSO6LSDR;
+        (*(volatile unsigned char xdata *)0xE07) = KSO7LSDR;
+        (*(volatile unsigned char xdata *)0xE08) = KSO8LSDR;
+        (*(volatile unsigned char xdata *)0xE09) = KSO9LSDR;
+        (*(volatile unsigned char xdata *)0xE0a) = KSO10LSDR;
+        (*(volatile unsigned char xdata *)0xE0b) = KSO11LSDR;
+        (*(volatile unsigned char xdata *)0xE0c) = KSO12LSDR;
+        (*(volatile unsigned char xdata *)0xE0d) = KSO13LSDR;
+        (*(volatile unsigned char xdata *)0xE0e) = KSO14LSDR;
+        (*(volatile unsigned char xdata *)0xE0f) = KSO15LSDR;
+        (*(volatile unsigned char xdata *)0xE10) = KSO16LSDR;
+        (*(volatile unsigned char xdata *)0xE11) = KSO17LSDR;
+// 
+    // }
 
-    }
-
-    while(1);
+    // while(1);
 
      SDSR = 0x01;
 }
