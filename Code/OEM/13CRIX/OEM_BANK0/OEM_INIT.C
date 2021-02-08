@@ -1173,11 +1173,15 @@ static void __dptr2_test(void)
     Init_GPIO();
     Init_Timers();
     
-
+    BAT_LED1_ON();
     for(;;){
-        (*(volatile unsigned char xdata *)0xE00) = SP    ;
-        (*(volatile unsigned char xdata *)0xE00) = DPL   ;
-        (*(volatile unsigned char xdata *)0xE00) = DPH   ;
+        IE  = 0x00;
+        ACC = 0x00;
+        INVERSE_REG(GPDRJ, 4);
+        DelayXms(20);
+        // (*(volatile unsigned char xdata *)0xE00) = SP    ;
+        // (*(volatile unsigned char xdata *)0xE00) = DPL   ;
+        // (*(volatile unsigned char xdata *)0xE00) = DPH   ;
         
     //    memcpy(__array, "hello world!\r\n", 15); 
     };
@@ -1496,7 +1500,7 @@ void Oem_StartUp(void)
     // __deepdoze_to_wakeup();
 
     // __sleep_to_wakeup();
-// 
+
     // Init_ADC();
 
     

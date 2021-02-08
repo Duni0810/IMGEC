@@ -7,7 +7,7 @@
  
 #include "CORE_INCLUDE.H"
 #include "OEM_INCLUDE.H"
-#if 0
+#if 1
 
 #define		FIC628_REG_SMFI_BASE	(0x1000)
 #define		FIC628_REG_INTC_BASE	(0x1100)	//(0x2100)

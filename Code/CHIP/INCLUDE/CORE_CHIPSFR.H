@@ -48,6 +48,8 @@ sfr TL2	   = 0xCC;
 sfr TH2	   = 0xCD;
 sfr WDTCON = 0xD8;
 
+// sfr ACC    = 0xE0;
+
 sfr MPRECF = 0xF7;
 
 sbit WDTEB	= 0xD9;		// Watch dog register

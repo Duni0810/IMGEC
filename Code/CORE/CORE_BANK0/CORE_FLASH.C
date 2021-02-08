@@ -162,13 +162,6 @@ static void Winbond_SpiFlash_SetQE(void)
 }
 
 
-static void __led_on()
-{
-    BAT_LED1_ON();
-    BAT_LED2_ON();
-}
-
-
 void FlashECCode1(void)
 {
 	// 第一步
